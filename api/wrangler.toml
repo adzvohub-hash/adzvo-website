@@ -7,7 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "adzvo-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "445b7f4c-c41f-45ef-8cf3-59ba6bb6d18a"
 
 # R2 bucket binding
 [[r2_buckets]]
