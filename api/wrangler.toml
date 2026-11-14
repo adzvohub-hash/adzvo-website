@@ -21,7 +21,7 @@ bucket_name = "adzvo-media"
 
 [vars]
 ENVIRONMENT = "production"
-CORS_ORIGIN = "https://adzvo.com"
+CORS_ORIGIN = "https://adzvo.com,https://adzvo-website.adzvohub.workers.dev"
 
 # Dev overrides
 [env.dev.vars]

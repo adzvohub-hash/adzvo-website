@@ -10,12 +10,16 @@ import media    from "./routes/media";
 const app = new Hono<{ Bindings: Bindings }>();
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
-app.use("*", (ctx, next) => cors({
-  origin: ctx.env.CORS_ORIGIN ?? "*",
-  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowHeaders: ["Content-Type", "Authorization"],
-  maxAge: 86400,
-})(ctx, next));
+app.use("*", (ctx, next) => {
+  // CORS_ORIGIN can be a comma-separated list e.g. "https://adzvo.com,https://adzvo-website.adzvohub.workers.dev"
+  const allowed = (ctx.env.CORS_ORIGIN ?? "*").split(",").map((s) => s.trim());
+  return cors({
+    origin: (origin) => allowed.includes("*") || allowed.includes(origin) ? origin : allowed[0],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    maxAge: 86400,
+  })(ctx, next);
+});
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get("/api/health", (ctx) => ctx.json({ ok: true, env: ctx.env.ENVIRONMENT }));
