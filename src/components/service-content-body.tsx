@@ -185,9 +185,13 @@ export function ServiceContentBody({ slug }: { slug: string }) {
     <section className="bg-background py-16 sm:py-20">
       <div className="page-shell">
         <p className="mx-auto max-w-3xl text-center leading-relaxed text-muted-foreground">{body.intro}</p>
-        {body.layout === "spotlight" ? <CapabilitySpotlight capabilities={body.capabilities} />
-        : body.layout === "showcase" ? <CapabilityShowcase capabilities={body.capabilities} />
+        {/* key={slug}: moving between service pages reuses this component, and the scroll-in
+            animation only plays once per mount. Without the key, the next page's cards
+            are added to an already-played animation and stay invisible until a refresh. */}
+        {body.layout === "spotlight" ? <CapabilitySpotlight key={slug} capabilities={body.capabilities} />
+        : body.layout === "showcase" ? <CapabilityShowcase key={slug} capabilities={body.capabilities} />
         : <motion.div
+          key={slug}
           className="mx-auto mt-14 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3"
           variants={gridVariants}
           initial="hidden"
