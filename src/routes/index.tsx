@@ -20,6 +20,7 @@ import svc6 from "@/assets/svc-6.jpg";
 import svc7 from "@/assets/svc-7.jpg";
 import svc8 from "@/assets/svc-8.jpg";
 import { ArrowRight, ArrowUpRight, Check, Cpu, Handshake, Lightbulb, Pause, Play, Target, TrendingUp, Users, LayoutGrid, Rocket } from "lucide-react";
+import { getSettings, getServiceImages } from "@/lib/api";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -52,7 +53,7 @@ const SERVICES = [
   ["Content & Localization", "Copywriting • Blogs • E-books • Storybooks • Translation • Subtitles • Multilingual content"],
   ["Strategy & Analytics", "Digital/marketing strategy • GA4 • Tag Manager • Dashboards • Reporting • Content strategy"],
 ];
-const SVC_IMGS = [svc1, svc2, svc3, svc4, svc5, svc6, svc7, svc8];
+const SVC_IMGS_DEFAULT = [svc1, svc2, svc3, svc4, svc5, svc6, svc7, svc8];
 const ACCENTS = ["from-gold to-coral", "from-electric to-sky", "from-coral to-gold", "from-mint to-sky"];
 
 const WHY = [
@@ -143,6 +144,10 @@ export function Hero() {
   const [paused, setPaused] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoPlaying, setVideoPlaying] = useState(true);
+  const [heroVideoUrl, setHeroVideoUrl] = useState(HERO_VIDEO_URL);
+  useEffect(() => {
+    void getSettings().then((s) => { if (s.hero_video_url) setHeroVideoUrl(s.hero_video_url); }).catch(() => {});
+  }, []);
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
       videoRef.current?.pause();
@@ -164,7 +169,7 @@ export function Hero() {
     <section id="about" className="homepage-hero relative flex items-center overflow-hidden bg-navy pt-24 pb-32">
       <video
         ref={videoRef}
-        src={HERO_VIDEO_URL}
+        src={heroVideoUrl}
         poster={hero1}
         autoPlay
         muted
@@ -256,14 +261,27 @@ function Marquee() {
   );
 }
 
-export const IMPACT_STATS = [
+export const IMPACT_STATS_DEFAULT = [
   { value: 120, label: "Projects Delivered" },
   { value: 50, label: "Trusted Clients" },
   { value: 36, label: "Partners & Collaborators" },
   { value: 8, label: "Service Categories" },
-] as const;
+];
+// Keep the old const name for any components still importing it
+export const IMPACT_STATS = IMPACT_STATS_DEFAULT;
 
 function Impact() {
+  const [stats, setStats] = useState(IMPACT_STATS_DEFAULT);
+  useEffect(() => {
+    void getSettings().then((s) => {
+      setStats([
+        { value: s.metric_projects,   label: "Projects Delivered" },
+        { value: s.metric_clients,    label: "Trusted Clients" },
+        { value: s.metric_partners,   label: "Partners & Collaborators" },
+        { value: s.metric_categories, label: "Service Categories" },
+      ]);
+    }).catch(() => {});
+  }, []);
   // Logo palette only: navy, gold and white. The first card is the navy anchor.
   const icons = [Rocket, Handshake, Users, LayoutGrid];
   return (
@@ -280,7 +298,7 @@ function Impact() {
           </p>
         </div>
         <div className="reveal grid w-full grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
-            {IMPACT_STATS.map((stat, index) => {
+            {stats.map((stat, index) => {
               const Icon = icons[index] ?? TrendingUp;
               const anchor = index === 0;
               return (
@@ -301,6 +319,16 @@ function Impact() {
 }
 
 function Services() {
+  // svcImgs is indexed by service slug — falls back to default static images
+  const [svcImgs, setSvcImgs] = useState<Record<string, string>>({});
+  useEffect(() => {
+    void getServiceImages().then((imgs) => {
+      const map: Record<string, string> = {};
+      imgs.forEach(({ slug, image_url }) => { if (image_url) map[slug] = image_url; });
+      setSvcImgs(map);
+    }).catch(() => {});
+  }, []);
+
   return (
     <section id="services" className="bg-services grain relative overflow-hidden py-20 sm:py-24">
       <div className="page-shell relative">
@@ -332,7 +360,7 @@ function Services() {
               className="reveal group relative block aspect-square w-full min-w-0 overflow-hidden rounded-2xl border border-primary-foreground/15 shadow-xl outline-none transition duration-500 hover:-translate-y-1.5 hover:border-primary-foreground/30 hover:shadow-2xl focus-visible:ring-2 focus-visible:ring-gold"
               style={{ transitionDelay: `${(i % 4) * 70}ms` }}
             >
-              <img src={SVC_IMGS[i]} alt={t} width={768} height={960} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-[1200ms] ease-out group-hover:scale-110 group-focus:scale-110" />
+              <img src={svcImgs[service.slug] ?? SVC_IMGS_DEFAULT[i]} alt={t} width={768} height={960} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-[1200ms] ease-out group-hover:scale-110 group-focus:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/5 transition duration-500 group-hover:via-navy/80 group-hover:to-navy/40 group-focus:via-navy/80 group-focus:to-navy/40" />
               <div className="absolute inset-x-0 top-0 h-0.5 bg-gold opacity-0 transition group-hover:opacity-100" />
               <div className="glass absolute top-5 left-5 flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-primary-foreground" style={LOGO_FONT}>
