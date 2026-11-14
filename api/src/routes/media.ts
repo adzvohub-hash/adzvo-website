@@ -5,9 +5,31 @@ import type { Bindings } from "../types";
 const media = new Hono<{ Bindings: Bindings }>();
 
 // ─── Allowed MIME types ────────────────────────────────────────────────────────
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-const ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/webm"]);
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024;  // 10 MB
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/jpeg",       // .jpg / .jpeg
+  "image/png",        // .png
+  "image/webp",       // .webp
+  "image/avif",       // .avif
+  "image/gif",        // .gif
+  "image/svg+xml",    // .svg
+  "image/tiff",       // .tiff / .tif
+  "image/bmp",        // .bmp
+  "image/heic",       // .heic  (Apple)
+  "image/heif",       // .heif  (Apple)
+  "image/x-icon",     // .ico
+  "image/vnd.microsoft.icon", // .ico (alt MIME)
+]);
+const ALLOWED_VIDEO_TYPES = new Set([
+  "video/mp4",        // .mp4
+  "video/webm",       // .webm
+  "video/ogg",        // .ogv
+  "video/quicktime",  // .mov
+  "video/x-msvideo",  // .avi
+  "video/x-matroska", // .mkv
+  "video/3gpp",       // .3gp
+  "video/x-ms-wmv",   // .wmv
+]);
+const MAX_IMAGE_SIZE = 20 * 1024 * 1024;  // 20 MB
 const MAX_VIDEO_SIZE = 500 * 1024 * 1024; // 500 MB
 
 // ─── POST /api/media/upload ───────────────────────────────────────────────────

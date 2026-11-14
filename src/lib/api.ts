@@ -144,3 +144,17 @@ export async function uploadMedia(file: File, folder: "images" | "videos"): Prom
   const data = await res.json<{ url: string }>();
   return data.url;
 }
+
+/** Delete a file from R2. Pass the full public URL — the key is extracted automatically. */
+export async function deleteMedia(url: string): Promise<void> {
+  // Extract the R2 key from the public URL: strip the R2_BASE prefix
+  const key = url.startsWith(R2_BASE) ? url.slice(R2_BASE.length + 1) : null;
+  if (!key) return; // not an R2 URL — don't try to delete
+  const res = await authFetch("/api/media", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key }),
+  });
+  // Silently ignore delete errors — file may already be gone
+  if (!res.ok) console.warn("Could not delete old media:", key);
+}
