@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, ChartNoAxesCombined, Route, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
+import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 export function StrategyAnalyticsHero() {
   return (
@@ -10,10 +11,11 @@ export function StrategyAnalyticsHero() {
       <div className="strategy-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="strategy-intro">
-          <h1 id="strategy-title" className="font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl">
-            Strategy <span className="italic">& Analytics</span>
+          <SectionLabel>ADZVO Services</SectionLabel>
+          <h1 id="strategy-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">
+            Strategy <Highlight>& Analytics</Highlight>
           </h1>
-          <p className="mt-4 text-lg font-semibold uppercase tracking-wide text-navy sm:text-2xl">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Clarity for every next move
           </p>
           <Button asChild variant="outline" className="strategy-project-link">

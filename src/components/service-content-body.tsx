@@ -1,6 +1,10 @@
 import { CtaVideo } from "@/components/cta-video";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Boxes, Sparkles, Presentation, Bot, Smartphone, Music, Globe, AppWindow, ShoppingCart, PenTool, LayoutDashboard, Gauge, Compass, Fingerprint, Palette, Megaphone, Package, MonitorPlay, Clapperboard, Building2, Video, Mic2, Camera, Film, PenLine, Newspaper, BookOpen, Book, Languages, Target, BarChart3, Tags, FileText, ListChecks, Share2, Search, Mail, TrendingUp, Zap, type LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { Highlight, SectionLabel } from "@/components/brand-logo";
+import { CapabilitySpotlight } from "@/components/capability-spotlight";
+import { CapabilityShowcase } from "@/components/capability-showcase";
 import { Button } from "@/components/ui/button";
 import { servicePages } from "@/lib/services";
 import animationCta from "@/assets/animation-play.jpg";
@@ -12,9 +16,47 @@ import strategyCta from "@/assets/svc-8.jpg";
 import marketingCta from "@/assets/svc-2.jpg";
 
 type Capability = { icon: LucideIcon; title: string; text: string };
+
+// ── Animation variants ────────────────────────────────────────────────────────
+
+const gridVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.1, delayChildren: 0.05 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
+
+function CapabilityCard({ icon: Icon, title, text }: Capability) {
+  return (
+    <motion.div
+      variants={cardVariants}
+      whileHover={{ y: -6, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+      className="group flex flex-col rounded-3xl border border-navy/10 bg-off p-6 text-left transition-colors duration-300 hover:border-navy hover:bg-navy sm:p-7"
+    >
+      <span className="grid size-12 place-items-center rounded-xl bg-gold text-navy transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+        <Icon className="size-6" strokeWidth={2.2} />
+      </span>
+      <h3 className="mt-6 text-lg font-semibold text-navy transition-colors duration-300 group-hover:text-primary-foreground">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground transition-colors duration-300 group-hover:text-primary-foreground/75">{text}</p>
+      <span className="mt-auto block pt-5"><span className="block h-1 w-8 rounded-full bg-gold transition-all duration-300 group-hover:w-16" /></span>
+    </motion.div>
+  );
+}
+
 type BodyContent = {
   intro: string;
   capabilities: Capability[];
+  /** How the capability list is presented. Omit for the classic icon grid. */
+  layout?: "spotlight" | "showcase";
   studioLink?: { href: string; label: string };
   ctaTitle: [string, string];
   ctaText?: string;
@@ -90,6 +132,7 @@ export const serviceBodies: Record<string, BodyContent> = {
   "marketing-growth": {
     intro: "We create connected marketing experiences that help brands attract the right audience, strengthen engagement, and turn interest into measurable business growth. From social media and targeted email campaigns to SEO, YouTube SEO, Google and Meta advertising, every initiative is shaped around clear objectives and audience insights. Our lead-generation and conversion-rate optimization strategies continuously improve the customer journey, helping your marketing investment deliver stronger visibility, qualified opportunities, and sustainable results.",
     capabilities: marketingCapabilities,
+    layout: "showcase",
     ctaTitle: ["Ready to accelerate", "your growth?"],
     ctaLabel: "Build My Growth Plan",
     ctaImage: marketingCta,
@@ -105,7 +148,7 @@ export const serviceBodies: Record<string, BodyContent> = {
   },
   "digital-technology": {
     intro: "We design and develop modern digital solutions that combine smart technology with intuitive experiences. From high-performing websites and mobile apps to e-commerce platforms and UX/UI, we turn ideas into scalable digital products that are easy to use and built for growth.",
-    capabilities: digitalCapabilities, ctaTitle: ["Have an idea? Let’s", "bring it to life."], ctaText: "From the first sketch to the final launch, we help transform your vision into a meaningful digital experience.", ctaLabel: "Start Your Digital Project", ctaImage: digitalCta, ctaAlt: "Laptop showing a modern website build",
+    capabilities: digitalCapabilities, layout: "spotlight", ctaTitle: ["Have an idea? Let’s", "bring it to life."], ctaText: "From the first sketch to the final launch, we help transform your vision into a meaningful digital experience.", ctaLabel: "Start Your Digital Project", ctaImage: digitalCta, ctaAlt: "Laptop showing a modern website build",
   },
   "film-video-photography": {
     intro: "Through LCA Film Studio, we transform ideas into compelling visual stories that capture attention and create lasting impact. From advertising and corporate films to commercials, podcasts, and professional photography, we manage every stage of the creative process with a strong focus on storytelling and production quality. Our end-to-end capabilities cover concept development, scripting, filming, editing, sound, and final delivery, ensuring every frame communicates your brand with clarity and purpose.",
@@ -142,44 +185,53 @@ export function ServiceContentBody({ slug }: { slug: string }) {
     <section className="bg-background py-16 sm:py-20">
       <div className="page-shell">
         <p className="mx-auto max-w-3xl text-center leading-relaxed text-muted-foreground">{body.intro}</p>
-        <div className="mx-auto mt-14 grid max-w-5xl gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-          {body.capabilities.map(({ icon: Icon, title, text }) => (
-            <div key={title} className="flex flex-col items-center text-center">
-              <span className="grid size-16 place-items-center rounded-full border-2 border-navy text-navy"><Icon className="size-7" /></span>
-              <h3 className="mt-5 text-xl font-medium text-navy">{title}</h3>
-              <p className="mt-3 max-w-xs text-sm text-muted-foreground">{text}</p>
-            </div>
+        {body.layout === "spotlight" ? <CapabilitySpotlight capabilities={body.capabilities} />
+        : body.layout === "showcase" ? <CapabilityShowcase capabilities={body.capabilities} />
+        : <motion.div
+          className="mx-auto mt-14 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          variants={gridVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+        >
+          {body.capabilities.map((cap) => (
+            <CapabilityCard key={cap.title} {...cap} />
           ))}
-        </div>
+        </motion.div>}
         {body.studioLink && <div className="mt-12 text-center">
-          <a href={body.studioLink.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-md bg-sky px-6 py-3 font-medium text-navy transition hover:brightness-110">
+          <a href={body.studioLink.href} target="_blank" rel="noreferrer" className="shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">
             {body.studioLink.label}<ArrowUpRight className="size-4" />
           </a>
         </div>}
       </div>
     </section>
 
-    <section className="bg-ai-plum py-16 text-primary-foreground">
+    <section
+      className="relative overflow-hidden bg-navy py-16 text-primary-foreground sm:py-20"
+      style={{ backgroundImage: "radial-gradient(50% 90% at 86% 40%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 70%)" }}
+    >
       <div className="page-shell grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-16">
         <div>
-          <h2 className="text-4xl font-extrabold leading-tight sm:text-5xl">{body.ctaTitle[0]}<br />{body.ctaTitle[1]}</h2>
-          {body.ctaText && <p className="mt-4 max-w-md text-primary-foreground/85">{body.ctaText}</p>}
-          {slug === "marketing-growth" ? <Button asChild className="mt-8 bg-sky px-6 py-3 font-medium text-navy hover:bg-sky hover:brightness-110">
+          <SectionLabel light>Start a Project</SectionLabel>
+          <h2 className="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">{body.ctaTitle[0]}<br /><Highlight dark>{body.ctaTitle[1]}</Highlight></h2>
+          {body.ctaText && <p className="mt-6 max-w-md text-primary-foreground/85">{body.ctaText}</p>}
+          {slug === "marketing-growth" ? <Button asChild className="mt-8 h-auto rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy shadow-gold hover:bg-gold hover:brightness-110">
             <Link to="/" hash="contact">{body.ctaLabel}</Link>
-          </Button> : <Link to="/" hash="contact" className="mt-8 inline-flex rounded-md bg-sky px-6 py-3 font-medium text-navy hover:brightness-110">{body.ctaLabel}</Link>}
+          </Button> : <Link to="/" hash="contact" className="mt-8 shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">{body.ctaLabel}</Link>}
         </div>
         <CtaVideo slug={slug} poster={body.ctaImage} label={body.ctaAlt} />
       </div>
     </section>
 
-    <section className="bg-electric py-16 text-primary-foreground">
+    <section className="bg-off py-16 text-navy sm:py-20">
       <div className="page-shell">
-        <h2 className="text-4xl font-extrabold">Other Services</h2>
+        <SectionLabel>Explore More</SectionLabel>
+        <h2 className="mt-5 font-display text-4xl font-extrabold">Other <Highlight>Services</Highlight></h2>
         <div className="mt-10 overflow-hidden pb-4">
           <div className="ai-services-track flex w-max gap-5">
           {[...others, ...others].map((s, i) => (
             <Link key={`${s.slug}-${i}`} to="/services/$service" params={{ service: s.slug }} aria-hidden={i >= others.length || undefined} tabIndex={i >= others.length ? -1 : undefined}
-              className="group relative h-72 w-64 shrink-0 overflow-hidden rounded-lg bg-navy">
+              className="group relative h-72 w-64 shrink-0 overflow-hidden rounded-lg bg-navy text-primary-foreground shadow-xl shadow-navy/20">
               <img src={s.image} alt={s.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/40 to-transparent" />
               <ArrowUpRight className="absolute right-3 top-3 size-4" />
@@ -191,7 +243,7 @@ export function ServiceContentBody({ slug }: { slug: string }) {
           ))}
           </div>
         </div>
-        <Link to="/" hash="services" className="mt-6 inline-flex items-center gap-2 font-semibold">All services <ArrowRight className="size-4" /></Link>
+        <Link to="/" hash="services" className="mt-6 inline-flex items-center gap-2 border-b-2 border-gold pb-0.5 font-semibold text-navy transition hover:gap-3">All services <ArrowRight className="size-4" /></Link>
       </div>
     </section>
   </>;

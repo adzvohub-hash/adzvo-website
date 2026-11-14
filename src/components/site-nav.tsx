@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { servicePages } from "@/lib/services";
+import { BrandLogo } from "@/components/brand-logo";
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
@@ -25,8 +26,8 @@ export function SiteNav() {
   return (
     <header className={`site-nav-glass fixed inset-x-0 top-0 z-50 border-b ${scrolled ? "site-nav-scrolled" : ""}`} onKeyDown={(event) => { if (event.key === "Escape") close(); }}>
       <nav aria-label="Main navigation" className="page-shell grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-3 md:flex md:justify-between">
-        <Link to="/" onClick={close} className="min-w-0 font-display text-2xl font-extrabold text-navy">ADZ<span className="text-gold">VO</span></Link>
-        <ul className="hidden items-center gap-8 text-xs font-semibold uppercase tracking-[0.16em] text-navy md:flex">
+        <Link to="/" onClick={close} aria-label="ADZVO home" className="min-w-0"><BrandLogo /></Link>
+        <ul className="hidden items-center gap-8 text-xs font-semibold uppercase tracking-[0.16em] md:flex">
           <li><Link to="/" className="hover:text-gold">Home</Link></li>
           <li><Link to="/about" className="hover:text-gold">About</Link></li>
           <li className="relative" onMouseEnter={() => setServicesOpen(true)} onMouseLeave={() => setServicesOpen(false)}
@@ -43,8 +44,8 @@ export function SiteNav() {
           <li><Link to="/insights" className="hover:text-gold">Insights</Link></li>
           <li><Link to="/" hash="contact" className="hover:text-gold">Contact</Link></li>
         </ul>
-        <Button asChild className="hidden bg-navy text-primary-foreground hover:bg-navy/90 md:inline-flex"><Link to="/" hash="contact" onClick={close}>Let's Talk</Link></Button>
-        <Button variant="ghost" size="icon" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen(!open)} className="text-navy md:hidden">{open ? <X /> : <Menu />}</Button>
+        <Button asChild className="site-nav-cta hidden md:inline-flex"><Link to="/" hash="contact" onClick={close}>Let's Talk</Link></Button>
+        <Button variant="ghost" size="icon" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen(!open)} className="hover:bg-white/15 hover:text-inherit md:hidden">{open ? <X /> : <Menu />}</Button>
       </nav>
       {open && <div className="site-menu-glass page-shell my-2 max-h-[calc(100dvh-100px)] overflow-y-auto rounded-lg border p-3 md:hidden">
         <Link to="/" onClick={close} className="block px-3 py-3 font-semibold text-navy">Home</Link>

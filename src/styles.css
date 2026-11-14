@@ -181,9 +181,9 @@
   --hero-badge-glass: oklch(0.1 0 0 / 60%);
   --hero-badge-foreground: oklch(1 0 0);
   --hero-badge-border: oklch(1 0 0 / 20%);
-  --services-carbon: oklch(0.13 0 0);
-  --services-charcoal: oklch(0.21 0 0);
-  --services-graphite: oklch(0.29 0 0);
+  --services-carbon: var(--navy);
+  --services-charcoal: color-mix(in oklab, var(--navy) 90%, white);
+  --services-graphite: color-mix(in oklab, var(--navy) 80%, white);
   --services-sheen: oklch(0.75 0 0 / 9%);
   --services-silk-background: linear-gradient(118deg, transparent 12%, var(--services-sheen) 24%, transparent 37%, transparent 62%, var(--services-sheen) 76%, transparent 88%), linear-gradient(155deg, var(--services-carbon) 0%, var(--services-charcoal) 28%, var(--services-graphite) 46%, var(--services-charcoal) 60%, var(--services-carbon) 100%);
 }
@@ -289,9 +289,9 @@ body { font-family: var(--font-sans); overflow-x: hidden; }
   isolation: isolate;
 }
 .impact-stat-card:nth-child(1) { --impact-flap-surface: var(--navy); }
-.impact-stat-card:nth-child(2) { --impact-flap-surface: color-mix(in oklab, var(--electric) 16%, var(--off)); }
-.impact-stat-card:nth-child(3) { --impact-flap-surface: color-mix(in oklab, var(--gold) 16%, var(--off)); }
-.impact-stat-card:nth-child(4) { --impact-flap-surface: color-mix(in oklab, var(--mint) 12%, var(--off)); }
+.impact-stat-card:nth-child(2) { --impact-flap-surface: var(--card); }
+.impact-stat-card:nth-child(3) { --impact-flap-surface: var(--card); }
+.impact-stat-card:nth-child(4) { --impact-flap-surface: var(--card); }
 .impact-counter-face { display: block; }
 .impact-counter-flaps { position: absolute; inset: 0; animation: impact-flaps-finish 85ms step-end forwards; }
 .impact-counter-flaps::after {
@@ -329,35 +329,56 @@ body { font-family: var(--font-sans); overflow-x: hidden; }
   .impact-counter-flaps { display: none; }
 }
 
-/* Consistent light glass navigation across all page backgrounds. */
+/* Navigation: frosted black with white text at the top of the page,
+   switching to frosted white with navy text once the page is scrolled. */
 :root {
-  --nav-glass-surface: color-mix(in oklab, var(--primary-foreground) 82%, transparent);
-  --nav-glass-scrolled: color-mix(in oklab, var(--primary-foreground) 89%, transparent);
+  --nav-glass-dark: color-mix(in oklab, black 80%, transparent);
+  --nav-glass-dark-edge: color-mix(in oklab, white 14%, transparent);
+  --nav-glass-scrolled: color-mix(in oklab, var(--primary-foreground) 86%, transparent);
   --nav-glass-edge: color-mix(in oklab, var(--primary-foreground) 68%, transparent);
   --nav-glass-shadow: 0 6px 24px -16px color-mix(in oklab, var(--navy) 22%, transparent);
   --menu-glass-surface: color-mix(in oklab, var(--primary-foreground) 80%, transparent);
   --menu-glass-shadow: 0 20px 48px -18px color-mix(in oklab, var(--navy) 28%, transparent);
+  --strip-glass-dark: color-mix(in oklab, black 50%, transparent);
 }
 .site-nav-glass {
-  background: var(--nav-glass-surface);
+  background: var(--nav-glass-dark);
+  border-color: var(--nav-glass-dark-edge);
+  color: white;
+  backdrop-filter: blur(28px) saturate(130%);
+  -webkit-backdrop-filter: blur(28px) saturate(130%);
+  transition: background 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+}
+.site-nav-scrolled {
+  background: var(--nav-glass-scrolled);
   border-color: var(--nav-glass-edge);
   color: var(--navy);
-  backdrop-filter: blur(28px) saturate(130%);
   box-shadow: var(--nav-glass-shadow);
-  transition: background 300ms ease, box-shadow 300ms ease;
 }
-.site-nav-scrolled { background: var(--nav-glass-scrolled); }
+/* "Let's Talk" inverts with the bar so it never disappears into it. */
+.site-nav-cta { background: white; color: var(--navy); transition: background 300ms ease, color 300ms ease; }
+.site-nav-cta:hover { background: color-mix(in oklab, white 88%, var(--gold)); }
+.site-nav-scrolled .site-nav-cta { background: var(--navy); color: var(--primary-foreground); }
+.site-nav-scrolled .site-nav-cta:hover { background: color-mix(in oklab, var(--navy) 90%, white); }
+/* Scrolling services strip laid over the bottom edge of the homepage hero. */
+.hero-strip-glass {
+  background: var(--strip-glass-dark);
+  border-top: 1px solid var(--nav-glass-dark-edge);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+}
 .site-menu-glass {
   background: var(--menu-glass-surface);
   border-color: var(--nav-glass-edge);
   backdrop-filter: blur(32px) saturate(140%);
   box-shadow: var(--menu-glass-shadow);
 }
-@supports not (backdrop-filter: blur(1px)) {
-  .site-nav-glass, .site-menu-glass { background: var(--off); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-nav-glass, .hero-strip-glass { background: var(--navy); }
+  .site-nav-scrolled, .site-menu-glass { background: var(--off); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .site-nav-glass { transition: none; }
+  .site-nav-glass, .site-nav-cta { transition: none; }
 }
 
 /* Frosted editorial stage, exclusive to the Animation & Content service. */
@@ -1025,3 +1046,62 @@ body { font-family: var(--font-sans); overflow-x: hidden; }
 @keyframes about-hero-drift { from { transform: scale(1.08); } to { transform: scale(1); } }
 .about-hero-img { animation: about-hero-drift 14s ease-out both; }
 @media (prefers-reduced-motion: reduce) { .about-hero-img { animation: none; } }
+
+/* Service heroes keep their original frosted rainbow backdrop; only the button follows the logo palette. */
+.animation-project-link, .marketing-project-link, .digital-project-link, .branding-project-link, .film-project-link, .strategy-project-link, .localization-project-link, .automation-project-link {
+  height: auto;
+  margin-top: 24px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 0.75rem;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  backdrop-filter: none;
+  box-shadow: 0 10px 28px -10px color-mix(in oklab, var(--gold) 80%, transparent);
+  transition: transform 200ms ease, filter 200ms ease;
+}
+.animation-project-link:hover, .marketing-project-link:hover, .digital-project-link:hover, .branding-project-link:hover, .film-project-link:hover, .strategy-project-link:hover, .localization-project-link:hover, .automation-project-link:hover { background: var(--gold); color: var(--navy); filter: brightness(1.08); transform: translateY(-3px); }
+
+/* ── Frosted-glass hero variants ──────────────────────────────────────────────
+   Both keep the ribbed frosted-glass backdrop image. Add one class to a hero. */
+
+/* Option 1: brand glass. The image is turned neutral so only its ribbed texture
+   remains, then gold, amber and steel-blue light is laid over it. */
+.hero-glass-brand [class$="-backdrop"] { filter: grayscale(1) brightness(1.06) contrast(1.04); }
+.hero-glass-brand [class$="-ambient"] {
+  mix-blend-mode: multiply;
+  background:
+    radial-gradient(58% 85% at 5% 68%, oklch(0.72 0.09 255 / 62%), transparent 72%),
+    radial-gradient(52% 80% at 50% 46%, color-mix(in oklab, var(--gold) 34%, transparent), transparent 70%),
+    radial-gradient(60% 92% at 97% 22%, oklch(0.82 0.14 62 / 66%), transparent 74%);
+}
+.hero-glass-brand { --water-tint: color-mix(in oklab, var(--gold) 55%, transparent); }
+
+/* Option 2: pearl. The original rainbow at roughly half strength with a faint warm tint. */
+.hero-glass-pearl [class$="-backdrop"] { filter: saturate(0.45) brightness(1.05); }
+.hero-glass-pearl [class$="-ambient"] { opacity: 0.5; }
+.hero-glass-pearl .hero-waterfall { background: color-mix(in oklab, var(--gold) 7%, transparent); }
+.hero-glass-pearl { --water-tint: color-mix(in oklab, var(--navy) 12%, transparent); }
+
+/* Falling water behind the glass */
+.hero-waterfall { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.hero-waterfall i {
+  --water: color-mix(in oklab, white 92%, transparent);
+  position: absolute; top: -70%; height: 70%; border-radius: 999px;
+  background: linear-gradient(to bottom, transparent, var(--water) 42%, var(--water) 62%, transparent);
+  filter: blur(14px);
+  animation: hero-water-fall linear infinite;
+  will-change: transform;
+}
+.hero-waterfall i.is-tint { --water: var(--water-tint); }
+/* Fine vertical ribs drawn over the streaks so the water sits behind the glass. */
+.hero-waterfall::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, color-mix(in oklab, white 50%, transparent) 0 1px, transparent 1px 10px, color-mix(in oklab, var(--navy) 5%, transparent) 10px 11px);
+}
+@keyframes hero-water-fall { from { transform: translateY(0); } to { transform: translateY(260%); } }
+@media (prefers-reduced-motion: reduce) { .hero-waterfall i { animation: none; opacity: 0 !important; } }

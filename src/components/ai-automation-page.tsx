@@ -2,6 +2,7 @@ import { CtaVideo } from "@/components/cta-video";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { servicePages } from "@/lib/services";
+import { Highlight, SectionLabel } from "@/components/brand-logo";
 import { AiAutomationHero } from "@/components/ai-automation-hero";
 import consulting from "@/assets/ai-consulting.jpg";
 import content from "@/assets/ai-content.jpg";
@@ -16,7 +17,7 @@ const offerings = [
   { title: "Business Automation", text: "Transform repetitive tasks into smarter, connected workflows.", tags: "Process automation • Chatbots • Reporting", image: automation },
 ];
 
-const expertBtn = "inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-coral via-violet to-electric px-7 py-3 font-medium text-primary-foreground shadow-lg transition-transform hover:-translate-y-0.5";
+const expertBtn = "shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110";
 
 export function AiAutomationPage() {
   const others = servicePages.filter((s) => s.slug !== "ai-automation");
@@ -31,7 +32,7 @@ export function AiAutomationPage() {
         {offerings.map((o, i) => (
           <div key={o.title} className="mx-auto grid max-w-5xl items-center gap-10 md:grid-cols-2">
             <div className={i % 2 ? "md:order-2" : ""}>
-              <h2 className="text-4xl text-navy">{o.title}</h2>
+              <h2 className="font-display text-4xl font-extrabold text-navy">{o.title}</h2>
               <p className="mt-6 max-w-sm text-foreground">{o.text}</p>
               <p className="mt-2 font-semibold text-navy">{o.tags}</p>
               <Link to="/" hash="contact" className={`${expertBtn} mt-8`}>Talk to an AI Expert</Link>
@@ -43,25 +44,27 @@ export function AiAutomationPage() {
       </div>
     </section>
 
-    <section className="bg-ai-plum py-16 text-primary-foreground">
+    <section className="relative overflow-hidden bg-navy py-16 text-primary-foreground sm:py-20" style={{ backgroundImage: "radial-gradient(50% 90% at 86% 40%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 70%)" }}>
       <div className="page-shell grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-16">
         <div>
-          <h2 className="text-4xl font-extrabold leading-tight sm:text-5xl">Ready to work<br />smarter with AI?</h2>
-          <p className="mt-4 text-primary-foreground/85">Let's turn your ideas into intelligent solutions.</p>
-          <Link to="/" hash="contact" className="mt-8 inline-flex rounded-md bg-sky px-6 py-3 font-medium text-navy hover:brightness-110">Start Your AI Journey</Link>
+          <SectionLabel light>Start a Project</SectionLabel>
+          <h2 className="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">Ready to work<br /><Highlight dark>smarter with AI?</Highlight></h2>
+          <p className="mt-6 text-primary-foreground/85">Let's turn your ideas into intelligent solutions.</p>
+          <Link to="/" hash="contact" className="mt-8 shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">Start Your AI Journey</Link>
         </div>
         <CtaVideo slug="ai-automation" poster={cta} label="Glowing AI network animation" />
       </div>
     </section>
 
-    <section className="bg-electric py-16 text-primary-foreground">
+    <section className="bg-off py-16 text-navy sm:py-20">
       <div className="page-shell">
-        <h2 className="text-4xl font-extrabold">Other Services</h2>
+        <SectionLabel>Explore More</SectionLabel>
+        <h2 className="mt-5 font-display text-4xl font-extrabold">Other <Highlight>Services</Highlight></h2>
         <div className="mt-10 overflow-hidden pb-4">
           <div className="ai-services-track flex w-max gap-5">
           {[...others, ...others].map((s, i) => (
             <Link key={`${s.slug}-${i}`} to="/services/$service" params={{ service: s.slug }} aria-hidden={i >= others.length || undefined} tabIndex={i >= others.length ? -1 : undefined}
-              className="group relative h-72 w-64 shrink-0 snap-start overflow-hidden rounded-lg bg-navy">
+              className="group relative h-72 w-64 shrink-0 snap-start overflow-hidden rounded-lg bg-navy text-primary-foreground shadow-xl shadow-navy/20">
               <img src={s.image} alt={s.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/40 to-transparent" />
               <ArrowUpRight className="absolute right-3 top-3 size-4" />
@@ -73,7 +76,7 @@ export function AiAutomationPage() {
           ))}
           </div>
         </div>
-        <Link to="/" hash="services" className="mt-6 inline-flex items-center gap-2 font-semibold">All services <ArrowRight className="size-4" /></Link>
+        <Link to="/" hash="services" className="mt-6 inline-flex items-center gap-2 border-b-2 border-gold pb-0.5 font-semibold text-navy transition hover:gap-3">All services <ArrowRight className="size-4" /></Link>
       </div>
     </section>
   </>;

@@ -2,18 +2,22 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, BadgeDollarSign, Gauge, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
+import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
+import { HeroWaterfall } from "@/components/hero-waterfall";
 
 export function MarketingGrowthHero() {
   return (
-    <section className="marketing-hero" aria-labelledby="marketing-title">
+    <section className="marketing-hero hero-glass-pearl" aria-labelledby="marketing-title">
       <img className="marketing-backdrop" src={frost} alt="" width={1920} height={1088} />
+      <HeroWaterfall />
       <div className="marketing-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="marketing-intro">
-          <h1 id="marketing-title" className="font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl">
-            Marketing <span className="italic">& Growth</span>
+          <SectionLabel>ADZVO Services</SectionLabel>
+          <h1 id="marketing-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">
+            Marketing <Highlight>& Growth</Highlight>
           </h1>
-          <p className="mt-4 text-lg font-semibold uppercase tracking-wide text-navy sm:text-2xl">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Turn attention into measurable growth
           </p>
           <Button asChild variant="outline" className="marketing-project-link">

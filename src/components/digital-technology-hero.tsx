@@ -2,18 +2,22 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Braces, Cloud, Code2, Gauge, LayoutDashboard, Layers3, MonitorSmartphone, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
+import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
+import { HeroWaterfall } from "@/components/hero-waterfall";
 
 export function DigitalTechnologyHero() {
   return (
-    <section className="digital-hero" aria-labelledby="digital-title">
+    <section className="digital-hero hero-glass-brand" aria-labelledby="digital-title">
       <img className="digital-backdrop" src={frost} alt="" width={1920} height={1088} />
+      <HeroWaterfall />
       <div className="digital-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="digital-intro">
-          <h1 id="digital-title" className="font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl">
-            Digital <span className="italic">& Technology</span>
+          <SectionLabel>ADZVO Services</SectionLabel>
+          <h1 id="digital-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">
+            Digital <Highlight>& Technology</Highlight>
           </h1>
-          <p className="mt-4 text-lg font-semibold uppercase tracking-wide text-navy sm:text-2xl">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Digital experiences built to perform
           </p>
           <Button asChild variant="outline" className="digital-project-link">

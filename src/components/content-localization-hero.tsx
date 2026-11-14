@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Globe2, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
+import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 export function ContentLocalizationHero() {
   return (
@@ -10,10 +11,11 @@ export function ContentLocalizationHero() {
       <div className="localization-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="localization-intro">
-          <h1 id="localization-title" className="font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl">
-            Content <span className="italic">& Localization</span>
+          <SectionLabel>ADZVO Services</SectionLabel>
+          <h1 id="localization-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">
+            Content <Highlight>& Localization</Highlight>
           </h1>
-          <p className="mt-4 text-lg font-semibold uppercase tracking-wide text-navy sm:text-2xl">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             One voice. Every culture.
           </p>
           <Button asChild variant="outline" className="localization-project-link">

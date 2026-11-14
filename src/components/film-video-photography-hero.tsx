@@ -5,6 +5,7 @@ import frost from "@/assets/animation-frosted.jpg";
 import cinemaStill from "@/assets/film-cinema-still.jpg";
 import behindScenes from "@/assets/film-behind-scenes.jpg";
 import automotiveMotion from "@/assets/film-automotive-motion.jpg";
+import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 export function FilmVideoPhotographyHero() {
   return (
@@ -13,10 +14,11 @@ export function FilmVideoPhotographyHero() {
       <div className="film-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="film-intro">
-          <h1 id="film-title" className="font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl">
-            Film, Video <span className="italic">& Photography</span>
+          <SectionLabel>ADZVO Services</SectionLabel>
+          <h1 id="film-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">
+            Film, Video <Highlight>& Photography</Highlight>
           </h1>
-          <p className="mt-4 text-lg font-semibold uppercase tracking-wide text-navy sm:text-2xl">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Bring your story into focus
           </p>
           <Button asChild variant="outline" className="film-project-link">

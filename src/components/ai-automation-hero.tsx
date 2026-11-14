@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
+import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 export function AiAutomationHero() {
   return (
@@ -22,10 +23,11 @@ export function AiAutomationHero() {
       <div className="automation-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="automation-intro">
-          <h1 id="automation-title" className="font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl">
-            AI <span className="italic">& Automation</span>
+          <SectionLabel>ADZVO Services</SectionLabel>
+          <h1 id="automation-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">
+            AI <Highlight>& Automation</Highlight>
           </h1>
-          <p className="mt-4 text-lg font-semibold uppercase tracking-wide text-navy sm:text-2xl">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Smarter business starts with AI
           </p>
           <Button asChild variant="outline" className="automation-project-link">

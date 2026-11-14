@@ -8,6 +8,7 @@ import { MediaField, MediaPreview } from "./media-field";
 import { InsightEditor, ProjectEditor, selectClass } from "./content-editor";
 import { acceptsPreviewLogin, initialMetrics, initialPosts, initialProjects, upsertPreviewItem, validMediaUrl, type AdminPost, type AdminProject } from "@/lib/admin-preview";
 import { servicePages } from "@/lib/services";
+import { BrandLogo } from "@/components/brand-logo";
 import { HERO_VIDEO_URL } from "@/lib/videos";
 import loginImage from "@/assets/about-hero.jpg";
 
@@ -30,13 +31,13 @@ function LoginView({ onLogin }: { onLogin: () => void }) {
     <section className="relative hidden overflow-hidden bg-navy text-primary-foreground lg:flex lg:flex-col lg:justify-between lg:p-12">
       <img src={loginImage} alt="ADZVO creative studio" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-navy/65" />
-      <Link to="/" className="relative w-fit text-3xl font-extrabold">ADZVO<span className="text-gold">.</span></Link>
+      <Link to="/" aria-label="ADZVO home" className="relative w-fit"><BrandLogo markClassName="size-11" textClassName="text-2xl" /></Link>
       <div className="relative max-w-lg"><span className="text-xs font-semibold uppercase tracking-widest text-gold">The studio, behind the scenes</span><h1 className="mt-5 font-display text-5xl leading-tight">Great work starts<br />with a clear view.</h1><p className="mt-6 text-sm text-primary-foreground/75">ADZVO content workspace</p></div>
       <p className="relative text-xs text-primary-foreground/65">Creative thinking. Connected experiences.</p>
     </section>
     <section className="flex flex-col justify-center px-6 py-12 sm:px-14 lg:px-20">
       <div className="mx-auto w-full max-w-sm">
-        <Link to="/" className="text-2xl font-extrabold lg:hidden">ADZVO<span className="text-electric">.</span></Link>
+        <Link to="/" aria-label="ADZVO home" className="lg:hidden"><BrandLogo /></Link>
         <div className="mt-10 flex size-12 items-center justify-center rounded-lg bg-electric/10 text-electric lg:mt-0"><LockKeyhole className="size-5" /></div>
         <p className="mt-6 text-xs font-semibold uppercase tracking-widest text-electric">Admin workspace</p>
         <h2 className="mt-3 font-display text-3xl">Welcome back.</h2>
@@ -98,7 +99,7 @@ export function AdminDashboard() {
   return <div className="min-h-svh bg-background">
     <header className="sticky top-0 z-30 border-b bg-card">
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
-        <div className="flex items-center gap-3"><Link to="/" className="text-2xl font-extrabold">ADZVO<span className="text-electric">.</span></Link><span className="border-l pl-3 text-xs font-medium text-muted-foreground">Admin</span></div>
+        <div className="flex items-center gap-3"><Link to="/" aria-label="ADZVO home"><BrandLogo /></Link><span className="border-l pl-3 text-xs font-medium text-muted-foreground">Admin</span></div>
         <div className="flex items-center gap-2"><Button variant="ghost" size="sm" asChild><Link to="/">View site<ArrowUpRight /></Link></Button><Button variant="outline" size="sm" onClick={() => { setSignedIn(false); setNotice(""); }}><LogOut />Sign out</Button></div>
       </div>
       <nav aria-label="Admin navigation" className="flex gap-1 overflow-x-auto px-5 sm:px-8">{tabs.map((item) => <Button key={item} variant="ghost" aria-current={tab === item ? "page" : undefined} onClick={() => changeTab(item)} className={`h-12 shrink-0 rounded-none border-b-2 px-5 ${tab === item ? "border-electric text-electric" : "border-transparent text-muted-foreground"}`}>{item}</Button>)}</nav>

@@ -12,6 +12,7 @@ import { ContentLocalizationHero } from "@/components/content-localization-hero"
 import { AiAutomationPage } from "@/components/ai-automation-page";
 import { ServiceContentBody, serviceBodies } from "@/components/service-content-body";
 import { Footer } from "@/components/site-footer";
+import { SectionLabel } from "@/components/brand-logo";
 
 export const Route = createFileRoute("/services/$service")({
   loader: ({ params }) => {
@@ -58,8 +59,8 @@ function ServicePage() {
   return <main className="bg-off">
     <Hero />
     {serviceBodies[service.slug] ? <ServiceContentBody slug={service.slug} /> : <section className="page-shell py-16 sm:py-20">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-electric">Coming soon</p>
-      <h2 className="mt-4 font-display text-3xl text-navy">More details are on the way.</h2>
+      <p><SectionLabel>Coming soon</SectionLabel></p>
+      <h2 className="mt-5 font-display text-3xl font-extrabold text-navy">More details are on the way.</h2>
       <p className="mt-4 max-w-xl text-muted-foreground">Our {service.title.toLowerCase()} page is taking shape. In the meantime, let’s talk about your project.</p>
       <Button asChild className="mt-8"><Link to="/" hash="contact">Start a conversation <ArrowRight /></Link></Button>
     </section>}

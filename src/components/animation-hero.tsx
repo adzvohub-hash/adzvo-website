@@ -11,6 +11,7 @@ const artwork = [
   { image: glass, label: "Ideas in motion", category: "Motion design", alt: "Lime glass loops surrounding a mint sphere" },
   { image: play, label: "A little unexpected", category: "Visual storytelling", alt: "Blue sculptural star and yellow sphere above a lavender platform" },
 ];
+import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 export function AnimationHero() {
   return (
@@ -18,8 +19,9 @@ export function AnimationHero() {
       <img className="animation-backdrop" src={frost} alt="" width={1920} height={1088} />
       <div className="page-shell relative z-10">
         <div className="animation-intro">
-          <h1 id="animation-title" className="font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl">Animation <span className="italic">& Content</span></h1>
-          <p className="mt-4 text-lg font-semibold uppercase tracking-wide text-navy sm:text-2xl">Make every frame move with purpose</p>
+          <SectionLabel>ADZVO Services</SectionLabel>
+          <h1 id="animation-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">Animation <Highlight>& Content</Highlight></h1>
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>Make every frame move with purpose</p>
           <Button asChild variant="outline" className="animation-project-link"><Link to="/" hash="contact">Create with us <ArrowUpRight className="size-4" /></Link></Button>
         </div>
         <div className="animation-gallery">

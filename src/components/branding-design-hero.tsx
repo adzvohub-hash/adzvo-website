@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 
 const palette = [
-  { name: "Coral", hex: "#E76F51", className: "branding-swatch-coral" },
-  { name: "Champagne", hex: "#D9A441", className: "branding-swatch-gold" },
-  { name: "Violet", hex: "#8E6BC8", className: "branding-swatch-violet" },
-  { name: "Navy", hex: "#17182C", className: "branding-swatch-navy" },
+  { name: "Gold", hex: "#F5A524" },
+  { name: "Navy", hex: "#0B0F1E" },
+  { name: "Slate", hex: "#3B4257" },
+  { name: "Off-white", hex: "#F7F8FC" },
 ];
+import { BrandMark, Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 export function BrandingDesignHero() {
   return (
@@ -17,10 +18,11 @@ export function BrandingDesignHero() {
       <div className="branding-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="branding-intro">
-          <h1 id="branding-title" className="font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl">
-            Branding <span className="italic">& Design</span>
+          <SectionLabel>ADZVO Services</SectionLabel>
+          <h1 id="branding-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">
+            Branding <Highlight>& Design</Highlight>
           </h1>
-          <p className="mt-4 text-lg font-semibold uppercase tracking-wide text-navy sm:text-2xl">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Build a brand people recognize and remember
           </p>
           <Button asChild variant="outline" className="branding-project-link">
@@ -50,13 +52,13 @@ export function BrandingDesignHero() {
             <div className="branding-palette-grid">
               {palette.map((color) => (
                 <div className="branding-swatch" key={color.name}>
-                  <i className={color.className} />
+                  <i style={{ background: color.hex }} />
                   <span>{color.name}</span>
                   <code>{color.hex}</code>
                 </div>
               ))}
             </div>
-            <p className="branding-palette-note">Warm / Expressive / Distinct</p>
+            <p className="branding-palette-note">Bold / Clear / Confident</p>
           </article>
 
           <article className="branding-card branding-mark-card">
@@ -64,7 +66,7 @@ export function BrandingDesignHero() {
               <span>Primary lockup</span><span>03 / Mark</span>
             </div>
             <div className="branding-mark-lockup">
-              <span className="branding-monogram font-display">A</span>
+              <BrandMark className="size-20" />
               <strong>ADZVO</strong>
               <span>Brand system</span>
             </div>

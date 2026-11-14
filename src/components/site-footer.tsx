@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { policyLinks } from "@/components/policy-page";
 import { servicePages } from "@/lib/services";
+import { BrandLogo } from "@/components/brand-logo";
 
 function Logo({ dark = false }: { dark?: boolean }) {
   return (
-    <Link to="/" className="font-display text-2xl font-extrabold tracking-tight">
-      <span className={dark ? "text-navy" : "text-primary-foreground"}>ADZ</span>
-      <span className="text-gold">VO</span>
+    <Link to="/" aria-label="ADZVO home" className={dark ? "text-navy" : "text-primary-foreground"}>
+      <BrandLogo />
     </Link>
   );
 }
