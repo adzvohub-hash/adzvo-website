@@ -1,0 +1,12 @@
+- Keep site navigation in the root shell so homepage and service pages share the same menu.
+- Use the shared page-shell utility and page-gutter variable for section and navigation alignment so widths remain consistent across pages.
+- Use the default page-shell gutter for homepage sections and the shared footer, without nested grid width caps, so their outer edges align with navigation while the hero video stays full-bleed.
+- Define the service-page catalogue in `src/lib/services.ts` and resolve `/services/$service` through it; unknown slugs must return not found.
+- Keep the hero background video independent of the text carousel, with separate playback controls and a poster fallback, so changing slides never restarts footage.
+- Keep Impact count-up behaviour in the shared ImpactCounter component, triggered once by visibility with reduced-motion support, so layout and animation remain independent.
+- Keep the Why Choose ADZVO section as a compact separator strip of icon and heading only, with no cards, images or pointer effects.
+- Keep legal pages on separate content routes using the shared PolicyPage layout and policy link list so footer links and legal navigation stay consistent.
+- Keep the Animation & Content hero in its own AnimationHero component, selected by the service slug, so its visual treatment does not alter other service pages.
+- Keep standard service introductions, capabilities, closing CTAs and related-service links in the shared slug-keyed ServiceContentBody catalogue so content changes retain the same page layout without altering heroes.
+- Keep /adzvoadmin as a frontend-only preview with route-owned temporary React state and a demonstration login, never browser storage or public-page mutations; this separates the requested management views from future authentication and persistence.
+- Share read-only insight sample content in src/lib/insights.ts so the public page and admin preview start from the same articles without importing route modules.

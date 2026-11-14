@@ -1,0 +1,37 @@
+- [x] Add a hover-accessible Services dropdown and touch menu.
+- [x] Create eight service placeholder pages with individual metadata.
+- [x] Verify service navigation and return-to-home links.
+- [x] Widen sections and align them with a continuous full-width navigation bar.
+- [x] Verify updated section alignment and navigation on desktop and mobile.
+- [x] Generate a full-frame 16:9 hero video showcasing eight service categories.
+- [x] Add video behind unchanged slide text without a frosted panel.
+- [x] Verify video playback, slide transitions and pause controls.
+- [x] Restore the large Impact heading and compact four-card desktop row.
+- [x] Add and verify once-on-scroll mechanical count-up to the four final metrics.
+- [x] Restyle the six Why Choose ADZVO reasons as individual light-reactive cards without changing copy.
+- [x] Verify the refreshed cards on desktop and mobile, including reduced motion.
+- [x] Fix service cards overlapping at intermediate screen widths.
+- [x] Make every service card open its matching page and verify all eight links.
+- [x] Replace the footer origin badge with three separate policy pages and verify navigation.
+- [x] Refresh the Animation & Content hero with a frosted colour backdrop and foreground artwork.
+- [x] Verify the new hero and preserve other service pages.
+- [x] Apply consistent frosted white navigation and translucent dropdown/mobile menus, and verify across pages.
+- [x] Create and verify the tailored frosted Marketing & Growth hero.
+- [x] Create and verify the layered-glass Digital & Technology hero.
+- [x] Create and verify the Branding & Design identity specimen hero.
+- [x] Create and verify the cinematic Film, Video & Photography hero.
+- [x] Replace the temporary second-strip scene study with the selected automotive motion still.
+- [x] Create the frosted AI & Automation workflow hero while preserving the page content below.
+- [x] Verify the AI hero, contact link, mobile layout and reduced-motion behaviour.
+- [x] Add approved Marketing & Growth introduction, six capabilities and growth CTA beneath the unchanged hero.
+- [x] Verify Marketing & Growth layout, contact CTA and other-service links.
+- [x] Projects page with category/location filters, details popup and case-study PDF button.
+- [x] Increase homepage side spacing, match section heading sizes and vertical spacing, and style two contact cards.
+- [x] Add all eight linked services to the shared footer and verify desktop/mobile layouts.
+- [x] Reduce service card text and chip spacing without resizing cards; verify all eight on desktop, tablet and mobile.
+- [x] Shorten the homepage hero and verify every slide and playback control fits desktop, tablet and mobile screens.
+- [x] Build frontend-only /adzvoadmin login and Home, About, Services, Projects and Insights management views.
+- [x] Verify temporary editing, adding, deleting and media previews on desktop, tablet and mobile.
+- [x] Increase homepage hero height, enlarge slide headings and apply a black-glass badge with white details; verify desktop and mobile.
+- [x] Unify homepage and footer boundaries, square service cards with larger text, and widen the enquiry card slightly; verify across screen sizes.
+- [x] Increase shared side gutters while preserving full-bleed hero video; verify section alignment and square-card text fit.
