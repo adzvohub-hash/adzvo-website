@@ -1,37 +1,25 @@
-// Vite resolves these imports at build time and emits the MP4 files as
-// hashed static assets. The imported value is the public URL string.
-import heroVideoSrc from "@/assets/videos/adzvo-hero-services.mp4";
-import showreelSrc from "@/assets/videos/adzvo-showreel.mp4";
-import showreelLandscapeSrc from "@/assets/videos/adzvo-showreel-landscape.mp4";
-import digitalSrc from "@/assets/videos/cta-digital-technology.mp4";
-import marketingSrc from "@/assets/videos/cta-marketing-growth.mp4";
-import brandingSrc from "@/assets/videos/cta-branding-design.mp4";
-import filmSrc from "@/assets/videos/cta-film-video-photography.mp4";
-import animationSrc from "@/assets/videos/cta-animation-content.mp4";
-import aiSrc from "@/assets/videos/cta-ai-automation.mp4";
-import contentSrc from "@/assets/videos/cta-content-localization.mp4";
-import strategySrc from "@/assets/videos/cta-strategy-analytics.mp4";
+const R2 = "https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev";
 
-/** Hero section background video on the homepage and admin preview. */
-export const HERO_VIDEO_URL = heroVideoSrc;
+/** Hero section background video on the homepage. */
+export const HERO_VIDEO_URL = `${R2}/videos/adzvo-hero-services.mp4`;
 
 /** Showreel (portrait). */
-export const SHOWREEL_URL = showreelSrc;
+export const SHOWREEL_URL = `${R2}/videos/adzvo-showreel.mp4`;
 
 /** Showreel (landscape). */
-export const SHOWREEL_LANDSCAPE_URL = showreelLandscapeSrc;
+export const SHOWREEL_LANDSCAPE_URL = `${R2}/videos/adzvo-showreel-landscape.mp4`;
 
 /**
  * Per-service CTA loop videos.
  * Keys must match the `slug` prop passed to <CtaVideo>.
  */
 export const CTA_VIDEOS: Record<string, string> = {
-  "digital-technology":    digitalSrc,
-  "marketing-growth":      marketingSrc,
-  "branding-design":       brandingSrc,
-  "film-video-photography": filmSrc,
-  "animation-content":     animationSrc,
-  "ai-automation":         aiSrc,
-  "content-localization":  contentSrc,
-  "strategy-analytics":    strategySrc,
+  "digital-technology":     `${R2}/videos/cta-digital-technology.mp4`,
+  "marketing-growth":       `${R2}/videos/cta-marketing-growth.mp4`,
+  "branding-design":        `${R2}/videos/cta-branding-design.mp4`,
+  "film-video-photography": `${R2}/videos/cta-film-video-photography.mp4`,
+  "animation-content":      `${R2}/videos/cta-animation-content.mp4`,
+  "ai-automation":          `${R2}/videos/cta-ai-automation.mp4`,
+  "content-localization":   `${R2}/videos/cta-content-localization.mp4`,
+  "strategy-analytics":     `${R2}/videos/cta-strategy-analytics.mp4`,
 };

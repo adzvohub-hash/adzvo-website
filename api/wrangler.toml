@@ -1,0 +1,29 @@
+name = "adzvo-api"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "adzvo-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# R2 bucket binding
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "adzvo-media"
+
+# Environment variables (secrets — set via `wrangler secret put`)
+# JWT_SECRET     — used to sign admin tokens
+# ADMIN_USERNAME — admin login username
+# ADMIN_PASSWORD — admin login password (store hashed in production)
+
+[vars]
+ENVIRONMENT = "production"
+CORS_ORIGIN = "https://adzvo.com"
+
+# Dev overrides
+[env.dev.vars]
+ENVIRONMENT = "development"
+CORS_ORIGIN = "http://localhost:5173"

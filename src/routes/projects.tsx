@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FileText, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -7,7 +7,7 @@ import { Footer as SiteFooter } from "@/components/site-footer";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 import projectsHero from "@/assets/projects-hero.jpg";
 import { servicePages } from "@/lib/services";
-import { projectLocations, projects, type Project } from "@/lib/projects";
+import { projectLocations, projectsSeed, fetchProjects, type Project } from "@/lib/projects";
 
 export const Route = createFileRoute("/projects")({
   head: () => ({
@@ -29,7 +29,13 @@ function ProjectsPage() {
   const [service, setService] = useState("all");
   const [location, setLocation] = useState("all");
   const [active, setActive] = useState<Project | null>(null);
-  const list = useMemo(() => projects.filter((p) => (service === "all" || p.service === service) && (location === "all" || p.location === location)), [service, location]);
+  const [allProjects, setAllProjects] = useState<Project[]>(projectsSeed);
+
+  useEffect(() => {
+    void fetchProjects().then(setAllProjects);
+  }, []);
+
+  const list = useMemo(() => allProjects.filter((p) => (service === "all" || p.service === service) && (location === "all" || p.location === location)), [allProjects, service, location]);
   const selectCls = "h-11 rounded-xl border border-navy/15 bg-card px-3 text-sm font-medium normal-case tracking-normal text-navy outline-none transition focus:border-navy focus:ring-[3px] focus:ring-gold/40";
 
   return (
@@ -66,14 +72,14 @@ function ProjectsPage() {
               const s = serviceOf(p.service);
               return (
                 <article key={p.id} className="group flex flex-col overflow-hidden rounded-3xl border border-navy/10 bg-card shadow-[0_14px_36px_-22px] shadow-navy/30 transition duration-300 hover:-translate-y-1.5 hover:border-gold">
-                  <img src={s.image} alt="" className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                  <img src={p.image_url || s.image} alt="" className="aspect-[4/3] w-full object-cover" loading="lazy" />
                   <div className="flex flex-1 flex-col p-5">
                     <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-navy/70" style={LOGO_FONT}><span className="size-1.5 shrink-0 rounded-full bg-gold" />{s.title}</p>
                     <h2 className="mt-3 font-display text-lg font-bold leading-snug text-navy">{p.title}</h2>
                     <p className="mt-2 flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="size-3.5" />{p.client} · {p.location}</p>
                     <div className="mt-auto flex gap-2 pt-5">
                       <Button size="sm" className="rounded-lg bg-navy font-semibold text-primary-foreground hover:bg-gold hover:text-navy" onClick={() => setActive(p)}>More</Button>
-                      <Button size="sm" variant="outline" className="rounded-lg border-navy/20 font-semibold text-navy hover:border-navy hover:bg-navy hover:text-primary-foreground" asChild><a href={p.caseStudyUrl} target="_blank" rel="noopener noreferrer"><FileText />Case Study</a></Button>
+                      {p.case_study_url && <Button size="sm" variant="outline" className="rounded-lg border-navy/20 font-semibold text-navy hover:border-navy hover:bg-navy hover:text-primary-foreground" asChild><a href={p.case_study_url} target="_blank" rel="noopener noreferrer"><FileText />Case Study</a></Button>}
                     </div>
                   </div>
                 </article>
@@ -93,11 +99,13 @@ function ProjectsPage() {
               <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-navy" style={LOGO_FONT}>Project Description</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{active.description}</p>
             </div>
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-navy" style={LOGO_FONT}>Images</h3>
-              <img src={serviceOf(active.service).image} alt={active.title} className="mt-3 h-40 w-56 rounded-xl object-cover" />
-            </div>
-            <Button asChild className="w-fit rounded-xl bg-gold font-bold uppercase tracking-wider text-navy hover:bg-gold hover:brightness-110"><a href={active.caseStudyUrl} target="_blank" rel="noopener noreferrer"><FileText />View Case Study</a></Button>
+            {(active.image_url || serviceOf(active.service).image) && (
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-navy" style={LOGO_FONT}>Images</h3>
+                <img src={active.image_url || serviceOf(active.service).image} alt={active.title} className="mt-3 h-40 w-56 rounded-xl object-cover" />
+              </div>
+            )}
+            {active.case_study_url && <Button asChild className="w-fit rounded-xl bg-gold font-bold uppercase tracking-wider text-navy hover:bg-gold hover:brightness-110"><a href={active.case_study_url} target="_blank" rel="noopener noreferrer"><FileText />View Case Study</a></Button>}
           </>}
         </DialogContent>
       </Dialog>

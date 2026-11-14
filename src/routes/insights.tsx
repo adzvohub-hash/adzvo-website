@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Footer as SiteFooter } from "@/components/site-footer";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 import hero from "@/assets/insights-hero.jpg";
-import { posts, type Post } from "@/lib/insights";
+import { postsSeed, fetchInsights, type Post } from "@/lib/insights";
 
 export const Route = createFileRoute("/insights")({
   head: () => ({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/insights")({
   component: InsightsPage,
 });
 
-const tags = ["All", ...Array.from(new Set(posts.map((p) => p.tag)))];
+const tags = ["All", ...Array.from(new Set(postsSeed.map((p) => p.tag)))];
 
 function PostCard({ post, onOpen }: { post: Post; onOpen: () => void }) {
   const [i, setI] = useState(0);
@@ -55,7 +55,13 @@ function PostCard({ post, onOpen }: { post: Post; onOpen: () => void }) {
 function InsightsPage() {
   const [tag, setTag] = useState("All");
   const [open, setOpen] = useState<Post | null>(null);
-  const list = tag === "All" ? posts : posts.filter((p) => p.tag === tag);
+  const [allPosts, setAllPosts] = useState<Post[]>(postsSeed);
+
+  useEffect(() => {
+    void fetchInsights().then(setAllPosts);
+  }, []);
+
+  const list = tag === "All" ? allPosts : allPosts.filter((p) => p.tag === tag);
   return (
     <>
       <main className="bg-off pb-24">
