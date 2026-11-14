@@ -24,6 +24,7 @@ preview_bucket_name = "adzvo-media"
 [vars]
 ENVIRONMENT = "production"
 CORS_ORIGIN = "https://adzvo.com,https://adzvo-website.adzvohub.workers.dev,http://localhost:5173"
+R2_PUBLIC_URL = "https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev"
 
 # Dev overrides
 [env.dev.vars]
