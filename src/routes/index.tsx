@@ -5,7 +5,7 @@ import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
 import hero3 from "@/assets/hero-3.jpg";
 import contactImg from "@/assets/contact.jpg";
-import heroVideo from "@/assets/videos/adzvo-hero-services.mp4.asset.json";
+import { HERO_VIDEO_URL } from "@/lib/videos";
 import { Button } from "@/components/ui/button";
 import { ImpactCounter } from "@/components/impact-counter";
 import { servicePages } from "@/lib/services";
@@ -163,7 +163,7 @@ export function Hero() {
     <section id="about" className="homepage-hero relative flex items-center overflow-hidden bg-navy pt-24 pb-20">
       <video
         ref={videoRef}
-        src={heroVideo.url}
+        src={HERO_VIDEO_URL}
         poster={hero1}
         autoPlay
         muted

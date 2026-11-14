@@ -8,7 +8,7 @@ import { MediaField, MediaPreview } from "./media-field";
 import { InsightEditor, ProjectEditor, selectClass } from "./content-editor";
 import { acceptsPreviewLogin, initialMetrics, initialPosts, initialProjects, upsertPreviewItem, validMediaUrl, type AdminPost, type AdminProject } from "@/lib/admin-preview";
 import { servicePages } from "@/lib/services";
-import heroVideo from "@/assets/videos/adzvo-hero-services.mp4.asset.json";
+import { HERO_VIDEO_URL } from "@/lib/videos";
 import loginImage from "@/assets/about-hero.jpg";
 
 const tabs = ["Home", "About", "Services", "Projects", "Insights"] as const;
@@ -58,8 +58,8 @@ export function AdminDashboard() {
   const [signedIn, setSignedIn] = useState(false);
   const [tab, setTab] = useState<Tab>("Home");
   const [homeSection, setHomeSection] = useState<HomeSection>("Hero Page");
-  const [video, setVideo] = useState(heroVideo.url);
-  const [videoDraft, setVideoDraft] = useState(heroVideo.url);
+  const [video, setVideo] = useState(HERO_VIDEO_URL);
+  const [videoDraft, setVideoDraft] = useState(HERO_VIDEO_URL);
   const [metrics, setMetrics] = useState(initialMetrics.map((metric) => ({ ...metric })));
   const [metricDrafts, setMetricDrafts] = useState(initialMetrics.map((metric) => String(metric.value)));
   const [images, setImages] = useState<Record<string, string>>(Object.fromEntries(servicePages.map((service) => [service.slug, service.image])));
