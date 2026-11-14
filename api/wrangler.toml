@@ -8,11 +8,13 @@ compatibility_flags = ["nodejs_compat"]
 binding = "DB"
 database_name = "adzvo-db"
 database_id = "445b7f4c-c41f-45ef-8cf3-59ba6bb6d18a"
+preview_database_id = "445b7f4c-c41f-45ef-8cf3-59ba6bb6d18a"
 
 # R2 bucket binding
 [[r2_buckets]]
 binding = "MEDIA"
 bucket_name = "adzvo-media"
+preview_bucket_name = "adzvo-media"
 
 # Environment variables (secrets — set via `wrangler secret put`)
 # JWT_SECRET     — used to sign admin tokens
@@ -21,9 +23,12 @@ bucket_name = "adzvo-media"
 
 [vars]
 ENVIRONMENT = "production"
-CORS_ORIGIN = "https://adzvo.com,https://adzvo-website.adzvohub.workers.dev"
+CORS_ORIGIN = "https://adzvo.com,https://adzvo-website.adzvohub.workers.dev,http://localhost:5173"
 
 # Dev overrides
 [env.dev.vars]
 ENVIRONMENT = "development"
 CORS_ORIGIN = "http://localhost:5173"
+ADMIN_USERNAME = "adzvoadmin"
+ADMIN_PASSWORD = "adzvoadmin"
+JWT_SECRET = "local-dev-secret-not-for-production"

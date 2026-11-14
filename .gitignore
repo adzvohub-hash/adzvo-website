@@ -19,6 +19,21 @@ dist-ssr
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
+api/.dev.vars
+
+# Local environment files — never commit these
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# Secrets — never commit these
+*.secret
+*.token
+*token*.txt
+*secret*.txt
+apitoken-cloudflare.txt
 
 # Editor directories and files
 .vscode/*

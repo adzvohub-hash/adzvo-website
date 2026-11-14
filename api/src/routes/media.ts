@@ -5,6 +5,9 @@ import type { Bindings } from "../types";
 const media = new Hono<{ Bindings: Bindings }>();
 
 // ─── Allowed MIME types ────────────────────────────────────────────────────────
+const ALLOWED_DOC_TYPES = new Set([
+  "application/pdf",  // .pdf
+]);
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",       // .jpg / .jpeg
   "image/png",        // .png
@@ -29,8 +32,9 @@ const ALLOWED_VIDEO_TYPES = new Set([
   "video/3gpp",       // .3gp
   "video/x-ms-wmv",   // .wmv
 ]);
-const MAX_IMAGE_SIZE = 20 * 1024 * 1024;  // 20 MB
-const MAX_VIDEO_SIZE = 500 * 1024 * 1024; // 500 MB
+const MAX_IMAGE_SIZE = 20 * 1024 * 1024;   // 20 MB
+const MAX_VIDEO_SIZE = 500 * 1024 * 1024;  // 500 MB
+const MAX_DOC_SIZE   = 50 * 1024 * 1024;   // 50 MB
 
 // ─── POST /api/media/upload ───────────────────────────────────────────────────
 // Accepts multipart/form-data with field "file" and optional "folder" (images|videos)
@@ -44,12 +48,13 @@ media.post("/upload", requireAuth, async (ctx) => {
 
   const isImage = ALLOWED_IMAGE_TYPES.has(file.type);
   const isVideo = ALLOWED_VIDEO_TYPES.has(file.type);
+  const isDoc   = ALLOWED_DOC_TYPES.has(file.type);
 
-  if (!isImage && !isVideo) {
+  if (!isImage && !isVideo && !isDoc) {
     return ctx.json({ error: `Unsupported file type: ${file.type}` }, 415);
   }
 
-  const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+  const maxSize = isVideo ? MAX_VIDEO_SIZE : isDoc ? MAX_DOC_SIZE : MAX_IMAGE_SIZE;
   if (file.size > maxSize) {
     return ctx.json({ error: `File exceeds maximum size (${maxSize / 1024 / 1024} MB)` }, 413);
   }

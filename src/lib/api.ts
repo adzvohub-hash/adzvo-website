@@ -1,6 +1,6 @@
 // Central API client for the ADZVO Hono backend
 
-export const API_BASE = "https://adzvo-api.adzvohub.workers.dev";
+export const API_BASE = import.meta.env.VITE_API_BASE ?? "https://adzvo-api.adzvohub.workers.dev";
 export const R2_BASE  = "https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev";
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────

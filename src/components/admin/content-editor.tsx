@@ -1,5 +1,5 @@
-import { useId, useState, type FormEvent } from "react";
-import { Save } from "lucide-react";
+import { useId, useRef, useState, type FormEvent } from "react";
+import { Save, Upload, FileText, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +8,7 @@ import { MediaField, MediaPreview } from "./media-field";
 import { servicePages } from "@/lib/services";
 import { projectLocations } from "@/lib/projects";
 import { validMediaUrl } from "@/lib/admin-preview";
+import { uploadMedia, deleteMedia } from "@/lib/api";
 import type { Project, Insight } from "@/lib/api";
 
 export const selectClass = "h-10 w-full rounded-md border border-input bg-card px-3 text-sm";
@@ -21,6 +22,54 @@ export function TextField({ label, value, onChange, required = false, multiline 
     {multiline
       ? <Textarea id={id} required={required} value={value} onChange={(e) => onChange(e.target.value)} rows={4} />
       : <Input id={id} required={required} value={value} onChange={(e) => onChange(e.target.value)} />}
+  </div>;
+}
+
+// ─── PDF upload field ─────────────────────────────────────────────────────────
+
+function PdfField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const input = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  const filename = value ? value.split("/").pop() ?? value : null;
+
+  async function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") { setError("Choose a PDF file."); return; }
+    setError(""); setUploading(true);
+    try {
+      if (value) await deleteMedia(value).catch(() => {});
+      const url = await uploadMedia(file, "case-studies" as "images");
+      onChange(url);
+    } catch {
+      setError("Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
+  }
+
+  return <div className="space-y-2">
+    <p className="text-sm font-medium">{label}</p>
+    <div className="flex flex-wrap items-center gap-3">
+      <input ref={input} type="file" accept="application/pdf" className="hidden"
+        aria-label={`Upload ${label}`} onChange={handleFile} />
+      <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => input.current?.click()}>
+        {uploading ? <Loader2 className="animate-spin" /> : <Upload />}
+        {uploading ? "Uploading…" : "Upload PDF"}
+      </Button>
+      {filename && (
+        <span className="flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
+          <FileText className="size-3" />{filename}
+          <button type="button" onClick={() => onChange("")} className="ml-1 hover:text-destructive"><X className="size-3" /></button>
+        </span>
+      )}
+    </div>
+    <Input value={value} onChange={(e) => { onChange(e.target.value); setError(""); }}
+      placeholder="https://… or upload above" className="text-xs" />
+    {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
   </div>;
 }
 
@@ -38,8 +87,8 @@ export function ProjectEditor({ item, isNew, onClose, onSave }: {
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (!draft.title.trim() || !draft.client.trim() || !draft.description.trim() ||
-        !validMediaUrl(draft.image_url) || !validMediaUrl(draft.case_study_url)) {
-      setError("Complete the required fields and check the media links."); return;
+        !validMediaUrl(draft.image_url)) {
+      setError("Complete the required fields and check the image link."); return;
     }
     setSaving(true);
     try {
@@ -77,7 +126,7 @@ export function ProjectEditor({ item, isNew, onClose, onSave }: {
         <TextField label="Project description" required multiline value={draft.description} onChange={(description) => setDraft({ ...draft, description })} />
         <MediaField label="Project image URL" value={draft.image_url} onChange={(image_url) => setDraft({ ...draft, image_url })} />
         <MediaPreview src={validMediaUrl(draft.image_url) ? draft.image_url : ""} />
-        <TextField label="Case study PDF URL" value={draft.case_study_url} onChange={(case_study_url) => setDraft({ ...draft, case_study_url })} />
+        <PdfField label="Case study PDF (optional)" value={draft.case_study_url} onChange={(case_study_url) => setDraft({ ...draft, case_study_url })} />
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <div className="flex justify-end gap-2 border-t pt-4">
           <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
