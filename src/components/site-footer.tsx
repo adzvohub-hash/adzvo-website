@@ -56,7 +56,10 @@ function Footer() {
           ))}
         </div>
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-primary-foreground/10 pt-8 sm:flex-row">
-          <p className="text-xs text-primary-foreground/40">© 2026 ADZVO Digital Agency. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <p className="text-xs text-primary-foreground/40">© 2026 ADZVO Digital Agency. All rights reserved.</p>
+            <Link to="/adzvoadmin" className="text-xs text-primary-foreground/25 transition-colors hover:text-primary-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">Login</Link>
+          </div>
           <nav aria-label="Footer policies" className="flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs text-primary-foreground/70 sm:justify-end">
             {policyLinks.map((policy) => <Link key={policy.to} to={policy.to} className="transition-colors hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">{policy.title}</Link>)}
           </nav>
