@@ -33,7 +33,7 @@ function PostCard({ post, onOpen }: { post: Post; onOpen: () => void }) {
   }, [n, i]);
   return (
     <article className="flex flex-col">
-      <div className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-navy shadow-[0_14px_36px_-22px] shadow-navy/40">
+      <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-navy shadow-[0_14px_36px_-22px] shadow-navy/40">
         {post.images.map((src, k) => (
           <img key={k} src={src} alt="" loading="lazy" className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${k === i ? "opacity-100" : "opacity-0"}`} />
         ))}
@@ -45,9 +45,9 @@ function PostCard({ post, onOpen }: { post: Post; onOpen: () => void }) {
         </div>
       </div>
       <span className="mt-5 w-fit rounded-md bg-gold px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-navy" style={LOGO_FONT}>{post.tag}</span>
-      <h2 className="mt-3 font-display text-xl font-bold leading-snug text-navy">{post.title}</h2>
+      <h2 className="mt-3 font-display text-lg font-bold leading-snug text-navy">{post.title}</h2>
       <p className="mt-2 flex-1 text-sm text-muted-foreground">{post.excerpt}</p>
-      <button onClick={onOpen} className="mt-5 inline-flex w-fit items-center gap-2 rounded-xl border border-navy/25 px-4 py-2 text-sm font-bold uppercase tracking-wider text-navy transition hover:border-navy hover:bg-navy hover:text-primary-foreground">Read more <ArrowUpRight className="h-4 w-4" /></button>
+      <button onClick={onOpen} className="mt-4 inline-flex w-fit items-center gap-2 rounded-lg border border-navy/25 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-navy transition hover:border-navy hover:bg-navy hover:text-primary-foreground">Read more <ArrowUpRight className="h-4 w-4" /></button>
     </article>
   );
 }
@@ -79,7 +79,7 @@ function InsightsPage() {
             <button key={t} onClick={() => setTag(t)} aria-pressed={t === tag} className={`rounded-xl border px-5 py-2.5 text-sm font-semibold shadow-lg shadow-navy/10 transition ${t === tag ? "border-gold bg-gold text-navy" : "border-navy/10 bg-card text-navy hover:border-gold"}`}>{t}</button>
           ))}
         </div>
-        <section className="page-shell mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="page-shell mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {list.map((p) => <PostCard key={p.title} post={p} onOpen={() => setOpen(p)} />)}
         </section>
       </main>

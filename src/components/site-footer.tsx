@@ -11,12 +11,17 @@ function Logo({ dark = false }: { dark?: boolean }) {
   );
 }
 
-export 
+const companyLinks = [
+  { label: "About Us", to: "/about" },
+  { label: "Projects", to: "/projects" },
+  { label: "Insights", to: "/insights" },
+  { label: "Careers", to: "/careers" },
+] as const;
+
+const contactItems = ["hello@adzvo.com", "+91 XX XXXX XXXX", "Mumbai, India"] as const;
+
+export
 function Footer() {
-  const cols = [
-    ["Company", ["About Us", "Our Work", "Careers", "Blog"]],
-    ["Contact", ["hello@adzvo.com", "+91 XX XXXX XXXX", "Mumbai, India"]],
-  ] as const;
   return (
     <footer className="bg-ink pt-20 pb-8">
       <div className="page-shell">
@@ -44,16 +49,35 @@ function Footer() {
               ))}
             </ul>
           </nav>
-          {cols.map(([h, items]) => (
-            <div key={h}>
-              <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground">{h}</h4>
-              <ul className="mt-5 space-y-3">
-                {items.map((i) => (
-                  <li key={i}><a href="#" className="text-sm text-primary-foreground/45 transition hover:text-gold">{i}</a></li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Company */}
+          <div>
+            <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground">Company</h4>
+            <ul className="mt-5 space-y-3">
+              {companyLinks.map(({ label, to }) => (
+                <li key={label}>
+                  <Link to={to} className="text-sm text-primary-foreground/45 transition hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {/* Contact */}
+          <div>
+            <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground">Contact</h4>
+            <ul className="mt-5 space-y-3">
+              {contactItems.map((item) => (
+                <li key={item}>
+                  <a
+                    href={item.startsWith("hello@") ? `mailto:${item}` : "#"}
+                    className="text-sm text-primary-foreground/45 transition hover:text-gold"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-primary-foreground/10 pt-8 sm:flex-row">
           <div className="flex items-center gap-6">

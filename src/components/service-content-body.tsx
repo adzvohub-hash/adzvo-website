@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Highlight, SectionLabel } from "@/components/brand-logo";
 import { CapabilitySpotlight } from "@/components/capability-spotlight";
 import { CapabilityShowcase } from "@/components/capability-showcase";
+import { CapabilityBento, CapabilityFlip, CapabilityPanels, CapabilityStack, CapabilityTilt } from "@/components/capability-layouts";
 import { Button } from "@/components/ui/button";
 import { servicePages } from "@/lib/services";
 import animationCta from "@/assets/animation-play.jpg";
@@ -56,7 +57,7 @@ type BodyContent = {
   intro: string;
   capabilities: Capability[];
   /** How the capability list is presented. Omit for the classic icon grid. */
-  layout?: "spotlight" | "showcase";
+  layout?: "spotlight" | "showcase" | "tilt" | "panels" | "flip" | "stack" | "bento";
   studioLink?: { href: string; label: string };
   ctaTitle: [string, string];
   ctaText?: string;
@@ -140,7 +141,7 @@ export const serviceBodies: Record<string, BodyContent> = {
   },
   "animation-content": {
     intro: "We combine imaginative storytelling, animation, motion, and AI-enabled creativity to produce content that makes ideas easier to understand and more engaging to experience. Our capabilities include 2D and 3D animation, motion graphics, explainer videos, AI-assisted content, short-form social content, and music videos. From simplifying complex information to creating high-impact visual moments, we develop content tailored to your audience, platform, and communication goals.",
-    capabilities: animationCapabilities, ctaTitle: ["Turn your next idea", "into motion."], ctaLabel: "Create with us", ctaImage: animationCta, ctaAlt: "Sculptural 3D star and sphere artwork",
+    capabilities: animationCapabilities, layout: "flip", ctaTitle: ["Turn your next idea", "into motion."], ctaLabel: "Create with us", ctaImage: animationCta, ctaAlt: "Sculptural 3D star and sphere artwork",
   },
   "branding-design": {
     intro: "We build distinctive brands that communicate clearly, connect meaningfully, and remain memorable across every customer touchpoint. Our approach brings together brand strategy, logo and identity development, graphic design, advertising creatives, packaging, and presentations to create one consistent visual language. Whether launching a new brand or refreshing an established identity, we translate your purpose and personality into impactful design that strengthens recognition, credibility, and audience trust.",
@@ -148,11 +149,12 @@ export const serviceBodies: Record<string, BodyContent> = {
   },
   "digital-technology": {
     intro: "We design and develop modern digital solutions that combine smart technology with intuitive experiences. From high-performing websites and mobile apps to e-commerce platforms and UX/UI, we turn ideas into scalable digital products that are easy to use and built for growth.",
-    capabilities: digitalCapabilities, layout: "spotlight", ctaTitle: ["Have an idea? Let’s", "bring it to life."], ctaText: "From the first sketch to the final launch, we help transform your vision into a meaningful digital experience.", ctaLabel: "Start Your Digital Project", ctaImage: digitalCta, ctaAlt: "Laptop showing a modern website build",
+    capabilities: digitalCapabilities, layout: "tilt", ctaTitle: ["Have an idea? Let’s", "bring it to life."], ctaText: "From the first sketch to the final launch, we help transform your vision into a meaningful digital experience.", ctaLabel: "Start Your Digital Project", ctaImage: digitalCta, ctaAlt: "Laptop showing a modern website build",
   },
   "film-video-photography": {
     intro: "Through LCA Film Studio, we transform ideas into compelling visual stories that capture attention and create lasting impact. From advertising and corporate films to commercials, podcasts, and professional photography, we manage every stage of the creative process with a strong focus on storytelling and production quality. Our end-to-end capabilities cover concept development, scripting, filming, editing, sound, and final delivery, ensuring every frame communicates your brand with clarity and purpose.",
     capabilities: filmCapabilities,
+    layout: "panels",
     studioLink: { href: "https://www.lcafilmstudio.com/", label: "Visit LCA Film Studio" },
     ctaTitle: ["Have a story worth", "filming?"],
     ctaLabel: "Start a Production",
@@ -162,6 +164,7 @@ export const serviceBodies: Record<string, BodyContent> = {
   "content-localization": {
     intro: "We create meaningful content and adapt it for different audiences, formats, cultures, and languages without losing the clarity or intent of the original message. Our services include copywriting, blogs, e-books, storybooks, translation, subtitles, and multilingual content development for digital and offline channels. By combining thoughtful writing with culturally relevant localization, we help brands communicate consistently, improve accessibility, and build stronger connections with audiences across regions.",
     capabilities: contentLocalizationCapabilities,
+    layout: "stack",
     ctaTitle: ["Take your content", "beyond borders."],
     ctaLabel: "Create with us",
     ctaImage: contentCta,
@@ -170,6 +173,7 @@ export const serviceBodies: Record<string, BodyContent> = {
   "strategy-analytics": {
     intro: "We connect strategy, data, and performance measurement to help businesses make confident and informed marketing decisions. Our services cover digital and marketing strategy, GA4, Google Tag Manager, dashboards, reporting, and content strategy, creating a clear view of how audiences discover, engage, and convert. We transform complex performance data into focused insights, practical recommendations, and actionable roadmaps that reveal what is working, what needs improvement, and where the next opportunity lies.",
     capabilities: strategyAnalyticsCapabilities,
+    layout: "bento",
     ctaTitle: ["Make your next", "move with clarity."],
     ctaLabel: "Plan with data",
     ctaImage: strategyCta,
@@ -190,6 +194,11 @@ export function ServiceContentBody({ slug }: { slug: string }) {
             are added to an already-played animation and stay invisible until a refresh. */}
         {body.layout === "spotlight" ? <CapabilitySpotlight key={slug} capabilities={body.capabilities} />
         : body.layout === "showcase" ? <CapabilityShowcase key={slug} capabilities={body.capabilities} />
+        : body.layout === "tilt" ? <CapabilityTilt key={slug} capabilities={body.capabilities} />
+        : body.layout === "panels" ? <CapabilityPanels key={slug} capabilities={body.capabilities} />
+        : body.layout === "flip" ? <CapabilityFlip key={slug} capabilities={body.capabilities} />
+        : body.layout === "stack" ? <CapabilityStack key={slug} capabilities={body.capabilities} />
+        : body.layout === "bento" ? <CapabilityBento key={slug} capabilities={body.capabilities} />
         : <motion.div
           key={slug}
           className="mx-auto mt-14 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3"

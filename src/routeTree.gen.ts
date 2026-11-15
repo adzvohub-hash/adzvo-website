@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdzvoadminRouteImport } from './routes/adzvoadmin'
+import { Route as CareersRouteImport } from './routes/careers'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
@@ -32,6 +33,11 @@ const AboutRoute = AboutRouteImport.update({
 const AdzvoadminRoute = AdzvoadminRouteImport.update({
   id: '/adzvoadmin',
   path: '/adzvoadmin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiePolicyRoute = CookiePolicyRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/adzvoadmin': typeof AdzvoadminRoute
+  '/careers': typeof CareersRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/insights': typeof InsightsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/adzvoadmin': typeof AdzvoadminRoute
+  '/careers': typeof CareersRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/insights': typeof InsightsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/adzvoadmin': typeof AdzvoadminRoute
+  '/careers': typeof CareersRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/insights': typeof InsightsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/adzvoadmin'
+    | '/careers'
     | '/cookie-policy'
     | '/insights'
     | '/privacy-policy'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/adzvoadmin'
+    | '/careers'
     | '/cookie-policy'
     | '/insights'
     | '/privacy-policy'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/adzvoadmin'
+    | '/careers'
     | '/cookie-policy'
     | '/insights'
     | '/privacy-policy'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdzvoadminRoute: typeof AdzvoadminRoute
+  CareersRoute: typeof CareersRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
   InsightsRoute: typeof InsightsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/adzvoadmin'
       fullPath: '/adzvoadmin'
       preLoaderRoute: typeof AdzvoadminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookie-policy': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdzvoadminRoute: AdzvoadminRoute,
+  CareersRoute: CareersRoute,
   CookiePolicyRoute: CookiePolicyRoute,
   InsightsRoute: InsightsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,

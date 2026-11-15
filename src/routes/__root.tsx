@@ -10,6 +10,7 @@ import {
 import { useEffect } from "react";
 
 import { SiteNav } from "@/components/site-nav";
+import { ChatWidgets } from "@/components/chat-widgets";
 import { reportError } from "../lib/error-reporting";
 
 function NotFoundComponent() {
@@ -91,6 +92,7 @@ function RootComponent() {
       {!isAdmin && <SiteNav />}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <ChatWidgets />
     </QueryClientProvider>
   );
 }

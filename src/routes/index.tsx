@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import React, { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Toaster, toast } from "sonner";
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
@@ -19,7 +19,7 @@ import svc5 from "@/assets/svc-5.jpg";
 import svc6 from "@/assets/svc-6.jpg";
 import svc7 from "@/assets/svc-7.jpg";
 import svc8 from "@/assets/svc-8.jpg";
-import { ArrowRight, ArrowUpRight, Check, Cpu, Handshake, Lightbulb, Pause, Play, Target, TrendingUp, Users, LayoutGrid, Rocket } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, CheckCircle2, Cpu, Handshake, Lightbulb, Monitor, TrendingUp as TrendingUpIcon, Palette, Film, Sparkles, Bot, Globe, BarChart3, Pause, Play, Target, TrendingUp, Users, LayoutGrid, Rocket } from "lucide-react";
 import { getSettings, getServiceImages } from "@/lib/api";
 
 export const Route = createFileRoute("/")({
@@ -43,15 +43,15 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const SERVICES = [
-  ["Digital & Technology", "Website development • Apps • E-commerce • Landing pages • Maintenance • UX/UI"],
-  ["Marketing & Growth", "Social media • SEO & YouTube SEO • Email marketing • Google/Meta Ads • Lead generation • CRO"],
-  ["Branding & Design", "Brand strategy • Logo & identity • Graphic design • Ad creatives • Packaging • Presentations"],
-  ["Film, Video & Photography", "Ad & corporate films • Commercials • Product/brand shoots • Events • Podcasts • Weddings • Editing"],
-  ["Animation & Content", "2D/3D animation • Motion graphics • Explainer videos • AI & short-form content • Music videos"],
-  ["AI & Automation", "AI consulting • AI content & visuals • Creative workflows • Business automation"],
-  ["Content & Localization", "Copywriting • Blogs • E-books • Storybooks • Translation • Subtitles • Multilingual content"],
-  ["Strategy & Analytics", "Digital/marketing strategy • GA4 • Tag Manager • Dashboards • Reporting • Content strategy"],
+const SERVICES: [string, string, string[], React.ElementType][] = [
+  ["Digital & Technology", "Websites, apps and digital products built to perform and scale.", ["Website & app development", "E-commerce & landing pages", "UX/UI design", "Maintenance & support"], Monitor],
+  ["Marketing & Growth", "Full-funnel strategies that attract, convert and retain customers.", ["Social media management", "SEO & paid ads", "Email & lead generation", "CRO & analytics"], TrendingUpIcon],
+  ["Branding & Design", "Identities that make your brand impossible to ignore.", ["Brand strategy & logo", "Graphic & ad design", "Packaging design", "Presentations & decks"], Palette],
+  ["Film, Video & Photography", "Visual storytelling that moves audiences and builds brands.", ["Brand & corporate films", "TV commercials", "Product & event shoots", "Editing & post-production"], Film],
+  ["Animation & Content", "Motion and content that explain, engage and entertain.", ["2D/3D animation", "Motion graphics", "Explainer videos", "Short-form & AI content"], Sparkles],
+  ["AI & Automation", "Intelligent tools that save time and unlock new possibilities.", ["AI consulting & strategy", "AI content & visuals", "Creative workflows", "Business automation"], Bot],
+  ["Content & Localization", "Words and voice that connect across cultures and languages.", ["Copywriting & blogs", "Translation & subtitles", "Multilingual campaigns", "E-books & storybooks"], Globe],
+  ["Strategy & Analytics", "Data-led planning and reporting that drives smarter decisions.", ["Digital & marketing strategy", "GA4 & Tag Manager", "Dashboards & reporting", "Content strategy"], BarChart3],
 ];
 const SVC_IMGS_DEFAULT = [svc1, svc2, svc3, svc4, svc5, svc6, svc7, svc8];
 const ACCENTS = ["from-gold to-coral", "from-electric to-sky", "from-coral to-gold", "from-mint to-sky"];
@@ -347,40 +347,60 @@ function Services() {
             </a>
           </div>
 
-        <div className="mt-16 grid w-full gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {SERVICES.map(([t, d], i) => {
+        <div className="mt-16 grid w-full gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          {SERVICES.map(([t, desc, bullets, Icon], i) => {
             const service = servicePages.find((item) => item.title === t);
             if (!service) return null;
             return (
-            <Link
-              key={t}
-              to="/services/$service"
-              params={{ service: service.slug }}
-              aria-label={t}
-              className="reveal group relative block aspect-square w-full min-w-0 overflow-hidden rounded-2xl border border-primary-foreground/15 shadow-xl outline-none transition duration-500 hover:-translate-y-1.5 hover:border-primary-foreground/30 hover:shadow-2xl focus-visible:ring-2 focus-visible:ring-gold"
-              style={{ transitionDelay: `${(i % 4) * 70}ms` }}
-            >
-              <img src={svcImgs[service.slug] ?? SVC_IMGS_DEFAULT[i]} alt={t} width={768} height={960} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-[1200ms] ease-out group-hover:scale-110 group-focus:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/5 transition duration-500 group-hover:via-navy/80 group-hover:to-navy/40 group-focus:via-navy/80 group-focus:to-navy/40" />
-              <div className="absolute inset-x-0 top-0 h-0.5 bg-gold opacity-0 transition group-hover:opacity-100" />
-              <div className="glass absolute top-5 left-5 flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-primary-foreground" style={LOGO_FONT}>
-                {String(i + 1).padStart(2, "0")}
-              </div>
-              <ArrowUpRight className="absolute top-6 right-6 h-5 w-5 text-primary-foreground/60 transition duration-500 group-hover:rotate-45 group-hover:text-gold" />
-              <div className="absolute inset-x-0 bottom-0 p-4.5">
-                <h3 className="font-display text-xl leading-tight font-bold text-primary-foreground sm:text-2xl xl:text-xl">{t}</h3>
-                <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-out group-hover:grid-rows-[1fr] group-focus:grid-rows-[1fr] [@media(hover:none)]:grid-rows-[1fr]">
-                  <ul className="flex flex-wrap gap-1 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:delay-100 group-focus:opacity-100 [@media(hover:none)]:opacity-100">
-                    <li aria-hidden className="h-2 w-full" />
-                    {(d ?? "").split(" • ").map((x) => (
-                      <li key={x} className="min-w-0 max-w-full rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-2 py-0.5 text-[13px] leading-tight font-medium break-words text-primary-foreground sm:text-sm backdrop-blur">{x}</li>
+              <Link
+                key={t}
+                to="/services/$service"
+                params={{ service: service.slug }}
+                aria-label={t}
+                className="reveal group relative block aspect-square w-full min-w-0 overflow-hidden rounded-2xl shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                style={{ transitionDelay: `${(i % 4) * 60}ms` }}
+              >
+                {/* Background image — always visible, zooms on hover */}
+                <img
+                  src={svcImgs[service.slug] ?? SVC_IMGS_DEFAULT[i]}
+                  alt={t}
+                  width={768} height={768}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                />
+
+                {/* Default overlay — dark gradient + icon + title */}
+                <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/40 to-navy/10 transition-opacity duration-400 group-hover:opacity-0" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 transition-opacity duration-400 group-hover:opacity-0">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary-foreground/60 bg-navy/30 backdrop-blur-sm">
+                    <Icon className="h-6 w-6 text-primary-foreground" strokeWidth={1.5} />
+                  </div>
+                  <h3 className="font-display text-center text-base font-bold uppercase tracking-widest text-primary-foreground drop-shadow sm:text-lg">{t}</h3>
+                </div>
+
+                {/* Hover overlay — dark panel with description + bullets + CTA */}
+                <div className="absolute inset-0 flex flex-col justify-center bg-navy/90 p-6 opacity-0 backdrop-blur-sm transition-opacity duration-400 group-hover:opacity-100">
+                  {/* gold top bar */}
+                  <div className="absolute inset-x-0 top-0 h-0.5 bg-gold" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/50 bg-gold/10 mb-3">
+                    <Icon className="h-5 w-5 text-gold" strokeWidth={1.5} />
+                  </div>
+                  <h3 className="font-display text-sm font-bold uppercase tracking-widest text-primary-foreground">{t}</h3>
+                  <p className="mt-2 text-xs leading-relaxed text-primary-foreground/70">{desc}</p>
+                  <ul className="mt-3 space-y-1.5">
+                    {bullets.map((b) => (
+                      <li key={b} className="flex items-start gap-2 text-xs text-primary-foreground/80">
+                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
+                        {b}
+                      </li>
                     ))}
                   </ul>
+                  <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gold">
+                    More <ArrowRight className="h-3.5 w-3.5" />
+                  </div>
                 </div>
-                <div className="mt-2.5 h-0.5 w-10 rounded-full bg-gold transition-all duration-500 group-hover:w-20" />
-              </div>
-            </Link>
-          );
+              </Link>
+            );
           })}
         </div>
       </div>

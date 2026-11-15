@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { servicePages } from "@/lib/services";
 import { Highlight, SectionLabel } from "@/components/brand-logo";
 import { AiAutomationHero } from "@/components/ai-automation-hero";
+import { GlowGrid } from "@/components/capability-layouts";
 import consulting from "@/assets/ai-consulting.jpg";
 import content from "@/assets/ai-content.jpg";
 import workflows from "@/assets/ai-workflows.jpg";
@@ -28,19 +29,11 @@ export function AiAutomationPage() {
       <p className="page-shell mx-auto max-w-4xl text-center text-lg leading-relaxed text-muted-foreground">
         We turn artificial intelligence into a practical advantage for your business. We help you identify the right AI opportunities, create high-quality content, streamline creative production, and automate repetitive processes. Whether you are exploring AI for the first time or ready to scale existing solutions, we make adoption simple, strategic, and results-driven.
       </p>
-      <div className="page-shell mt-16 space-y-24">
-        {offerings.map((o, i) => (
-          <div key={o.title} className="mx-auto grid max-w-5xl items-center gap-10 md:grid-cols-2">
-            <div className={i % 2 ? "md:order-2" : ""}>
-              <h2 className="font-display text-4xl font-extrabold text-navy">{o.title}</h2>
-              <p className="mt-6 max-w-sm text-foreground">{o.text}</p>
-              <p className="mt-2 font-semibold text-navy">{o.tags}</p>
-              <Link to="/" hash="contact" className={`${expertBtn} mt-8`}>Talk to an AI Expert</Link>
-            </div>
-            <img src={o.image} alt={o.title} loading="lazy" width={1024} height={1024}
-              className={`aspect-[4/4.3] w-full max-w-sm rounded-[2rem] object-cover shadow-xl ${i % 2 ? "md:order-1" : "md:justify-self-end"}`} />
-          </div>
-        ))}
+      <div className="page-shell mt-16">
+        <GlowGrid items={offerings} />
+        <div className="mt-12 text-center">
+          <Link to="/" hash="contact" className={expertBtn}>Talk to an AI Expert</Link>
+        </div>
       </div>
     </section>
 
