@@ -14,7 +14,7 @@ function Logo({ dark = false }: { dark?: boolean }) {
 const companyLinks = [
   { label: "About Us", to: "/about" },
   { label: "Projects", to: "/projects" },
-  { label: "Insights", to: "/insights" },
+  { label: "Resources", to: "/resources" },
   { label: "Careers", to: "/careers" },
 ] as const;
 

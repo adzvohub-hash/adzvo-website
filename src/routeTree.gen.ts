@@ -14,10 +14,11 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdzvoadminRouteImport } from './routes/adzvoadmin'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
-import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
+import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ServicesServiceRouteImport } from './routes/services.$service'
 
 const IndexRoute = IndexRouteImport.update({
@@ -45,11 +46,6 @@ const CookiePolicyRoute = CookiePolicyRouteImport.update({
   path: '/cookie-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InsightsRoute = InsightsRouteImport.update({
-  id: '/insights',
-  path: '/insights',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
@@ -60,10 +56,20 @@ const ProjectsRoute = ProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
   id: '/terms-and-conditions',
   path: '/terms-and-conditions',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesRoute,
 } as any)
 const ServicesServiceRoute = ServicesServiceRouteImport.update({
   id: '/services/$service',
@@ -77,10 +83,11 @@ export interface FileRoutesByFullPath {
   '/adzvoadmin': typeof AdzvoadminRoute
   '/careers': typeof CareersRoute
   '/cookie-policy': typeof CookiePolicyRoute
-  '/insights': typeof InsightsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/projects': typeof ProjectsRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/terms-and-conditions': typeof TermsAndConditionsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
   '/services/$service': typeof ServicesServiceRoute
 }
 export interface FileRoutesByTo {
@@ -89,10 +96,11 @@ export interface FileRoutesByTo {
   '/adzvoadmin': typeof AdzvoadminRoute
   '/careers': typeof CareersRoute
   '/cookie-policy': typeof CookiePolicyRoute
-  '/insights': typeof InsightsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/projects': typeof ProjectsRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/terms-and-conditions': typeof TermsAndConditionsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
   '/services/$service': typeof ServicesServiceRoute
 }
 export interface FileRoutesById {
@@ -102,10 +110,11 @@ export interface FileRoutesById {
   '/adzvoadmin': typeof AdzvoadminRoute
   '/careers': typeof CareersRoute
   '/cookie-policy': typeof CookiePolicyRoute
-  '/insights': typeof InsightsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/projects': typeof ProjectsRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/terms-and-conditions': typeof TermsAndConditionsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
   '/services/$service': typeof ServicesServiceRoute
 }
 export interface FileRouteTypes {
@@ -116,10 +125,11 @@ export interface FileRouteTypes {
     | '/adzvoadmin'
     | '/careers'
     | '/cookie-policy'
-    | '/insights'
     | '/privacy-policy'
     | '/projects'
+    | '/resources'
     | '/terms-and-conditions'
+    | '/resources/$slug'
     | '/services/$service'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -128,10 +138,11 @@ export interface FileRouteTypes {
     | '/adzvoadmin'
     | '/careers'
     | '/cookie-policy'
-    | '/insights'
     | '/privacy-policy'
     | '/projects'
+    | '/resources'
     | '/terms-and-conditions'
+    | '/resources/$slug'
     | '/services/$service'
   id:
     | '__root__'
@@ -140,10 +151,11 @@ export interface FileRouteTypes {
     | '/adzvoadmin'
     | '/careers'
     | '/cookie-policy'
-    | '/insights'
     | '/privacy-policy'
     | '/projects'
+    | '/resources'
     | '/terms-and-conditions'
+    | '/resources/$slug'
     | '/services/$service'
   fileRoutesById: FileRoutesById
 }
@@ -153,9 +165,9 @@ export interface RootRouteChildren {
   AdzvoadminRoute: typeof AdzvoadminRoute
   CareersRoute: typeof CareersRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
-  InsightsRoute: typeof InsightsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ProjectsRoute: typeof ProjectsRoute
+  ResourcesRoute: typeof ResourcesRouteWithChildren
   TermsAndConditionsRoute: typeof TermsAndConditionsRoute
   ServicesServiceRoute: typeof ServicesServiceRoute
 }
@@ -197,13 +209,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CookiePolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/insights': {
-      id: '/insights'
-      path: '/insights'
-      fullPath: '/insights'
-      preLoaderRoute: typeof InsightsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
@@ -218,12 +223,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms-and-conditions': {
       id: '/terms-and-conditions'
       path: '/terms-and-conditions'
       fullPath: '/terms-and-conditions'
       preLoaderRoute: typeof TermsAndConditionsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/resources/$slug': {
+      id: '/resources/$slug'
+      path: '/$slug'
+      fullPath: '/resources/$slug'
+      preLoaderRoute: typeof ResourcesSlugRouteImport
+      parentRoute: typeof ResourcesRoute
     }
     '/services/$service': {
       id: '/services/$service'
@@ -235,15 +254,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ResourcesRouteChildren {
+  ResourcesSlugRoute: typeof ResourcesSlugRoute
+}
+
+const ResourcesRouteChildren: ResourcesRouteChildren = {
+  ResourcesSlugRoute: ResourcesSlugRoute,
+}
+
+const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
+  ResourcesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdzvoadminRoute: AdzvoadminRoute,
   CareersRoute: CareersRoute,
   CookiePolicyRoute: CookiePolicyRoute,
-  InsightsRoute: InsightsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ProjectsRoute: ProjectsRoute,
+  ResourcesRoute: ResourcesRouteWithChildren,
   TermsAndConditionsRoute: TermsAndConditionsRoute,
   ServicesServiceRoute: ServicesServiceRoute,
 }

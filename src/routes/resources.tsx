@@ -1,29 +1,28 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Footer as SiteFooter } from "@/components/site-footer";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 import hero from "@/assets/insights-hero.jpg";
 import { postsSeed, fetchInsights, type Post } from "@/lib/insights";
 
-export const Route = createFileRoute("/insights")({
+export const Route = createFileRoute("/resources")({
   head: () => ({
     meta: [
-      { title: "Insights — ADZVO" },
+      { title: "Resources — ADZVO" },
       { name: "description", content: "Practical thinking on brands, growth, AI, film and the ideas shaping modern creative work." },
-      { property: "og:title", content: "ADZVO Insights" },
+      { property: "og:title", content: "ADZVO Resources" },
       { property: "og:description", content: "Practical thinking on brands, growth, AI, film and the ideas shaping modern creative work." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: InsightsPage,
+  component: ResourcesRoot,
 });
 
 const tags = ["All", ...Array.from(new Set(postsSeed.map((p) => p.tag)))];
 
-function PostCard({ post, onOpen }: { post: Post; onOpen: () => void }) {
+function PostCard({ post }: { post: Post }) {
   const [i, setI] = useState(0);
   const n = post.images.length;
   useEffect(() => {
@@ -47,14 +46,19 @@ function PostCard({ post, onOpen }: { post: Post; onOpen: () => void }) {
       <span className="mt-5 w-fit rounded-md bg-gold px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-navy" style={LOGO_FONT}>{post.tag}</span>
       <h2 className="mt-3 font-display text-lg font-bold leading-snug text-navy">{post.title}</h2>
       <p className="mt-2 flex-1 text-sm text-muted-foreground">{post.excerpt}</p>
-      <button onClick={onOpen} className="mt-4 inline-flex w-fit items-center gap-2 rounded-lg border border-navy/25 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-navy transition hover:border-navy hover:bg-navy hover:text-primary-foreground">Read more <ArrowUpRight className="h-4 w-4" /></button>
+      <Link
+        to="/resources/$slug"
+        params={{ slug: post.id }}
+        className="mt-4 inline-flex w-fit items-center gap-2 rounded-lg border border-navy/25 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-navy transition hover:border-navy hover:bg-navy hover:text-primary-foreground"
+      >
+        Read more <ArrowUpRight className="h-4 w-4" />
+      </Link>
     </article>
   );
 }
 
-function InsightsPage() {
+function ResourcesPage() {
   const [tag, setTag] = useState("All");
-  const [open, setOpen] = useState<Post | null>(null);
   const [allPosts, setAllPosts] = useState<Post[]>(postsSeed);
 
   useEffect(() => {
@@ -70,7 +74,7 @@ function InsightsPage() {
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-navy/70 via-navy/40 to-navy/80" />
           <div className="page-shell">
             <p><SectionLabel light>Knowledge & Perspectives</SectionLabel></p>
-            <h1 className="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-6xl">ADZVO <Highlight dark>Insights</Highlight></h1>
+            <h1 className="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-6xl">ADZVO <Highlight dark>Resources</Highlight></h1>
             <p className="mx-auto mt-7 max-w-xl text-primary-foreground/80">Practical thinking on brands, growth, AI and the creative ideas shaping how businesses connect with people.</p>
           </div>
         </section>
@@ -80,23 +84,17 @@ function InsightsPage() {
           ))}
         </div>
         <section className="page-shell mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {list.map((p) => <PostCard key={p.title} post={p} onOpen={() => setOpen(p)} />)}
+          {list.map((p) => <PostCard key={p.title} post={p} />)}
         </section>
       </main>
-      <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <DialogContent className="max-w-2xl">
-          {open && (<>
-            <img src={open.images[0]} alt="" className="aspect-video w-full rounded-2xl object-cover" />
-            <DialogHeader>
-              <span className="w-fit rounded-md bg-gold px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-navy" style={LOGO_FONT}>{open.tag}</span>
-              <DialogTitle className="font-display text-2xl font-extrabold text-navy">{open.title}</DialogTitle>
-              <DialogDescription>{open.excerpt}</DialogDescription>
-            </DialogHeader>
-            <p className="text-sm leading-relaxed text-foreground">{open.body}</p>
-          </>)}
-        </DialogContent>
-      </Dialog>
       <SiteFooter />
     </>
   );
+}
+
+function ResourcesRoot() {
+  const matches = useRouterState({ select: (s) => s.matches });
+  const isChild = matches.some((m) => m.routeId === "/resources/$slug");
+  if (isChild) return <Outlet />;
+  return <ResourcesPage />;
 }

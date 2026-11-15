@@ -41,7 +41,7 @@ export function SiteNav() {
             </div>}
           </li>
           <li><Link to="/projects" className="hover:text-gold">Projects</Link></li>
-          <li><Link to="/insights" className="hover:text-gold">Insights</Link></li>
+          <li><Link to="/resources" className="hover:text-gold">Resources</Link></li>
           <li><Link to="/" hash="contact" className="hover:text-gold">Contact</Link></li>
         </ul>
         <Button asChild className="site-nav-cta hidden md:inline-flex"><Link to="/" hash="contact" onClick={close}>Let's Talk</Link></Button>
@@ -53,7 +53,7 @@ export function SiteNav() {
         <Button variant="ghost" className="w-full justify-between px-3 text-navy" aria-expanded={servicesOpen} onClick={() => setServicesOpen(!servicesOpen)}>Services <ChevronDown className={`transition-transform ${servicesOpen ? "rotate-180" : ""}`} /></Button>
         {servicesOpen && <div className="border-l border-border pl-1">{serviceLinks}</div>}
         <Link to="/projects" onClick={close} className="block px-3 py-3 font-semibold text-navy">Projects</Link>
-        <Link to="/insights" onClick={close} className="block px-3 py-3 font-semibold text-navy">Insights</Link>
+        <Link to="/resources" onClick={close} className="block px-3 py-3 font-semibold text-navy">Resources</Link>
         <Link to="/" hash="contact" onClick={close} className="block px-3 py-3 font-semibold text-navy">Contact</Link>
         <Button asChild className="mt-2 w-full"><Link to="/" hash="contact" onClick={close}>Let's Talk</Link></Button>
       </div>}
