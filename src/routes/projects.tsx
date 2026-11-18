@@ -105,7 +105,7 @@ function ProjectsPage() {
                 <img src={active.image_url || serviceOf(active.service).image} alt={active.title} className="mt-3 h-40 w-56 rounded-xl object-cover" />
               </div>
             )}
-            {active.case_study_url && <Button asChild className="w-fit rounded-xl bg-gold font-bold uppercase tracking-wider text-navy hover:bg-gold hover:brightness-110"><a href={active.case_study_url} target="_blank" rel="noopener noreferrer"><FileText />View Case Study</a></Button>}
+            {active.case_study_url && <Button asChild className="w-fit rounded-xl bg-gold font-bold text-navy hover:bg-gold hover:brightness-110"><a href={active.case_study_url} target="_blank" rel="noopener noreferrer"><FileText />View Case Study</a></Button>}
           </>}
         </DialogContent>
       </Dialog>

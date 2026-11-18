@@ -98,9 +98,9 @@ function ResourcePage() {
           <div className="mt-14">
             <Link
               to="/resources"
-              className="inline-flex items-center gap-2 rounded-lg border border-navy/25 px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-navy transition hover:border-navy hover:bg-navy hover:text-white"
+              className="inline-flex items-center gap-2 rounded-lg border border-navy/25 px-4 py-2.5 text-sm font-bold text-navy transition hover:border-navy hover:bg-navy hover:text-white"
             >
-              <ArrowLeft className="h-4 w-4" /> Back to Resources
+              <ArrowLeft className="h-4 w-4" /> Back To Resources
             </Link>
           </div>
         </article>

@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import React, { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import { Toaster, toast } from "sonner";
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
 import hero3 from "@/assets/hero-3.jpg";
-import contactImg from "@/assets/contact.jpg";
 import { HERO_VIDEO_URL } from "@/lib/videos";
 import { Button } from "@/components/ui/button";
 import { ImpactCounter } from "@/components/impact-counter";
@@ -19,7 +18,7 @@ import svc5 from "@/assets/svc-5.jpg";
 import svc6 from "@/assets/svc-6.jpg";
 import svc7 from "@/assets/svc-7.jpg";
 import svc8 from "@/assets/svc-8.jpg";
-import { ArrowRight, ArrowUpRight, Check, CheckCircle2, Cpu, Handshake, Lightbulb, Monitor, TrendingUp as TrendingUpIcon, Palette, Film, Sparkles, Bot, Globe, BarChart3, Pause, Play, Target, TrendingUp, Users, LayoutGrid, Rocket } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CheckCircle2, Cpu, Handshake, Lightbulb, Monitor, TrendingUp as TrendingUpIcon, Palette, Film, Sparkles, Bot, Globe, BarChart3, Pause, Play, Target, TrendingUp, Users, LayoutGrid, Rocket } from "lucide-react";
 import { getSettings, getServiceImages } from "@/lib/api";
 
 export const Route = createFileRoute("/")({
@@ -123,19 +122,19 @@ const SLIDES = [
     img: hero1,
     title: (<>Ideas That <em className="italic">Inspire.</em><br />Digital That Delivers.</>),
     body: "We bring strategy, creativity and technology together to help ambitious brands stand out and move forward.",
-    cta: "Let's Talk", link: "Explore our services", bar: true, tags: [] as string[],
+    cta: "Let's Talk", link: "Explore Our Services", bar: true, tags: [] as string[],
   },
   {
     img: hero2,
     title: (<>Make your brand<br /><em className="italic">mean more.</em></>),
     body: "From brand identity and digital experiences to campaigns, content and intelligent solutions — we turn possibilities into work that connects with people and moves business.",
-    cta: "Let's Build", link: "View our capabilities", bar: false, tags: ["Branding", "Digital", "Film & Content", "AI & Analytics"],
+    cta: "Let's Build", link: "View Our Capabilities", bar: false, tags: ["Branding", "Digital", "Film & Content", "AI & Analytics"],
   },
   {
     img: hero3,
     title: (<>Your Next Big Idea<br /><em className="italic">Starts Here.</em></>),
     body: "From the first spark to the final result, ADZVO combines bold creativity, smart digital solutions and clear strategy to help your brand go further.",
-    cta: "Start a Project", link: "Explore our services", bar: true, tags: [] as string[],
+    cta: "Start a Project", link: "Explore Our Services", bar: true, tags: [] as string[],
   },
 ];
 
@@ -199,10 +198,10 @@ export function Hero() {
               </div>
             )}
             <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-              <a href="#contact" className="shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">
+              <a href="/contact" className="shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold text-navy transition hover:-translate-y-1 hover:brightness-110">
                 {s.cta}
               </a>
-              <a href="#services" className="group inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground sm:text-base">
+              <a href="#services" className="group inline-flex items-center gap-2 text-sm font-semibold text-gold sm:text-base">
                 {s.link} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </a>
             </div>
@@ -210,21 +209,15 @@ export function Hero() {
         ))}
       </div>
 
-      <div className="page-shell absolute bottom-[4.5rem] left-1/2 flex -translate-x-1/2 items-center gap-3">
+      <div className="absolute bottom-[4.5rem] left-1/2 flex -translate-x-1/2 items-center gap-3">
         {SLIDES.map((_, k) => (
-          <Button variant="ghost" key={k} aria-label={`Slide ${k + 1}`} onClick={() => setI(k)} className="group h-8 flex-1 max-w-24 rounded-none p-0 hover:bg-transparent">
+          <Button variant="ghost" key={k} aria-label={`Slide ${k + 1}`} onClick={() => setI(k)} className="group h-8 w-20 rounded-none p-0 hover:bg-transparent">
             <span className="block h-0.5 w-full overflow-hidden rounded-full bg-primary-foreground/20">
               <span key={`${i}-${k}`} className={`block h-full bg-gold ${k === i ? (paused ? "w-full" : "animate-[progress_6.5s_linear_forwards]") : k < i ? "w-full" : "w-0"}`} />
             </span>
           </Button>
         ))}
-        <Button variant="ghost" size="icon" type="button" onClick={() => setPaused((p) => !p)} aria-label={paused ? "Play slides" : "Pause slides"} title={paused ? "Play slides" : "Pause slides"} className="ml-2 h-8 w-8 shrink-0 rounded-full border border-primary-foreground/30 text-primary-foreground/80 transition hover:border-gold hover:bg-transparent hover:text-gold">
-          {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
-        </Button>
-        <span className="ml-2 text-xs font-semibold tracking-widest text-primary-foreground/60">0{i + 1} / 0{SLIDES.length}</span>
-        <Button variant="ghost" size="icon" onClick={toggleVideo} aria-label={videoPlaying ? "Pause hero video" : "Play hero video"} title={videoPlaying ? "Pause hero video" : "Play hero video"} className="ml-auto h-9 w-9 shrink-0 rounded-full border border-primary-foreground/30 text-primary-foreground/80 hover:border-gold hover:bg-transparent hover:text-gold">
-          {videoPlaying ? <Pause /> : <Play />}
-        </Button>
+        {/* Slide pause/play, counter, and video controls hidden — slides and video run automatically in the background */}
       </div>
 
       {/* Frosted strip sits over the hero so the video shows through it */}
@@ -285,30 +278,29 @@ function Impact() {
   // Logo palette only: navy, gold and white. The first card is the navy anchor.
   const icons = [Rocket, Handshake, Users, LayoutGrid];
   return (
-    <section id="impact" className="bg-off py-20 sm:py-24">
-      <div className="page-shell flex flex-col items-center gap-12">
+    <section id="impact" className="bg-off py-28 sm:py-32">
+      <div className="page-shell flex flex-col items-center gap-16">
         <div className="reveal mx-auto flex w-full flex-col items-center text-center">
           <SectionLabel>The ADZVO Impact</SectionLabel>
-          <h2 className="font-display mt-6 text-4xl leading-tight font-extrabold text-navy sm:text-5xl">
-            Ideas in Motion.<br />
-            <Highlight>Impact in Numbers.</Highlight>
+          <h2 className="font-display mt-6 text-3xl leading-tight font-extrabold text-navy sm:text-4xl whitespace-nowrap">
+            Ideas in Motion, <Highlight>Impact in Numbers.</Highlight>
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
             Creative thinking and technology, working together to move brands forward.
           </p>
         </div>
-        <div className="reveal grid w-full grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
+        <div className="reveal grid w-full grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
             {stats.map((stat, index) => {
               const Icon = icons[index] ?? TrendingUp;
               const anchor = index === 0;
               return (
-              <div key={stat.label} className={`impact-stat-card group flex min-w-0 flex-col rounded-3xl border p-5 text-left transition duration-300 hover:-translate-y-1.5 sm:p-6 ${anchor ? "border-navy bg-navy text-primary-foreground shadow-[0_18px_40px_-18px] shadow-navy/60" : "border-navy/10 bg-card text-navy shadow-[0_14px_36px_-20px] shadow-navy/30 hover:border-gold"}`}>
+              <div key={stat.label} className={`impact-stat-card group flex min-w-0 flex-col rounded-3xl border p-6 text-left transition duration-300 hover:-translate-y-1.5 sm:p-7 ${anchor ? "border-navy bg-navy text-primary-foreground shadow-[0_18px_40px_-18px] shadow-navy/60" : "border-navy/10 bg-card text-navy shadow-[0_14px_36px_-20px] shadow-navy/30 hover:border-gold"}`}>
                 <span className="grid size-11 place-items-center rounded-xl bg-gold text-navy transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
                   <Icon className="size-5" strokeWidth={2.4} />
                 </span>
-                <div className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl" style={LOGO_FONT}><ImpactCounter value={stat.value} /></div>
+                <div className="mt-7 text-3xl font-bold tracking-tight sm:text-4xl" style={LOGO_FONT}><ImpactCounter value={stat.value} /></div>
                 <div className={`mt-2 text-xs font-semibold sm:text-sm ${anchor ? "text-primary-foreground/75" : "text-navy/65"}`}>{stat.label}</div>
-                <span className="mt-5 block h-1 w-8 rounded-full bg-gold transition-all duration-300 group-hover:w-16" />
+                <span className="mt-6 block h-1 w-8 rounded-full bg-gold transition-all duration-300 group-hover:w-16" />
               </div>
               );
             })}
@@ -334,17 +326,12 @@ function Services() {
       <div className="page-shell relative">
           <div className="reveal mx-auto flex flex-col items-center text-center">
             <SectionLabel light>What We Do</SectionLabel>
-            <h2 className="font-display mt-6 text-4xl leading-tight font-extrabold text-primary-foreground sm:text-5xl">
-              Full-Spectrum
-              <br />
-              <Highlight dark>Digital Services</Highlight>
+            <h2 className="font-display mt-6 text-4xl leading-tight font-extrabold text-primary-foreground sm:text-5xl whitespace-nowrap">
+              Full-Spectrum <Highlight dark>Digital Services</Highlight>
             </h2>
-            <p className="mt-5 max-w-2xl text-primary-foreground/60">
-              From strategy to execution — every discipline you need under one roof, built for Indian brands that want to grow.
+            <p className="mt-5 max-w-xl text-primary-foreground/60">
+              From strategy to execution — every discipline you need, under one roof.
             </p>
-            <a href="#contact" className="group mt-8 inline-flex items-center gap-2 font-semibold text-gold">
-              Start a Project <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-            </a>
           </div>
 
         <div className="mt-16 grid w-full gap-5 sm:grid-cols-2 xl:grid-cols-4">
@@ -403,119 +390,150 @@ function Services() {
             );
           })}
         </div>
+
+        <div className="mt-10 flex justify-center">
+          <a href="/contact" className="group inline-flex items-center gap-2 font-semibold text-gold">
+            Start a Project <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+          </a>
+        </div>
       </div>
     </section>
+  );
+}
+
+const WHY_ORBITAL = [
+  { icon: <Lightbulb />, title: "Creative Excellence",       desc: "Ideas that inspire and make an impact.",              color: "from-amber-400 to-orange-500",   shadow: "shadow-amber-400/40"   },
+  { icon: <Cpu />,       title: "Tech-Enabled Solutions",    desc: "Leveraging the latest tech for smarter outcomes.",   color: "from-purple-500 to-indigo-600",  shadow: "shadow-purple-500/40"  },
+  { icon: <Users />,     title: "Experienced Team",          desc: "A passionate team that makes it happen.",            color: "from-blue-400 to-cyan-500",      shadow: "shadow-blue-400/40"    },
+  { icon: <Target />,    title: "Strategic Approach",        desc: "Insights-driven, always a step ahead.",             color: "from-pink-400 to-rose-500",      shadow: "shadow-pink-400/40"    },
+  { icon: <Handshake />, title: "Client-Centric Partnership",desc: "Your goals, our commitment.",                       color: "from-teal-400 to-emerald-500",   shadow: "shadow-teal-400/40"    },
+  { icon: <TrendingUp />,title: "Real Business Impact",      desc: "Measurable results for a brighter tomorrow.",       color: "from-indigo-500 to-blue-700",    shadow: "shadow-indigo-500/40"  },
+] as const;
+
+function WhyCard({ item, side }: { item: typeof WHY_ORBITAL[number]; side: "left" | "right" }) {
+  return (
+    <div
+      className="why-orbital-card group flex w-full items-center gap-4 px-4 py-3.5 transition-all duration-300 hover:-translate-y-1 sm:w-72"
+      style={{
+        borderRadius: "1.1rem",
+        background: "linear-gradient(145deg, rgba(255,255,255,0.82) 0%, rgba(240,236,255,0.55) 100%)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        border: "1px solid rgba(255,255,255,0.75)",
+        boxShadow: "0 2px 0 0 rgba(255,255,255,0.9) inset, 0 -1px 0 0 rgba(180,160,255,0.18) inset, 2px 0 0 0 rgba(255,255,255,0.7) inset, -1px 0 0 0 rgba(180,160,255,0.12) inset, 0 8px 24px rgba(130,100,220,0.10), 0 2px 6px rgba(100,80,180,0.08)",
+      }}
+    >
+      <span className={`grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${item.color} text-white shadow-lg ${item.shadow} [&_svg]:size-5 [&_svg]:stroke-[2] transition-transform duration-300 group-hover:scale-110`}>
+        {item.icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5">
+          {side === "right" && <span className="text-[9px] font-bold tracking-widest text-purple-400" style={LOGO_FONT}>——</span>}
+          <span className="text-[10px] font-bold tracking-widest text-purple-400" style={LOGO_FONT}>{String(WHY_ORBITAL.indexOf(item) + 1).padStart(2, "0")}</span>
+          {side === "left" && <span className="text-[9px] font-bold tracking-widest text-purple-400" style={LOGO_FONT}>——</span>}
+        </div>
+        <h3 className="font-display text-sm font-bold leading-tight text-navy">{item.title}</h3>
+        <p className="mt-0.5 text-xs leading-snug text-navy/55">{item.desc}</p>
+      </div>
+    </div>
   );
 }
 
 function Why() {
-  // Logo palette only: navy, gold and white, with the same gold tiles as the Impact cards.
   return (
-    <section id="why" className="relative overflow-hidden bg-card py-20 sm:py-24">
-      <div className="page-shell relative flex flex-col items-center gap-12">
-        <div className="reveal mx-auto flex w-full flex-col items-center text-center">
+    <section id="why" className="relative overflow-hidden py-24 sm:py-32">
+      {/* Light pastel background */}
+      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #f5f3ff 0%, #faf9ff 40%, #eff6ff 100%)" }} />
+
+      {/* Decorative wave lines */}
+      <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-50" viewBox="0 0 1300 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden>
+        <path d="M-100 520 Q200 400 500 460 Q800 520 1050 420 Q1200 360 1450 440" stroke="url(#wg1)" strokeWidth="1.8" />
+        <path d="M-100 570 Q300 450 620 510 Q920 570 1150 480 Q1300 420 1450 490" stroke="url(#wg2)" strokeWidth="1.4" />
+        <defs>
+          <linearGradient id="wg1" x1="0" y1="0" x2="1300" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#f97316" stopOpacity="0" />
+            <stop offset="25%" stopColor="#f97316" />
+            <stop offset="65%" stopColor="#a855f7" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="wg2" x1="0" y1="0" x2="1300" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#a855f7" stopOpacity="0" />
+            <stop offset="35%" stopColor="#a855f7" />
+            <stop offset="75%" stopColor="#06b6d4" />
+            <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+
+      <div className="page-shell relative z-10 flex flex-col items-center gap-14">
+        {/* Header */}
+        <div className="reveal text-center">
           <SectionLabel>Why Choose ADZVO</SectionLabel>
-          <h2 className="font-display mt-6 text-4xl leading-tight font-extrabold text-navy sm:text-5xl">
-            More Than a Service.<br />
-            <Highlight>A Strategic Partner.</Highlight>
+          <h2 className="font-display mt-6 text-3xl font-extrabold leading-tight text-navy sm:text-4xl">
+            More Than a Service. <Highlight>A Strategic Partner.</Highlight>
           </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            We combine creativity, technology and strategy to help ambitious brands build, connect and grow — in today's digital world and beyond.
+          <p className="mx-auto mt-4 max-w-xl text-center text-sm leading-relaxed text-muted-foreground">
+            Creativity, technology and strategy — working together for your brand.
           </p>
         </div>
-        <div className="reveal grid w-full max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 [transition-delay:150ms]">
-          {WHY.map(([icon, title], index) => (
-            <div key={title} className="group flex items-center gap-4 rounded-2xl border border-navy/10 bg-off p-4 transition duration-300 hover:-translate-y-1 hover:border-navy hover:bg-navy">
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gold text-navy transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110 [&_svg]:size-5 [&_svg]:stroke-[2.4]">{icon}</span>
-              <h3 className="min-w-0 flex-1 text-sm font-semibold text-navy transition-colors duration-300 group-hover:text-primary-foreground sm:text-base">{title}</h3>
-              <span className="text-xs font-bold tabular-nums tracking-widest text-navy/50 transition-colors duration-300 group-hover:text-gold" style={LOGO_FONT}>{String(index + 1).padStart(2, "0")}</span>
+
+        {/* Mobile grid */}
+        <div className="reveal grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:hidden">
+          {WHY_ORBITAL.map((item) => (
+            <div key={item.title} className="flex items-start gap-4 p-4" style={{ borderRadius:"1.1rem", background:"linear-gradient(145deg,rgba(255,255,255,0.82) 0%,rgba(240,236,255,0.55) 100%)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", border:"1px solid rgba(255,255,255,0.75)", boxShadow:"0 2px 0 0 rgba(255,255,255,0.9) inset,0 -1px 0 0 rgba(180,160,255,0.18) inset,2px 0 0 0 rgba(255,255,255,0.7) inset,-1px 0 0 0 rgba(180,160,255,0.12) inset,0 8px 24px rgba(130,100,220,0.10),0 2px 6px rgba(100,80,180,0.08)" }}>
+              <span className={`grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${item.color} text-white shadow-lg [&_svg]:size-5 [&_svg]:stroke-[2]`}>{item.icon}</span>
+              <div>
+                <span className="text-[10px] font-bold tracking-widest text-purple-400" style={LOGO_FONT}>{String(WHY_ORBITAL.indexOf(item) + 1).padStart(2, "0")}</span>
+                <h3 className="font-display text-sm font-bold text-navy">{item.title}</h3>
+                <p className="mt-0.5 text-xs text-navy/55">{item.desc}</p>
+              </div>
             </div>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
 
-function Contact() {
-  const [sending, setSending] = useState(false);
-  const submit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSending(true);
-    const form = e.currentTarget;
-    setTimeout(() => {
-      setSending(false);
-      form.reset();
-      toast.success("Thanks! We'll get back to you within one business day.");
-    }, 700);
-  };
-  const input = "w-full rounded-[10px] border border-border bg-off px-4 py-3 text-sm text-ink outline-none transition placeholder:text-muted-foreground/60 focus:border-navy focus:ring-[3px] focus:ring-gold/40";
-  const bars = [
-    ["Social & Content", 78],
-    ["Branding & Web", 62],
-    ["Paid Media", 55],
-  ] as const;
-  return (
-    <section id="contact" className="bg-off py-20 sm:py-24">
-      <div className="page-shell grid gap-8 lg:grid-cols-[11fr_13fr]">
-      <div className="shadow-contact relative min-w-0 overflow-hidden rounded-3xl bg-navy p-6 sm:p-10 xl:p-12">
-        <img src={contactImg} alt="" width={1024} height={1280} loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-40" />
-        <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy/85 to-navy/60" />
-        <div className="orb -top-20 -right-20 h-80 w-80 bg-gold/20" />
-        <div className="orb -bottom-20 -left-20 h-80 w-80 bg-gold/10 [animation-delay:-5s]" />
-        <div className="reveal relative w-full">
-          <SectionLabel light>Start a Project</SectionLabel>
-          <h2 className="font-display mt-5 text-4xl leading-tight font-extrabold text-primary-foreground sm:text-5xl">
-            Your Next Big Idea <Highlight dark>Starts Here.</Highlight>
-          </h2>
-          <p className="mt-6 text-primary-foreground/70">Tell us about your brand and your goals. We'll come back with a clear plan — no fluff, no obligation.</p>
-          <div className="mt-10 border-t border-primary-foreground/20 pt-6">
-            <div className="text-xs font-semibold uppercase tracking-wider text-primary-foreground/50">What our clients invest in</div>
-            <div className="mt-5 space-y-4">
-              {bars.map(([l, p]) => (
-                <div key={l} className="flex items-center gap-3">
-                  <span className="h-2 w-2 shrink-0 rounded-full bg-gold" />
-                  <span className="w-28 shrink-0 text-sm text-primary-foreground/80">{l}</span>
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-[3px] bg-primary-foreground/10">
-                    <div className="h-full rounded-[3px] bg-gold" style={{ width: `${p}%` }} />
-                  </div>
-                  <span className="w-10 text-right text-sm font-bold text-primary-foreground" style={LOGO_FONT}>{p}%</span>
-                </div>
-              ))}
+        {/* Desktop orbital layout */}
+        <div className="reveal hidden w-full items-center justify-center gap-6 lg:flex xl:gap-10">
+          {/* Left cards */}
+          <div className="flex flex-col items-end gap-5">
+            {WHY_ORBITAL.slice(0, 3).map((item) => <WhyCard key={item.title} item={item} side="left" />)}
+          </div>
+
+          {/* Center sphere */}
+          <div className="relative mx-2 flex shrink-0 items-center justify-center xl:mx-6">
+            {/* Outer orbit rings */}
+            <div className="why-orbit-ring absolute h-[340px] w-[340px] rounded-full border border-purple-200/50 border-dashed" />
+            <div className="why-orbit-ring-slow absolute h-[290px] w-[290px] rounded-full border border-purple-300/40" />
+
+            {/* Connecting dots on orbit */}
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="absolute h-2.5 w-2.5 rounded-full bg-purple-400/70 shadow-sm shadow-purple-400/50"
+                style={{ transform: `rotate(${-30 + i * -50}deg) translateX(-145px) rotate(${30 - i * -50}deg)` }} />
+            ))}
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="absolute h-2.5 w-2.5 rounded-full bg-purple-400/70 shadow-sm shadow-purple-400/50"
+                style={{ transform: `rotate(${30 + i * 50}deg) translateX(145px) rotate(${-(30 + i * 50)}deg)` }} />
+            ))}
+
+            {/* Sphere */}
+            <div className="relative flex h-56 w-56 flex-col items-center justify-center rounded-full" style={{
+              background: "radial-gradient(circle at 35% 32%, rgba(255,255,255,0.98), rgba(220,215,255,0.65) 55%, rgba(180,200,255,0.45))",
+              boxShadow: "0 0 60px 20px rgba(168,139,250,0.22), 0 0 120px 40px rgba(99,102,241,0.12), inset 0 0 50px rgba(255,255,255,0.85), 0 20px 50px rgba(99,102,241,0.18), inset 0 -10px 30px rgba(200,210,255,0.3)"
+            }}>
+              <div className="absolute inset-3 rounded-full" style={{ background: "radial-gradient(circle at 38% 38%, rgba(255,255,255,0.9), rgba(230,225,255,0.2))", border: "1px solid rgba(200,185,255,0.35)" }} />
+              <div className="relative z-10 flex flex-col items-center gap-1">
+                <BrandMark className="size-14" />
+                <span className="mt-1 text-lg font-extrabold tracking-[0.2em] text-navy" style={LOGO_FONT}>ADZVO</span>
+                <span className="text-[8px] font-semibold tracking-[0.28em] text-navy/45" style={LOGO_FONT}>IDEAS · PEOPLE · IMPACT</span>
+              </div>
             </div>
           </div>
-          <ul className="mt-8 space-y-3">
-            {["Response within 24 hours", "Free initial strategy session", "No long-term lock-in contracts"].map((t) => (
-              <li key={t} className="flex items-center gap-3 text-primary-foreground/80">
-                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gold text-navy">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
-                {t}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <div className="shadow-contact min-w-0 rounded-3xl border border-border bg-primary-foreground p-6 sm:p-10 xl:p-12">
-        <form onSubmit={submit} className="reveal w-full space-y-4">
-          <h3 className="font-display text-3xl font-bold text-navy">Send us an enquiry</h3>
-          <p className="pb-2 text-sm text-muted-foreground">We'll get back to you within one business day.</p>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <input required className={input} placeholder="Rahul" aria-label="First name" />
-            <input required className={input} placeholder="Sharma" aria-label="Last name" />
+
+          {/* Right cards */}
+          <div className="flex flex-col items-start gap-5">
+            {WHY_ORBITAL.slice(3, 6).map((item) => <WhyCard key={item.title} item={item} side="right" />)}
           </div>
-          <input required type="email" className={input} placeholder="rahul@company.com" aria-label="Email" />
-          <select required defaultValue="" className={input} aria-label="Service">
-            <option value="" disabled>Select a service</option>
-            {SERVICES.map(([t]) => <option key={t}>{t}</option>)}
-            <option>Full-Service Partnership</option>
-          </select>
-          <textarea required rows={5} className={input} placeholder="Tell us about your project, goals and budget (₹)…" aria-label="Project description" />
-          <Button type="submit" disabled={sending} className="h-auto w-full rounded-xl bg-navy py-4 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-gold hover:text-navy hover:shadow-gold disabled:opacity-60">
-            {sending ? "Sending…" : "Send Enquiry →"}
-          </Button>
-        </form>
-      </div>
+        </div>
       </div>
     </section>
   );
@@ -530,7 +548,6 @@ function Index() {
       <Impact />
       <Services />
       <Why />
-      <Contact />
       <Footer />
     </main>
   );

@@ -49,9 +49,9 @@ function PostCard({ post }: { post: Post }) {
       <Link
         to="/resources/$slug"
         params={{ slug: post.id }}
-        className="mt-4 inline-flex w-fit items-center gap-2 rounded-lg border border-navy/25 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-navy transition hover:border-navy hover:bg-navy hover:text-primary-foreground"
+        className="mt-4 inline-flex w-fit items-center gap-2 rounded-lg border border-navy/25 px-3 py-1.5 text-xs font-bold text-navy transition hover:border-navy hover:bg-navy hover:text-primary-foreground"
       >
-        Read more <ArrowUpRight className="h-4 w-4" />
+        Read More <ArrowUpRight className="h-4 w-4" />
       </Link>
     </article>
   );

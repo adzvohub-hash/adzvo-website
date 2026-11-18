@@ -46,8 +46,8 @@ function AboutPage() {
               <p>Then we bring the right mix of creative thinking, digital execution and specialist expertise to make the work happen.</p>
             </div>
             <div className="mt-10 flex flex-wrap gap-4">
-              <Link to="/" hash="contact" className="shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">Work with us <ArrowRight className="size-4" /></Link>
-              <Link to="/projects" className="inline-flex items-center gap-2 rounded-xl border border-primary-foreground/30 px-7 py-3.5 text-sm font-bold uppercase tracking-wider backdrop-blur transition hover:bg-primary-foreground/10">See our projects</Link>
+              <Link to="/" hash="contact" className="shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-7 py-3.5 text-sm font-bold text-navy transition hover:-translate-y-1 hover:brightness-110">Work With Us <ArrowRight className="size-4" /></Link>
+              <Link to="/projects" className="inline-flex items-center gap-2 rounded-xl border border-primary-foreground/30 px-7 py-3.5 text-sm font-bold backdrop-blur transition hover:bg-primary-foreground/10">See Our Projects</Link>
             </div>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-primary-foreground/15 bg-primary-foreground/10 backdrop-blur-md md:grid-cols-4">
@@ -104,8 +104,8 @@ function AboutPage() {
       <section className="bg-navy py-20 text-center text-primary-foreground">
         <div className="page-shell">
           <h2 className="mx-auto max-w-3xl font-display text-3xl font-extrabold leading-tight sm:text-5xl">We turn ambitious ideas into connected brand and <Highlight dark>digital experiences.</Highlight></h2>
-          <Link to="/" hash="services" className="shadow-gold mt-10 inline-flex items-center gap-2 rounded-xl bg-gold px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">
-            Explore our work <ArrowRight className="size-4" />
+          <Link to="/" hash="services" className="shadow-gold mt-10 inline-flex items-center gap-2 rounded-xl bg-gold px-8 py-3.5 text-sm font-bold text-navy transition hover:-translate-y-1 hover:brightness-110">
+            Explore Our Work <ArrowRight className="size-4" />
           </Link>
         </div>
       </section>
