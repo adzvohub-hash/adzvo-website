@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { useState, useEffect, type FormEvent } from "react";
 import { Toaster, toast } from "sonner";
 import contactImg from "@/assets/contact.jpg";
 import { Button } from "@/components/ui/button";
 import { Highlight, SectionLabel } from "@/components/brand-logo";
 import { Footer } from "@/components/site-footer";
-import { Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 function useReveal() {
   useEffect(() => {
@@ -106,9 +107,9 @@ function ContactPage() {
                 <label className="mb-1.5 block text-xs font-semibold text-navy/70">Message <span className="text-gold">*</span></label>
                 <textarea required rows={5} className={input} placeholder="Tell us about your project and goals…" aria-label="Project description" />
               </div>
-              <Button type="submit" disabled={sending} className="shadow-gold h-auto w-full rounded-xl bg-gold py-4 font-semibold text-navy transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-60">
-                {sending ? "Sending…" : "Send Enquiry →"}
-              </Button>
+              <GlassButton as="button" type="submit" disabled={sending} className="w-full">
+                {sending ? "Sending…" : <>Send Enquiry <ArrowRight /></>}
+              </GlassButton>
             </form>
           </div>
         </div>

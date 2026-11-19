@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Footer as SiteFooter } from "@/components/site-footer";
@@ -46,13 +47,9 @@ function PostCard({ post }: { post: Post }) {
       <span className="mt-5 w-fit rounded-md bg-gold px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-navy" style={LOGO_FONT}>{post.tag}</span>
       <h2 className="mt-3 font-display text-lg font-bold leading-snug text-navy">{post.title}</h2>
       <p className="mt-2 flex-1 text-sm text-muted-foreground">{post.excerpt}</p>
-      <Link
-        to="/resources/$slug"
-        params={{ slug: post.id }}
-        className="mt-4 inline-flex w-fit items-center gap-2 rounded-lg border border-navy/25 px-3 py-1.5 text-xs font-bold text-navy transition hover:border-navy hover:bg-navy hover:text-primary-foreground"
-      >
+      <GlassButton as={Link} to="/resources/$slug" params={{ slug: post.id }} variant="secondary" size="sm" className="mt-4 self-start">
         Read More <ArrowUpRight className="h-4 w-4" />
-      </Link>
+      </GlassButton>
     </article>
   );
 }

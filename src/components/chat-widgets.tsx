@@ -3,7 +3,6 @@
  * Floating chat widgets — WhatsApp (direct link) + Web Chat (webhook-powered).
  *
  * Configuration via env vars:
- *   VITE_WHATSAPP_NUMBER      e.g. "919876543210"  (no +, no spaces)
  *   VITE_CHAT_WEBHOOK_URL     your n8n / backend webhook POST endpoint
  *
  * Both buttons are stacked bottom-right, same visual pattern as the
@@ -15,8 +14,9 @@ import { useRouterState } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ─── Config ────────────────────────────────────────────────────────────────
-const WA_NUMBER: string =
-  (import.meta as any).env?.VITE_WHATSAPP_NUMBER ?? "919876543210";
+// WhatsApp number: country code + number, no "+" or spaces.
+// Set here on purpose (not from VITE_WHATSAPP_NUMBER) so an old .env / hosting value can't override it.
+export const WA_NUMBER: string = "917012376221"; // +91 70123 76221
 const WEBHOOK_URL: string =
   (import.meta as any).env?.VITE_CHAT_WEBHOOK_URL ?? "";
 const N8N_USERNAME: string =
@@ -337,7 +337,7 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
         ...m,
         {
           role: "bot",
-          text: "Sorry, I'm having trouble connecting right now. Please try again shortly or reach us at hello@adzvo.com.",
+          text: "Sorry, I'm having trouble connecting right now. Please try again shortly or reach us at adzvohub@gmail.com.",
           ts: Date.now(),
         },
       ]);

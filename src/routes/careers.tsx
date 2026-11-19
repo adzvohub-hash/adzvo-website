@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { Briefcase, Heart, Mail, Sparkles, Users, Zap } from "lucide-react";
 import { Footer } from "@/components/site-footer";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
@@ -120,13 +121,10 @@ function CareersPage() {
             <p className="mt-4 text-navy/70 max-w-lg mx-auto">
               We'd love to hear from you. Send us a short note about yourself, what you do and what excites you — and we'll be in touch if there's a match.
             </p>
-            <a
-              href="mailto:hr@adzvo.com?subject=Careers%20at%20ADZVO"
-              className="mt-8 inline-flex items-center gap-2.5 rounded-xl bg-navy px-7 py-3.5 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-xl"
-            >
+            <GlassButton as="a" href="mailto:hr@adzvo.com?subject=Careers%20at%20ADZVO" variant="secondary" className="mt-8">
               <Mail className="h-4 w-4" />
               hr@adzvo.com
-            </a>
+            </GlassButton>
             <p className="mt-5 text-xs text-navy/50">
               No formal application needed — just introduce yourself.
             </p>

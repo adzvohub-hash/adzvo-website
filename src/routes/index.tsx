@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import { Toaster, toast } from "sonner";
 import hero1 from "@/assets/hero-1.jpg";
@@ -10,6 +11,9 @@ import { ImpactCounter } from "@/components/impact-counter";
 import { servicePages } from "@/lib/services";
 import { BrandMark, Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 import { Footer } from "@/components/site-footer";
+import { WhySection } from "@/components/why-section";
+import { HomeCta } from "@/components/home-cta";
+import { LiquidGlass } from "@/components/liquid-glass";
 import svc1 from "@/assets/svc-1.jpg";
 import svc2 from "@/assets/svc-2.jpg";
 import svc3 from "@/assets/svc-3.jpg";
@@ -120,19 +124,19 @@ function Pill({ children, tone = "blue" }: { children: ReactNode; tone?: "blue" 
 const SLIDES = [
   {
     img: hero1,
-    title: (<>Ideas That <em className="italic">Inspire.</em><br />Digital That Delivers.</>),
+    title: (<>Ideas That <em className="not-italic">Inspire.</em><br />Digital That Delivers.</>),
     body: "We bring strategy, creativity and technology together to help ambitious brands stand out and move forward.",
     cta: "Let's Talk", link: "Explore Our Services", bar: true, tags: [] as string[],
   },
   {
     img: hero2,
-    title: (<>Make your brand<br /><em className="italic">mean more.</em></>),
+    title: (<>Make your brand<br /><em className="not-italic">mean more.</em></>),
     body: "From brand identity and digital experiences to campaigns, content and intelligent solutions — we turn possibilities into work that connects with people and moves business.",
     cta: "Let's Build", link: "View Our Capabilities", bar: false, tags: ["Branding", "Digital", "Film & Content", "AI & Analytics"],
   },
   {
     img: hero3,
-    title: (<>Your Next Big Idea<br /><em className="italic">Starts Here.</em></>),
+    title: (<>Your Next Big Idea<br /><em className="not-italic">Starts Here.</em></>),
     body: "From the first spark to the final result, ADZVO combines bold creativity, smart digital solutions and clear strategy to help your brand go further.",
     cta: "Start a Project", link: "Explore Our Services", bar: true, tags: [] as string[],
   },
@@ -193,23 +197,23 @@ export function Hero() {
             {s.tags.length > 0 && (
               <div className="mt-4 flex flex-wrap justify-center gap-2">
                 {s.tags.map((t) => (
-                  <span key={t} className="glass rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-primary-foreground">{t}</span>
+                  <LiquidGlass key={t} as="span" tint="clear" radius={12} refraction={12} elasticity={0.08}
+                    contentClassName="px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider">
+                    {t}
+                  </LiquidGlass>
                 ))}
               </div>
             )}
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-              <a href="/contact" className="shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold text-navy transition hover:-translate-y-1 hover:brightness-110">
-                {s.cta}
-              </a>
-              <a href="#services" className="group inline-flex items-center gap-2 text-sm font-semibold text-gold sm:text-base">
-                {s.link} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-              </a>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+              <GlassButton as="a" href="/contact">{s.cta} <ArrowRight /></GlassButton>
+              <GlassButton as="a" href="#services" variant="secondary" on="dark">{s.link} <ArrowUpRight /></GlassButton>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="absolute bottom-[4.5rem] left-1/2 flex -translate-x-1/2 items-center gap-3">
+      <div className="absolute bottom-[4.5rem] left-1/2 -translate-x-1/2">
+       <LiquidGlass tint="clear" radius={999} refraction={14} elasticity={0.1} contentClassName="gap-3 px-4 py-1">
         {SLIDES.map((_, k) => (
           <Button variant="ghost" key={k} aria-label={`Slide ${k + 1}`} onClick={() => setI(k)} className="group h-8 w-20 rounded-none p-0 hover:bg-transparent">
             <span className="block h-0.5 w-full overflow-hidden rounded-full bg-primary-foreground/20">
@@ -218,6 +222,7 @@ export function Hero() {
           </Button>
         ))}
         {/* Slide pause/play, counter, and video controls hidden — slides and video run automatically in the background */}
+       </LiquidGlass>
       </div>
 
       {/* Frosted strip sits over the hero so the video shows through it */}
@@ -242,11 +247,12 @@ function Marquee() {
   const items = ["Social Media", "Branding & Identity", "Web & App Development", "SEO & Growth", "Video Production", "Paid Media", "Influencer Marketing", "Content Strategy"];
   const row = [...items, ...items];
   return (
-    <div className="hero-strip-glass absolute inset-x-0 bottom-0 z-10 overflow-hidden py-4">
-      <div className="animate-marquee flex w-max gap-8 whitespace-nowrap">
+    <div className="hero-strip-glass hero-strip-gold absolute inset-x-0 bottom-0 z-10 overflow-hidden py-4">
+      <span aria-hidden className="hero-strip-shine" />
+      <div className="animate-marquee relative flex w-max gap-8 whitespace-nowrap">
         {row.map((t, i) => (
-          <span key={i} className="flex items-center gap-8 text-sm font-bold uppercase tracking-[0.2em] text-white">
-            {t} <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+          <span key={i} className="hero-strip-item flex items-center gap-8 text-sm font-bold uppercase tracking-[0.2em]">
+            {t} <span className="hero-strip-dot" />
           </span>
         ))}
       </div>
@@ -294,7 +300,22 @@ function Impact() {
               const Icon = icons[index] ?? TrendingUp;
               const anchor = index === 0;
               return (
-              <div key={stat.label} className={`impact-stat-card group flex min-w-0 flex-col rounded-3xl border p-6 text-left transition duration-300 hover:-translate-y-1.5 sm:p-7 ${anchor ? "border-navy bg-navy text-primary-foreground shadow-[0_18px_40px_-18px] shadow-navy/60" : "border-navy/10 bg-card text-navy shadow-[0_14px_36px_-20px] shadow-navy/30 hover:border-gold"}`}>
+              <div
+                key={stat.label}
+                className={`impact-stat-card group flex min-w-0 flex-col rounded-3xl border p-6 text-left transition duration-300 hover:-translate-y-1.5 sm:p-7 ${anchor ? "border-white/[0.12] text-primary-foreground shadow-[0_18px_48px_-16px] shadow-navy/70" : "text-navy shadow-[0_8px_32px_-12px] shadow-navy/15 hover:shadow-[0_14px_40px_-12px] hover:shadow-gold/20"}`}
+                style={anchor ? {
+                  background: "linear-gradient(135deg, rgba(10,14,31,0.88) 0%, rgba(10,14,31,0.75) 100%)",
+                  backdropFilter: "blur(24px) saturate(160%)",
+                  WebkitBackdropFilter: "blur(24px) saturate(160%)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(255,255,255,0.04), 0 18px 48px -16px rgba(10,14,31,0.7)",
+                } : {
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.52) 100%)",
+                  backdropFilter: "blur(20px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                  border: "1px solid rgba(255,255,255,0.75)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(255,255,255,0.3), 0 8px 32px -12px rgba(10,14,31,0.12)",
+                }}
+              >
                 <span className="grid size-11 place-items-center rounded-xl bg-gold text-navy transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
                   <Icon className="size-5" strokeWidth={2.4} />
                 </span>
@@ -356,27 +377,34 @@ function Services() {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
 
-                {/* Default overlay — dark gradient + icon + title */}
-                <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/40 to-navy/10 transition-opacity duration-400 group-hover:opacity-0" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 transition-opacity duration-400 group-hover:opacity-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary-foreground/60 bg-navy/30 backdrop-blur-sm">
-                    <Icon className="h-6 w-6 text-primary-foreground" strokeWidth={1.5} />
-                  </div>
-                  <h3 className="font-display text-center text-base font-bold uppercase tracking-widest text-primary-foreground drop-shadow sm:text-lg">{t}</h3>
+                {/* Default: soft shade + liquid-glass title bar */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent transition-opacity duration-500 group-hover:opacity-0" />
+                {/* glass title bar: orange glass icon badge + title, left-aligned, fixed height */}
+                <div className="absolute inset-x-3 bottom-3 flex transition-all duration-500 group-hover:translate-y-2 group-hover:opacity-0">
+                  <LiquidGlass tint="dark" radius={18} refraction={26} elasticity={0.05} className="svc-bar w-full" contentClassName="gap-3 px-3 py-2.5">
+                    <span className="svc-badge"><Icon className="svc-badge-svg" strokeWidth={2} /></span>
+                    <h3 className="font-display text-sm font-bold uppercase leading-snug tracking-widest sm:text-[15px]">{t}</h3>
+                  </LiquidGlass>
                 </div>
 
-                {/* Hover overlay — dark panel with description + bullets + CTA */}
-                <div className="absolute inset-0 flex flex-col justify-center bg-navy/90 p-6 opacity-0 backdrop-blur-sm transition-opacity duration-400 group-hover:opacity-100">
-                  {/* gold top bar */}
-                  <div className="absolute inset-x-0 top-0 h-0.5 bg-gold" />
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/50 bg-gold/10 mb-3">
-                    <Icon className="h-5 w-5 text-gold" strokeWidth={1.5} />
-                  </div>
+                {/* Hover: the whole tile turns to dark frosted glass (no inner panel / borders) */}
+                <div
+                  className="invisible absolute inset-0 opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+                  style={{
+                    background: "linear-gradient(180deg, rgba(10,14,31,0.42) 0%, rgba(10,14,31,0.58) 55%, rgba(10,14,31,0.72) 100%)",
+                    backdropFilter: "blur(14px) saturate(150%)",
+                    WebkitBackdropFilter: "blur(14px) saturate(150%)",
+                  }}
+                >
+                 <div className="flex h-full flex-col items-start justify-center p-6 text-primary-foreground" style={{ textShadow: "0 1px 10px rgba(0,0,0,0.35)" }}>
+                  <span className="mb-3 grid shrink-0 place-items-center rounded-xl bg-gold text-navy" style={{ width: 40, height: 40, boxShadow: "0 6px 16px -6px rgba(229,160,32,0.8)" }}>
+                    <Icon className="h-5 w-5" strokeWidth={2} />
+                  </span>
                   <h3 className="font-display text-sm font-bold uppercase tracking-widest text-primary-foreground">{t}</h3>
-                  <p className="mt-2 text-xs leading-relaxed text-primary-foreground/70">{desc}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-primary-foreground/85">{desc}</p>
                   <ul className="mt-3 space-y-1.5">
                     {bullets.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-xs text-primary-foreground/80">
+                      <li key={b} className="flex items-start gap-2 text-[13px] text-primary-foreground/90">
                         <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
                         {b}
                       </li>
@@ -385,6 +413,7 @@ function Services() {
                   <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gold">
                     More <ArrowRight className="h-3.5 w-3.5" />
                   </div>
+                 </div>
                 </div>
               </Link>
             );
@@ -401,144 +430,6 @@ function Services() {
   );
 }
 
-const WHY_ORBITAL = [
-  { icon: <Lightbulb />, title: "Creative Excellence",       desc: "Ideas that inspire and make an impact.",              color: "from-amber-400 to-orange-500",   shadow: "shadow-amber-400/40"   },
-  { icon: <Cpu />,       title: "Tech-Enabled Solutions",    desc: "Leveraging the latest tech for smarter outcomes.",   color: "from-purple-500 to-indigo-600",  shadow: "shadow-purple-500/40"  },
-  { icon: <Users />,     title: "Experienced Team",          desc: "A passionate team that makes it happen.",            color: "from-blue-400 to-cyan-500",      shadow: "shadow-blue-400/40"    },
-  { icon: <Target />,    title: "Strategic Approach",        desc: "Insights-driven, always a step ahead.",             color: "from-pink-400 to-rose-500",      shadow: "shadow-pink-400/40"    },
-  { icon: <Handshake />, title: "Client-Centric Partnership",desc: "Your goals, our commitment.",                       color: "from-teal-400 to-emerald-500",   shadow: "shadow-teal-400/40"    },
-  { icon: <TrendingUp />,title: "Real Business Impact",      desc: "Measurable results for a brighter tomorrow.",       color: "from-indigo-500 to-blue-700",    shadow: "shadow-indigo-500/40"  },
-] as const;
-
-function WhyCard({ item, side }: { item: typeof WHY_ORBITAL[number]; side: "left" | "right" }) {
-  return (
-    <div
-      className="why-orbital-card group flex w-full items-center gap-4 px-4 py-3.5 transition-all duration-300 hover:-translate-y-1 sm:w-72"
-      style={{
-        borderRadius: "1.1rem",
-        background: "linear-gradient(145deg, rgba(255,255,255,0.82) 0%, rgba(240,236,255,0.55) 100%)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        border: "1px solid rgba(255,255,255,0.75)",
-        boxShadow: "0 2px 0 0 rgba(255,255,255,0.9) inset, 0 -1px 0 0 rgba(180,160,255,0.18) inset, 2px 0 0 0 rgba(255,255,255,0.7) inset, -1px 0 0 0 rgba(180,160,255,0.12) inset, 0 8px 24px rgba(130,100,220,0.10), 0 2px 6px rgba(100,80,180,0.08)",
-      }}
-    >
-      <span className={`grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${item.color} text-white shadow-lg ${item.shadow} [&_svg]:size-5 [&_svg]:stroke-[2] transition-transform duration-300 group-hover:scale-110`}>
-        {item.icon}
-      </span>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          {side === "right" && <span className="text-[9px] font-bold tracking-widest text-purple-400" style={LOGO_FONT}>——</span>}
-          <span className="text-[10px] font-bold tracking-widest text-purple-400" style={LOGO_FONT}>{String(WHY_ORBITAL.indexOf(item) + 1).padStart(2, "0")}</span>
-          {side === "left" && <span className="text-[9px] font-bold tracking-widest text-purple-400" style={LOGO_FONT}>——</span>}
-        </div>
-        <h3 className="font-display text-sm font-bold leading-tight text-navy">{item.title}</h3>
-        <p className="mt-0.5 text-xs leading-snug text-navy/55">{item.desc}</p>
-      </div>
-    </div>
-  );
-}
-
-function Why() {
-  return (
-    <section id="why" className="relative overflow-hidden py-24 sm:py-32">
-      {/* Light pastel background */}
-      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #f5f3ff 0%, #faf9ff 40%, #eff6ff 100%)" }} />
-
-      {/* Decorative wave lines */}
-      <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-50" viewBox="0 0 1300 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden>
-        <path d="M-100 520 Q200 400 500 460 Q800 520 1050 420 Q1200 360 1450 440" stroke="url(#wg1)" strokeWidth="1.8" />
-        <path d="M-100 570 Q300 450 620 510 Q920 570 1150 480 Q1300 420 1450 490" stroke="url(#wg2)" strokeWidth="1.4" />
-        <defs>
-          <linearGradient id="wg1" x1="0" y1="0" x2="1300" y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#f97316" stopOpacity="0" />
-            <stop offset="25%" stopColor="#f97316" />
-            <stop offset="65%" stopColor="#a855f7" />
-            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="wg2" x1="0" y1="0" x2="1300" y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#a855f7" stopOpacity="0" />
-            <stop offset="35%" stopColor="#a855f7" />
-            <stop offset="75%" stopColor="#06b6d4" />
-            <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-
-      <div className="page-shell relative z-10 flex flex-col items-center gap-14">
-        {/* Header */}
-        <div className="reveal text-center">
-          <SectionLabel>Why Choose ADZVO</SectionLabel>
-          <h2 className="font-display mt-6 text-3xl font-extrabold leading-tight text-navy sm:text-4xl">
-            More Than a Service. <Highlight>A Strategic Partner.</Highlight>
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-sm leading-relaxed text-muted-foreground">
-            Creativity, technology and strategy — working together for your brand.
-          </p>
-        </div>
-
-        {/* Mobile grid */}
-        <div className="reveal grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:hidden">
-          {WHY_ORBITAL.map((item) => (
-            <div key={item.title} className="flex items-start gap-4 p-4" style={{ borderRadius:"1.1rem", background:"linear-gradient(145deg,rgba(255,255,255,0.82) 0%,rgba(240,236,255,0.55) 100%)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", border:"1px solid rgba(255,255,255,0.75)", boxShadow:"0 2px 0 0 rgba(255,255,255,0.9) inset,0 -1px 0 0 rgba(180,160,255,0.18) inset,2px 0 0 0 rgba(255,255,255,0.7) inset,-1px 0 0 0 rgba(180,160,255,0.12) inset,0 8px 24px rgba(130,100,220,0.10),0 2px 6px rgba(100,80,180,0.08)" }}>
-              <span className={`grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${item.color} text-white shadow-lg [&_svg]:size-5 [&_svg]:stroke-[2]`}>{item.icon}</span>
-              <div>
-                <span className="text-[10px] font-bold tracking-widest text-purple-400" style={LOGO_FONT}>{String(WHY_ORBITAL.indexOf(item) + 1).padStart(2, "0")}</span>
-                <h3 className="font-display text-sm font-bold text-navy">{item.title}</h3>
-                <p className="mt-0.5 text-xs text-navy/55">{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Desktop orbital layout */}
-        <div className="reveal hidden w-full items-center justify-center gap-6 lg:flex xl:gap-10">
-          {/* Left cards */}
-          <div className="flex flex-col items-end gap-5">
-            {WHY_ORBITAL.slice(0, 3).map((item) => <WhyCard key={item.title} item={item} side="left" />)}
-          </div>
-
-          {/* Center sphere */}
-          <div className="relative mx-2 flex shrink-0 items-center justify-center xl:mx-6">
-            {/* Outer orbit rings */}
-            <div className="why-orbit-ring absolute h-[340px] w-[340px] rounded-full border border-purple-200/50 border-dashed" />
-            <div className="why-orbit-ring-slow absolute h-[290px] w-[290px] rounded-full border border-purple-300/40" />
-
-            {/* Connecting dots on orbit */}
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="absolute h-2.5 w-2.5 rounded-full bg-purple-400/70 shadow-sm shadow-purple-400/50"
-                style={{ transform: `rotate(${-30 + i * -50}deg) translateX(-145px) rotate(${30 - i * -50}deg)` }} />
-            ))}
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="absolute h-2.5 w-2.5 rounded-full bg-purple-400/70 shadow-sm shadow-purple-400/50"
-                style={{ transform: `rotate(${30 + i * 50}deg) translateX(145px) rotate(${-(30 + i * 50)}deg)` }} />
-            ))}
-
-            {/* Sphere */}
-            <div className="relative flex h-56 w-56 flex-col items-center justify-center rounded-full" style={{
-              background: "radial-gradient(circle at 35% 32%, rgba(255,255,255,0.98), rgba(220,215,255,0.65) 55%, rgba(180,200,255,0.45))",
-              boxShadow: "0 0 60px 20px rgba(168,139,250,0.22), 0 0 120px 40px rgba(99,102,241,0.12), inset 0 0 50px rgba(255,255,255,0.85), 0 20px 50px rgba(99,102,241,0.18), inset 0 -10px 30px rgba(200,210,255,0.3)"
-            }}>
-              <div className="absolute inset-3 rounded-full" style={{ background: "radial-gradient(circle at 38% 38%, rgba(255,255,255,0.9), rgba(230,225,255,0.2))", border: "1px solid rgba(200,185,255,0.35)" }} />
-              <div className="relative z-10 flex flex-col items-center gap-1">
-                <BrandMark className="size-14" />
-                <span className="mt-1 text-lg font-extrabold tracking-[0.2em] text-navy" style={LOGO_FONT}>ADZVO</span>
-                <span className="text-[8px] font-semibold tracking-[0.28em] text-navy/45" style={LOGO_FONT}>IDEAS · PEOPLE · IMPACT</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right cards */}
-          <div className="flex flex-col items-start gap-5">
-            {WHY_ORBITAL.slice(3, 6).map((item) => <WhyCard key={item.title} item={item} side="right" />)}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function Index() {
   useReveal();
   return (
@@ -547,7 +438,8 @@ function Index() {
       <Hero />
       <Impact />
       <Services />
-      <Why />
+      <WhySection />
+      <HomeCta />
       <Footer />
     </main>
   );

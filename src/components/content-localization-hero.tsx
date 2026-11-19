@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight, Globe2, Languages } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
@@ -18,9 +18,7 @@ export function ContentLocalizationHero() {
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             One voice. Every culture.
           </p>
-          <Button asChild variant="outline" className="localization-project-link">
-            <Link to="/" hash="contact">Localize Your Story <ArrowUpRight className="size-4" /></Link>
-          </Button>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-5">Localize Your Story <ArrowUpRight /></GlassButton>
         </div>
 
         <div className="localization-showcase" aria-label="A campaign headline adapted across English, Hindi and Japanese">
@@ -42,7 +40,7 @@ export function ContentLocalizationHero() {
                 <span>English</span>
                 <span>01 / Source voice</span>
               </div>
-              <p className="localization-headline font-display">Stories that resonate, <span className="italic">everywhere.</span></p>
+              <p className="localization-headline font-display">Stories that resonate, <span>everywhere.</span></p>
               <div className="localization-card-footer">
                 <span>Clear · Warm · Human</span>
                 <Languages className="size-4" />

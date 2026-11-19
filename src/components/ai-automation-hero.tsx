@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -12,7 +13,6 @@ import {
   Workflow,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
@@ -30,9 +30,7 @@ export function AiAutomationHero() {
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Smarter business starts with AI
           </p>
-          <Button asChild variant="outline" className="automation-project-link">
-            <Link to="/" hash="contact">Talk to an AI Expert <ArrowUpRight className="size-4" /></Link>
-          </Button>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-5">Talk to an AI Expert <ArrowUpRight /></GlassButton>
         </div>
 
         <div className="automation-showcase" aria-label="Illustrative intelligent workflow from business inputs through AI reasoning to automated action">

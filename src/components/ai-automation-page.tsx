@@ -1,4 +1,5 @@
-import { CtaVideo } from "@/components/cta-video";
+import { CtaBand } from "@/components/cta-video";
+import { GlassButton } from "@/components/glass-button";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { servicePages } from "@/lib/services";
@@ -18,7 +19,6 @@ const offerings = [
   { title: "Business Automation", text: "Transform repetitive tasks into smarter, connected workflows.", tags: "Process automation • Chatbots • Reporting", image: automation },
 ];
 
-const expertBtn = "shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110";
 
 export function AiAutomationPage() {
   const others = servicePages.filter((s) => s.slug !== "ai-automation");
@@ -32,22 +32,17 @@ export function AiAutomationPage() {
       <div className="page-shell mt-16">
         <GlowGrid items={offerings} />
         <div className="mt-12 text-center">
-          <Link to="/" hash="contact" className={expertBtn}>Talk to an AI Expert</Link>
+          <GlassButton as={Link} to="/" hash="contact">Talk to an AI Expert <ArrowRight /></GlassButton>
         </div>
       </div>
     </section>
 
-    <section className="relative overflow-hidden bg-navy py-16 text-primary-foreground sm:py-20" style={{ backgroundImage: "radial-gradient(50% 90% at 86% 40%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 70%)" }}>
-      <div className="page-shell grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-16">
-        <div>
+    <CtaBand slug="ai-automation" poster={cta} label="Glowing AI network animation">
           <SectionLabel light>Start a Project</SectionLabel>
           <h2 className="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">Ready to work<br /><Highlight dark>smarter with AI?</Highlight></h2>
           <p className="mt-6 text-primary-foreground/85">Let's turn your ideas into intelligent solutions.</p>
-          <Link to="/" hash="contact" className="mt-8 shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">Start Your AI Journey</Link>
-        </div>
-        <CtaVideo slug="ai-automation" poster={cta} label="Glowing AI network animation" />
-      </div>
-    </section>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-8">Start Your AI Journey <ArrowRight /></GlassButton>
+    </CtaBand>
 
     <section className="bg-off py-16 text-navy sm:py-20">
       <div className="page-shell">

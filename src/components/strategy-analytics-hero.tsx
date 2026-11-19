@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight, ChartNoAxesCombined, Route, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
@@ -18,9 +18,7 @@ export function StrategyAnalyticsHero() {
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Clarity for every next move
           </p>
-          <Button asChild variant="outline" className="strategy-project-link">
-            <Link to="/" hash="contact">Build Your Roadmap <ArrowUpRight className="size-4" /></Link>
-          </Button>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-5">Build Your Roadmap <ArrowUpRight /></GlassButton>
         </div>
 
         <div className="strategy-showcase" aria-label="Illustrative market positioning matrix and strategic insight radar">

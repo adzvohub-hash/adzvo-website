@@ -42,10 +42,10 @@ export function SectionLabel({ children, light = false }: { children: ReactNode;
   );
 }
 
-/** The one heading emphasis: italic with a gold stroke. On dark backgrounds the stroke sits under the text so white letters stay readable. */
+/** The one heading emphasis: upright text with a gold stroke. On dark backgrounds the stroke sits under the text so white letters stay readable. */
 export function Highlight({ children, dark = false }: { children: ReactNode; dark?: boolean }) {
   return (
-    <span className="relative inline-block italic">
+    <span className="relative inline-block">
       <span aria-hidden className={`absolute inset-x-0 rounded-full ${dark ? "-bottom-1 h-1.5 bg-gold" : "bottom-1.5 h-3 bg-gold/70 sm:h-3.5"}`} />
       <span className="relative">{children}</span>
     </span>

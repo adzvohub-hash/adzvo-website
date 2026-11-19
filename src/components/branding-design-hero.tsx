@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 
 const palette = [
@@ -25,9 +25,7 @@ export function BrandingDesignHero() {
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Build a brand people recognize and remember
           </p>
-          <Button asChild variant="outline" className="branding-project-link">
-            <Link to="/" hash="contact">Build A Brand <ArrowUpRight className="size-4" /></Link>
-          </Button>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-5">Build a Brand <ArrowUpRight /></GlassButton>
         </div>
 
         <div className="branding-showcase" aria-label="ADZVO brand identity specimen board">

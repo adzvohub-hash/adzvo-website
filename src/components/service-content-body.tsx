@@ -1,4 +1,5 @@
-import { CtaVideo } from "@/components/cta-video";
+import { CtaBand } from "@/components/cta-video";
+import { GlassButton } from "@/components/glass-button";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Boxes, Sparkles, Presentation, Bot, Smartphone, Music, Globe, AppWindow, ShoppingCart, PenTool, LayoutDashboard, Gauge, Compass, Fingerprint, Palette, Megaphone, Package, MonitorPlay, Clapperboard, Building2, Video, Mic2, Camera, Film, PenLine, Newspaper, BookOpen, Book, Languages, Target, BarChart3, Tags, FileText, ListChecks, Share2, Search, Mail, TrendingUp, Zap, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -141,7 +142,7 @@ export const serviceBodies: Record<string, BodyContent> = {
   },
   "animation-content": {
     intro: "We combine imaginative storytelling, animation, motion, and AI-enabled creativity to produce content that makes ideas easier to understand and more engaging to experience. Our capabilities include 2D and 3D animation, motion graphics, explainer videos, AI-assisted content, short-form social content, and music videos. From simplifying complex information to creating high-impact visual moments, we develop content tailored to your audience, platform, and communication goals.",
-    capabilities: animationCapabilities, layout: "flip", ctaTitle: ["Turn your next idea", "into motion."], ctaLabel: "Create with us", ctaImage: animationCta, ctaAlt: "Sculptural 3D star and sphere artwork",
+    capabilities: animationCapabilities, layout: "flip", ctaTitle: ["Turn your next idea", "into motion."], ctaLabel: "Create With Us", ctaImage: animationCta, ctaAlt: "Sculptural 3D star and sphere artwork",
   },
   "branding-design": {
     intro: "We build distinctive brands that communicate clearly, connect meaningfully, and remain memorable across every customer touchpoint. Our approach brings together brand strategy, logo and identity development, graphic design, advertising creatives, packaging, and presentations to create one consistent visual language. Whether launching a new brand or refreshing an established identity, we translate your purpose and personality into impactful design that strengthens recognition, credibility, and audience trust.",
@@ -166,7 +167,7 @@ export const serviceBodies: Record<string, BodyContent> = {
     capabilities: contentLocalizationCapabilities,
     layout: "stack",
     ctaTitle: ["Take your content", "beyond borders."],
-    ctaLabel: "Create with us",
+    ctaLabel: "Create With Us",
     ctaImage: contentCta,
     ctaAlt: "Books and handwritten notes surrounded by multilingual scripts",
   },
@@ -175,7 +176,7 @@ export const serviceBodies: Record<string, BodyContent> = {
     capabilities: strategyAnalyticsCapabilities,
     layout: "bento",
     ctaTitle: ["Make your next", "move with clarity."],
-    ctaLabel: "Plan with data",
+    ctaLabel: "Plan With Data",
     ctaImage: strategyCta,
     ctaAlt: "Analytics dashboard showing audience, acquisition and sales performance",
   },
@@ -212,29 +213,19 @@ export function ServiceContentBody({ slug }: { slug: string }) {
           ))}
         </motion.div>}
         {body.studioLink && <div className="mt-12 text-center">
-          <a href={body.studioLink.href} target="_blank" rel="noreferrer" className="shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">
-            {body.studioLink.label}<ArrowUpRight className="size-4" />
-          </a>
+          <GlassButton as="a" href={body.studioLink.href} target="_blank" rel="noreferrer">
+            {body.studioLink.label} <ArrowUpRight />
+          </GlassButton>
         </div>}
       </div>
     </section>
 
-    <section
-      className="relative overflow-hidden bg-navy py-16 text-primary-foreground sm:py-20"
-      style={{ backgroundImage: "radial-gradient(50% 90% at 86% 40%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 70%)" }}
-    >
-      <div className="page-shell grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-16">
-        <div>
+    <CtaBand slug={slug} poster={body.ctaImage} label={body.ctaAlt}>
           <SectionLabel light>Start a Project</SectionLabel>
           <h2 className="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">{body.ctaTitle[0]}<br /><Highlight dark>{body.ctaTitle[1]}</Highlight></h2>
           {body.ctaText && <p className="mt-6 max-w-md text-primary-foreground/85">{body.ctaText}</p>}
-          {slug === "marketing-growth" ? <Button asChild className="mt-8 h-auto rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy shadow-gold hover:bg-gold hover:brightness-110">
-            <Link to="/" hash="contact">{body.ctaLabel}</Link>
-          </Button> : <Link to="/" hash="contact" className="mt-8 shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-sm font-bold uppercase tracking-wider text-navy transition hover:-translate-y-1 hover:brightness-110">{body.ctaLabel}</Link>}
-        </div>
-        <CtaVideo slug={slug} poster={body.ctaImage} label={body.ctaAlt} />
-      </div>
-    </section>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-8">{body.ctaLabel} <ArrowRight /></GlassButton>
+    </CtaBand>
 
     <section className="bg-off py-16 text-navy sm:py-20">
       <div className="page-shell">

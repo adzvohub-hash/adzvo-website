@@ -1,11 +1,29 @@
+/**
+ * ADZVO — About Page (v4 redesign)
+ *
+ * Layout: a split "story" — readable text chapters on the left, a sticky
+ * framed 3D stage on the right. Text and animation never overlap, so the
+ * copy stays the primary read and the animation illustrates it.
+ *
+ * The animation is one continuous marble run that mirrors the chapters:
+ *   01 The brief  → ball drops in
+ *   02 Explore    → plinko board (testing every angle)
+ *   03 Shape      → helix (refined turn by turn)
+ *   04 Align      → rings (checked against goals)
+ *   05 Deliver    → lands on the platform
+ *
+ * Only dependency: `three` (loaded dynamically, so the page still renders
+ * all of its text if WebGL or the package is unavailable).
+ */
+
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Eye, Handshake, Target } from "lucide-react";
-import aboutHero from "@/assets/about-hero.jpg";
-import team from "@/assets/team.jpg";
-import partnership from "@/assets/why-partnership.jpg";
+import { GlassButton } from "@/components/glass-button";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ArrowDown, ArrowRight, Check, Eye, Handshake, Target } from "lucide-react";
 import { Footer } from "@/components/site-footer";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
+/* ─── Route ──────────────────────────────────────────────────────────── */
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
@@ -20,96 +38,659 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
-const pillars = [
-  { icon: Target, label: "Our Mission", text: "To help brands communicate with clarity and grow with confidence by combining creative thinking, digital capability and purposeful technology." },
-  { icon: Eye, label: "Our Vision", text: "To become a trusted creative and digital partner for businesses looking to build meaningful brands, experiences and lasting connections." },
+/* ─── Content ────────────────────────────────────────────────────────── */
+const CHAPTERS = [
+  { step: "The brief", caption: "Every project starts with a single idea." },
+  { step: "Explore",   caption: "We test every angle before choosing a path." },
+  { step: "Shape",     caption: "Strategy and craft refine it, turn by turn." },
+  { step: "Align",     caption: "Each stage is checked against your goals." },
+  { step: "Deliver",   caption: "It lands — on brand, with real impact." },
+];
+
+const LENSES = [
+  { title: "The brand",         text: "Who you are and how you should feel." },
+  { title: "The audience",      text: "Who you need to reach, and where." },
+  { title: "The message",       text: "What needs to be said, clearly." },
+  { title: "The business goal", text: "What success actually looks like." },
+];
+
+const CAPABILITIES = ["Brand identity", "Content", "Websites & apps", "Campaigns", "Film production", "AI-enabled solutions"];
+
+const PILLARS = [
+  { icon: Target,    label: "Our Mission", text: "To help brands communicate with clarity and grow with confidence by combining creative thinking, digital capability and purposeful technology." },
+  { icon: Eye,       label: "Our Vision",  text: "To become a trusted creative and digital partner for businesses looking to build meaningful brands, experiences and lasting connections." },
   { icon: Handshake, label: "Our Promise", text: "Thoughtful strategy. Relevant creativity. Reliable execution. Every project begins with listening and stays focused on what matters to the client." },
 ];
 
-const lens = ["The brand", "The audience", "The message", "The business goal"];
+const APPROACH = [
+  { title: "We listen first", text: "Every brief starts with understanding your story, audience and ambition." },
+  { title: "We build around you", text: "A solution shaped to what you need — never a one-size-fits-all package." },
+  { title: "We keep it clear", text: "Considered, transparent collaboration from the first conversation to delivery." },
+];
 
+/* Fade-up when a block scrolls into view (class added by IntersectionObserver). */
+const REVEAL = "opacity-0 translate-y-6 transition-all duration-700 ease-out [&.is-in]:opacity-100 [&.is-in]:translate-y-0";
+
+/* ─── Page ───────────────────────────────────────────────────────────── */
 function AboutPage() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const chapterRefs = useRef<(HTMLElement | null)[]>([]);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const storyRef = useRef<HTMLDivElement>(null);
+  const journey = useRef(0);
+  const [active, setActive] = useState(0);
+  const [glReady, setGlReady] = useState(false);
+
+  /* Reveal-on-scroll */
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>("[data-reveal]");
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); }
+      }),
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  /* Liquid-glass sheen follows the pointer across any glass surface */
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      const el = (e.target as HTMLElement | null)?.closest?.(".lg-glass") as HTMLElement | null;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      el.style.setProperty("--my", `${e.clientY - r.top}px`);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+
+  /* Scroll position → journey value J in [0, 5] (chapter index + progress through it) */
+  useEffect(() => {
+    let raf = 0;
+    let last = -1;
+    const read = () => {
+      const vh = window.innerHeight;
+      let j = CHAPTERS.length;
+      const story = storyRef.current;
+      if (window.innerWidth >= 1024 && story) {
+        // Desktop: text and animation are both pinned; progress = how far through the story we've scrolled.
+        const r = story.getBoundingClientRect();
+        const span = Math.max(1, r.height - vh);
+        j = Math.min(1, Math.max(0, -r.top / span)) * CHAPTERS.length;
+      } else {
+        // Mobile: chapters scroll normally under the sticky animation band.
+        const mid = vh * 0.5;
+        const els = chapterRefs.current;
+        for (let i = 0; i < els.length; i++) {
+          const el = els[i];
+          if (!el) continue;
+          const r = el.getBoundingClientRect();
+          if (mid < r.top) { j = i; break; }
+          if (mid <= r.bottom) { j = i + (mid - r.top) / r.height; break; }
+        }
+      }
+      journey.current = j;
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${Math.min(1, j / CHAPTERS.length)})`;
+      const idx = Math.min(CHAPTERS.length - 1, Math.floor(j));
+      if (idx !== last) { last = idx; setActive(idx); }
+      raf = requestAnimationFrame(read);
+    };
+    raf = requestAnimationFrame(read);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  /* 3D marble run */
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
+
+    import("three")
+      .then((mod) => {
+        if (cancelled) return;
+        cleanup = buildScene(mod, canvas, journey);
+        setGlReady(true);
+      })
+      .catch((err) => console.error("About page 3D stage failed to load:", err));
+
+    return () => { cancelled = true; cleanup?.(); };
+  }, []);
+
+  const chapter = CHAPTERS[active] ?? CHAPTERS[0]!;
+  const setChapterRef = (i: number) => (el: HTMLElement | null) => { chapterRefs.current[i] = el; };
+
   return (
-    <main className="bg-off">
-      <section className="relative isolate flex min-h-[92vh] flex-col justify-end overflow-hidden bg-navy pb-16 pt-40 text-primary-foreground">
-        <img src={aboutHero} alt="ADZVO team collaborating in the studio" width={1920} height={1088} className="about-hero-img absolute inset-0 -z-20 h-full w-full object-cover" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy via-navy/80 to-navy/20" />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-navy to-transparent" />
-        <div className="page-shell relative">
-          <div className="max-w-3xl">
-            <p><SectionLabel light>About ADZVO · Brand promise</SectionLabel></p>
-            <h1 className="mt-7 font-display text-4xl font-extrabold leading-[1.08] sm:text-6xl lg:text-7xl">
-              An advertising and digital agency built around an <Highlight dark>integrated</Highlight> way of working.
-            </h1>
-            <div className="mt-8 max-w-2xl space-y-4 text-lg text-primary-foreground/80">
-              <p>We look beyond individual deliverables to understand the bigger picture: the brand, the audience, the message and the business goal.</p>
-              <p>Then we bring the right mix of creative thinking, digital execution and specialist expertise to make the work happen.</p>
-            </div>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Link to="/" hash="contact" className="shadow-gold inline-flex items-center gap-2 rounded-xl bg-gold px-7 py-3.5 text-sm font-bold text-navy transition hover:-translate-y-1 hover:brightness-110">Work With Us <ArrowRight className="size-4" /></Link>
-              <Link to="/projects" className="inline-flex items-center gap-2 rounded-xl border border-primary-foreground/30 px-7 py-3.5 text-sm font-bold backdrop-blur transition hover:bg-primary-foreground/10">See Our Projects</Link>
-            </div>
-          </div>
-          <div className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-primary-foreground/15 bg-primary-foreground/10 backdrop-blur-md md:grid-cols-4">
-            {lens.map((l, i) => (
-              <div key={l} className="bg-navy/50 p-5 transition hover:bg-navy/30">
-                <span className="text-xs font-bold tracking-widest text-gold" style={LOGO_FONT}>{String(i + 1).padStart(2, "0")}</span>
-                <p className="mt-2 font-display text-xl font-bold">{l}</p>
+    <main className="relative bg-white text-[#0a0e1f]">
+      <div ref={storyRef} className="relative">
+
+        {/* ── STAGE: centred animation, pinned while the story scrolls ── */}
+        <div className="sticky top-16 z-20 h-[40svh] bg-white lg:top-0 lg:z-0 lg:h-screen">
+          <div className="relative h-full overflow-hidden bg-white">
+            <canvas
+              ref={canvasRef}
+              aria-hidden
+              className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ${glReady ? "opacity-100" : "opacity-0"}`}
+            />
+            {/* soft white fade at top/bottom so it melts into the page */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,#fff_0%,transparent_14%,transparent_74%,#fff_100%)] lg:bg-[linear-gradient(to_bottom,#fff_0%,#fff_24%,transparent_34%,transparent_76%,#fff_100%)]" />
+
+            {/* caption + stepper, centred under the animation */}
+            <div className="absolute inset-x-0 bottom-0 z-10 mx-auto max-w-md px-4 pb-4 text-center lg:pb-7">
+              <div key={active} className="animate-[stageCaption_600ms_ease-out]">
+                <p className="text-[11px] font-bold tabular-nums tracking-[0.2em] text-[#0a0e1f]/45" style={LOGO_FONT}>
+                  <span className="text-[#e5a020]">{String(active + 1).padStart(2, "0")}</span> / {String(CHAPTERS.length).padStart(2, "0")}
+                </p>
+                <p className="font-display mt-1 text-base font-bold uppercase tracking-wider sm:text-xl">{chapter.step}</p>
+                <p className="mt-0.5 hidden text-sm text-[#0a0e1f]/60 sm:block">{chapter.caption}</p>
               </div>
-            ))}
+              <div className="mt-3 grid grid-cols-5 gap-1.5">
+                {CHAPTERS.map((c, i) => (
+                  <div key={c.step} className={`h-1 rounded-full transition-colors duration-500 ${i <= active ? "bg-[#e5a020]" : "bg-[#0a0e1f]/10"}`} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </section>
 
-      <section className="page-shell grid items-center gap-14 py-24 lg:grid-cols-2">
-        <img src={team} alt="ADZVO team collaborating" loading="lazy" className="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-xl" />
-        <div>
-          <p><SectionLabel>What we do</SectionLabel></p>
-          <h2 className="mt-5 font-display text-3xl font-extrabold leading-tight text-navy sm:text-4xl">Creativity, technology and strategy — <Highlight>together.</Highlight></h2>
-          <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            We bring creativity, technology and strategy together to help businesses build stronger brands, connect with the right audiences and create meaningful digital experiences. From brand identity and content to websites, campaigns, film production and AI-enabled solutions, ADZVO connects the capabilities needed to turn ideas into action.
-          </p>
-        </div>
-      </section>
+        {/* ── STORY: heading on top, content on either side of the animation ── */}
+        <div className="relative z-10 lg:-mt-[100vh]">
+          {/* Desktop: this layer is pinned and chapters cross-fade inside it */}
+          <div className="lg:sticky lg:top-0 lg:-mb-[100vh] lg:h-screen">
 
-      <section className="bg-card py-24">
-        <div className="page-shell">
-          <div className="mx-auto max-w-2xl text-center">
-            <SectionLabel>Mission · Vision · Promise</SectionLabel>
-            <h2 className="mt-6 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl">What <Highlight>guides us</Highlight></h2>
+          {/* 01 · Hero */}
+          <Chapter
+            refCb={setChapterRef(0)}
+            current={active === 0}
+            top={<>
+              <div data-reveal className={REVEAL}><SectionLabel>About ADZVO</SectionLabel></div>
+              <h1 data-reveal className={`${REVEAL} font-display mt-5 text-[2rem] font-extrabold leading-[1.12] sm:text-4xl lg:text-[clamp(2rem,2.8vw,3rem)]`}>
+                An advertising &amp; digital agency built around an <Highlight>integrated</Highlight> way of working.
+              </h1>
+            </>}
+            left={<>
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+                We look beyond individual deliverables to understand the bigger picture — so every piece of work moves the whole brand forward.
+              </p>
+              <div data-reveal className={`${REVEAL} mt-8 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-[#0a0e1f]/40`} style={LOGO_FONT}>
+                <ArrowDown className="size-4 animate-bounce" /> Scroll to follow the idea
+              </div>
+            </>}
+            right={<>
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+                Brand, content, digital, film and AI — connected by one team and one way of thinking.
+              </p>
+              <div data-reveal className={`${REVEAL} mt-7 flex flex-wrap gap-3`}>
+                <GlassButton as={Link} to="/contact">Work With Us <ArrowRight /></GlassButton>
+                <GlassButton as={Link} to="/projects" variant="secondary">See Our Projects</GlassButton>
+              </div>
+            </>}
+          />
+
+          {/* 02 · What we do */}
+          <Chapter
+            refCb={setChapterRef(1)}
+            current={active === 1}
+            top={<>
+              <ChapterTag n={2} label="Explore · What we do" />
+              <h2 data-reveal className={`${REVEAL} font-display mt-5 text-3xl font-extrabold leading-[1.12] sm:text-4xl lg:text-[clamp(2rem,2.8vw,3rem)]`}>
+                Creativity, technology and strategy — <Highlight>together.</Highlight>
+              </h2>
+            </>}
+            left={<>
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+                We help businesses build stronger brands, connect with the right audiences and create meaningful digital experiences.
+              </p>
+              <div data-reveal className={`${REVEAL} mt-7 flex flex-wrap gap-2`}>
+                {CAPABILITIES.map((c) => (
+                  <span key={c} className="lg-glass rounded-full px-4 py-2.5 text-base font-semibold text-[#0a0e1f]/85">{c}</span>
+                ))}
+              </div>
+            </>}
+            right={<>
+              <p data-reveal className={`${REVEAL} text-sm font-bold uppercase tracking-[0.2em] text-[#0a0e1f]/50`} style={LOGO_FONT}>Before we act, we look at</p>
+              <div className="mt-4 space-y-3">
+                {LENSES.map((l, i) => (
+                  <div key={l.title} data-reveal className={`${REVEAL} lg-glass flex gap-4 rounded-2xl p-4`}>
+                    <span className="text-base font-bold text-[#e5a020]" style={LOGO_FONT}>{String(i + 1).padStart(2, "0")}</span>
+                    <div>
+                      <p className="font-display text-lg font-bold">{l.title}</p>
+                      <p className="mt-0.5 text-base leading-relaxed text-[#0a0e1f]/65">{l.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>}
+          />
+
+          {/* 03 · What guides us */}
+          <Chapter
+            refCb={setChapterRef(2)}
+            current={active === 2}
+            top={<>
+              <ChapterTag n={3} label="Shape · What guides us" />
+              <h2 data-reveal className={`${REVEAL} font-display mt-5 text-3xl font-extrabold leading-[1.12] sm:text-4xl lg:text-[clamp(2rem,2.8vw,3rem)]`}>
+                Purpose that <Highlight>shapes</Highlight> every decision.
+              </h2>
+            </>}
+            left={<div className="space-y-4">{PILLARS.slice(0, 2).map((p) => <PillarCard key={p.label} {...p} />)}</div>}
+            right={<div className="space-y-4">{PILLARS.slice(2).map((p) => <PillarCard key={p.label} {...p} />)}</div>}
+          />
+
+          {/* 04 · Client approach */}
+          <Chapter
+            refCb={setChapterRef(3)}
+            current={active === 3}
+            top={<>
+              <ChapterTag n={4} label="Align · How we work with you" />
+              <h2 data-reveal className={`${REVEAL} font-display mt-5 text-3xl font-extrabold leading-[1.12] sm:text-4xl lg:text-[clamp(2rem,2.8vw,3rem)]`}>
+                Every business has a different story, audience and <Highlight>ambition.</Highlight>
+              </h2>
+            </>}
+            left={
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+                So we take time to understand each brief, and build the solution around what you actually need — not a one-size-fits-all package.
+              </p>
+            }
+            right={
+              <ol className="space-y-5">
+                {APPROACH.map((a) => (
+                  <li key={a.title} data-reveal className={`${REVEAL} flex gap-4`}>
+                    <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-[#0a0e1f] text-[#e5a020]">
+                      <Check className="size-4" strokeWidth={3} />
+                    </span>
+                    <div>
+                      <p className="font-display text-xl font-bold">{a.title}</p>
+                      <p className="mt-1 text-lg leading-relaxed text-[#0a0e1f]/70">{a.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            }
+          />
+
+          {/* 05 · Deliver */}
+          <Chapter
+            refCb={setChapterRef(4)}
+            current={active === 4}
+            top={<>
+              <ChapterTag n={5} label="Deliver · The result" />
+              <h2 data-reveal className={`${REVEAL} font-display mt-5 text-3xl font-extrabold leading-[1.12] sm:text-4xl lg:text-[clamp(2rem,2.8vw,3rem)]`}>
+                We turn ambitious ideas into connected brand and <Highlight>digital experiences.</Highlight>
+              </h2>
+            </>}
+            left={
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+                Have an idea that needs to land? Let's talk about where you want to take your brand.
+              </p>
+            }
+            right={
+              <div data-reveal className={`${REVEAL} flex flex-wrap gap-3`}>
+                <GlassButton as={Link} to="/contact">Get in Touch <ArrowRight /></GlassButton>
+                <GlassButton as={Link} to="/" hash="services" variant="secondary">Explore Our Services</GlassButton>
+              </div>
+            }
+          />
           </div>
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {pillars.map(({ icon: Icon, label, text }) => (
-              <article key={label} className="group rounded-3xl border border-navy/10 bg-off p-8 transition duration-300 hover:-translate-y-1.5 hover:border-navy hover:bg-navy">
-                <span className="grid size-12 place-items-center rounded-xl bg-gold text-navy transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110"><Icon className="size-5" strokeWidth={2.4} /></span>
-                <h3 className="mt-6 text-sm font-bold uppercase tracking-[0.2em] text-navy transition-colors duration-300 group-hover:text-gold" style={LOGO_FONT}>{label}</h3>
-                <p className="mt-4 leading-relaxed text-muted-foreground transition-colors duration-300 group-hover:text-primary-foreground/80">{text}</p>
-                <span className="mt-6 block h-1 w-8 rounded-full bg-gold transition-all duration-300 group-hover:w-16" />
-              </article>
-            ))}
-          </div>
+          {/* Desktop scroll length that drives the story (≈ 85vh per chapter) */}
+          <div aria-hidden className="hidden lg:block lg:h-[525vh]" />
         </div>
-      </section>
+      </div>
 
-      <section className="page-shell grid items-center gap-14 py-24 lg:grid-cols-[1fr_1.1fr]">
-        <div>
-          <p><SectionLabel>Client-focused</SectionLabel></p>
-          <h2 className="mt-5 font-display text-3xl font-extrabold leading-tight text-navy sm:text-4xl">Every business has a different story, audience and <Highlight>ambition.</Highlight></h2>
-          <p className="mt-6 text-lg leading-relaxed text-muted-foreground">We take time to understand each brief and build a solution around what the client needs—not a one-size-fits-all package.</p>
-          <p className="mt-4 text-lg leading-relaxed text-muted-foreground">Our goal is to make collaboration clear, considered and valuable from the first conversation to delivery.</p>
-        </div>
-        <img src={partnership} alt="Client partnership" loading="lazy" className="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-xl" />
-      </section>
+      {/* thin overall progress line along the top of the viewport */}
+      <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[3px]">
+        <div ref={progressRef} className="h-full origin-left bg-[#e5a020]" style={{ transform: "scaleX(0)" }} />
+      </div>
 
-      <section className="bg-navy py-20 text-center text-primary-foreground">
-        <div className="page-shell">
-          <h2 className="mx-auto max-w-3xl font-display text-3xl font-extrabold leading-tight sm:text-5xl">We turn ambitious ideas into connected brand and <Highlight dark>digital experiences.</Highlight></h2>
-          <Link to="/" hash="services" className="shadow-gold mt-10 inline-flex items-center gap-2 rounded-xl bg-gold px-8 py-3.5 text-sm font-bold text-navy transition hover:-translate-y-1 hover:brightness-110">
-            Explore Our Work <ArrowRight className="size-4" />
-          </Link>
-        </div>
-      </section>
-      <Footer />
+      <style>{`@keyframes stageCaption { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }`}</style>
+
+      <div className="relative z-10 bg-white"><Footer /></div>
     </main>
   );
+}
+
+/**
+ * One chapter: heading centred on top, then two side columns with an empty
+ * centre lane that the pinned animation shows through (desktop).
+ * On mobile everything stacks under the sticky animation band.
+ */
+function Chapter({ refCb, current, top, left, right }: {
+  refCb: (el: HTMLElement | null) => void;
+  current: boolean;
+  top: ReactNode;
+  left: ReactNode;
+  right: ReactNode;
+}) {
+  return (
+    <section
+      ref={refCb}
+      className={`flex min-h-[90svh] flex-col py-16 lg:absolute lg:inset-0 lg:min-h-0 lg:pb-40 lg:pt-24 lg:transition-all lg:duration-700 lg:ease-out ${current ? "lg:translate-y-0 lg:opacity-100" : "lg:pointer-events-none lg:translate-y-6 lg:opacity-0"}`}
+    >
+      <div className="page-shell"><div className="mx-auto max-w-[880px] lg:text-center lg:[&_.chapter-tag]:justify-center">{top}</div></div>
+      <div className="page-shell mt-10 grid flex-1 items-center gap-10 lg:mt-6 lg:grid-cols-[minmax(0,1fr)_minmax(220px,21vw)_minmax(0,1fr)] lg:gap-0">
+        {/* side columns hug the animation and tuck slightly over its edges */}
+        <div className="relative min-w-0 lg:-mr-8 lg:[&>p]:[text-shadow:0_0_14px_#fff,0_0_6px_#fff,0_0_2px_#fff]">{left}</div>
+        <div aria-hidden className="hidden lg:block" />
+        <div className="relative min-w-0 lg:-ml-8 lg:[&>p]:[text-shadow:0_0_14px_#fff,0_0_6px_#fff,0_0_2px_#fff]">{right}</div>
+      </div>
+    </section>
+  );
+}
+
+function PillarCard({ icon: Icon, label, text }: (typeof PILLARS)[number]) {
+  return (
+    <article data-reveal className={`${REVEAL} lg-glass rounded-2xl p-5`}>
+      <div className="flex items-center gap-3">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#e5a020] text-[#0a0e1f]">
+          <Icon className="size-5" strokeWidth={2.4} />
+        </span>
+        <h3 className="font-display text-xl font-bold">{label}</h3>
+      </div>
+      <p className="mt-3 text-lg leading-relaxed text-[#0a0e1f]/70">{text}</p>
+    </article>
+  );
+}
+
+function ChapterTag({ n, label }: { n: number; label: string }) {
+  return (
+    <div data-reveal className={`${REVEAL} chapter-tag flex items-center gap-3`}>
+      <span className="font-display text-sm font-black text-[#e5a020]">{String(n).padStart(2, "0")}</span>
+      <span className="h-px w-8 bg-[#0a0e1f]/20" />
+      <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#0a0e1f]/55" style={LOGO_FONT}>{label}</span>
+    </div>
+  );
+}
+
+/* ─── 3D scene ───────────────────────────────────────────────────────── */
+/* `three` is loaded dynamically, so it is typed loosely here. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildScene(THREE: any, canvas: HTMLCanvasElement, journey: { current: number }) {
+  const BG = 0xffffff;
+  const GOLD = 0xe5a020;
+  const BALL_R = 0.34;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(BG);
+  scene.fog = new THREE.Fog(BG, 14, 32);
+
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 80);
+  camera.position.set(0, 1.6, 12.5);
+
+  /* Lights */
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xdfe5f2, 1.4));
+  const key = new THREE.DirectionalLight(0xffffff, 2.2);
+  key.position.set(4, 8, 10);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0xbfd0ff, 0.9);
+  rim.position.set(-6, 2, -5);
+  scene.add(rim);
+  const ballLight = new THREE.PointLight(GOLD, 6, 5, 1.6);
+  scene.add(ballLight);
+
+  /* Ball */
+  const ball = new THREE.Mesh(
+    new THREE.SphereGeometry(BALL_R, 48, 48),
+    new THREE.MeshPhysicalMaterial({ color: 0xf2ac22, metalness: 0.35, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.15, emissive: 0x6b4300, emissiveIntensity: 0.5 }),
+  );
+  scene.add(ball);
+
+  /* Dust for depth */
+  {
+    const N = 420;
+    const pos = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 14;
+      pos[i * 3 + 1] = 9 - Math.random() * 34;
+      pos[i * 3 + 2] = -1.5 - Math.random() * 7;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0x9aa6c4, size: 0.04, transparent: true, opacity: 0.45 })));
+  }
+
+  /* 02 · Plinko pegs, floating — no backing plate (y 4.2 → -3) */
+
+  const ROW_Y = [3.4, 2.2, 1.0, -0.2, -1.4, -2.6];
+  const pegs: { mesh: any; glow: number }[] = [];
+  const pegGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.7, 24);
+  ROW_Y.forEach((y, r) => {
+    const xs = r % 2 === 0 ? [-2.4, -0.8, 0.8, 2.4] : [-1.6, 0, 1.6];
+    xs.forEach((x) => {
+      const m = new THREE.Mesh(pegGeo, new THREE.MeshStandardMaterial({ color: 0x3b7bff, roughness: 0.3, metalness: 0.15, emissive: 0x6fa8ff, emissiveIntensity: 0 }));
+      m.rotation.x = Math.PI / 2;
+      m.position.set(x, y, -0.05);
+      scene.add(m);
+      pegs.push({ mesh: m, glow: 0 });
+    });
+  });
+  // Path weaves through the gaps between pegs, row by row.
+  const HELIX_R = 1.4;
+  const HELIX_TOP = -3.6;
+  const plinko = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 4.6, 0),
+    new THREE.Vector3(0, 3.4, 0),
+    new THREE.Vector3(0.8, 2.2, 0),
+    new THREE.Vector3(0, 1.0, 0),
+    new THREE.Vector3(-0.8, -0.2, 0),
+    new THREE.Vector3(0, -1.4, 0),
+    new THREE.Vector3(0.8, -2.6, 0),
+    new THREE.Vector3(HELIX_R, HELIX_TOP, 0),
+  ]);
+
+  /* 03 · Helix (y -3.6 → -12) */
+  const TURNS = 3;
+  const HELIX_BOTTOM = -12;
+  const hPts = [];
+  for (let i = 0; i <= 300; i++) {
+    const t = i / 300;
+    const a = t * TURNS * Math.PI * 2;
+    hPts.push(new THREE.Vector3(Math.cos(a) * HELIX_R, HELIX_TOP + (HELIX_BOTTOM - HELIX_TOP) * t, Math.sin(a) * HELIX_R));
+  }
+  const helix = new THREE.CatmullRomCurve3(hPts);
+  const helixMat = new THREE.MeshStandardMaterial({ color: 0x3f6fe0, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.32, emissive: 0x2b5cff, emissiveIntensity: 0.08, depthWrite: false });
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(helix, 500, 0.46, 20, false), helixMat));
+
+  /* 04 · Rings (y -13.8 → -18.2) */
+  const RING_Y = [-13.8, -16, -18.2];
+  const rings = RING_Y.map((y) => {
+    const m = new THREE.Mesh(
+      new THREE.TorusGeometry(1.05, 0.08, 20, 96),
+      new THREE.MeshStandardMaterial({ color: 0xe5a020, metalness: 0.55, roughness: 0.25, emissive: GOLD, emissiveIntensity: 0.12 }),
+    );
+    m.rotation.x = Math.PI / 2;
+    m.position.y = y;
+    scene.add(m);
+    return m;
+  });
+  const helixEnd = helix.getPoint(1);
+  const ringPath = new THREE.CatmullRomCurve3([
+    helixEnd.clone(),
+    new THREE.Vector3(0.7, -12.6, 0),
+    new THREE.Vector3(0, -13.4, 0),
+    new THREE.Vector3(0, -16, 0),
+    new THREE.Vector3(0, -18.9, 0),
+  ]);
+
+  /* 05 · Platform (top at y -20.6) */
+  const PLAT_TOP = -20.6;
+  const platform = new THREE.Mesh(
+    new THREE.CylinderGeometry(2.2, 2.4, 0.26, 80),
+    new THREE.MeshStandardMaterial({ color: 0x1d2547, metalness: 0.3, roughness: 0.4 }),
+  );
+  platform.position.y = PLAT_TOP - 0.13;
+  scene.add(platform);
+  const rimMat = new THREE.MeshStandardMaterial({ color: GOLD, emissive: GOLD, emissiveIntensity: 0.4 });
+  const rimRing = new THREE.Mesh(new THREE.TorusGeometry(2.2, 0.05, 12, 96), rimMat);
+  rimRing.rotation.x = Math.PI / 2;
+  rimRing.position.y = PLAT_TOP + 0.01;
+  scene.add(rimRing);
+  const rippleMat = new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0 });
+  const ripple = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.035, 12, 96), rippleMat);
+  ripple.rotation.x = Math.PI / 2;
+  ripple.position.y = PLAT_TOP + 0.02;
+  scene.add(ripple);
+  const platLight = new THREE.PointLight(GOLD, 0, 7, 1.5);
+  platLight.position.set(0, PLAT_TOP + 1, 1);
+  scene.add(platLight);
+
+  /* Journey state */
+  const camTarget = new THREE.Vector3(0, 1.6, 12.5);
+  const lookTarget = new THREE.Vector3(0, 1.2, 0);
+  const look = lookTarget.clone();
+  const tmp = new THREE.Vector3();
+  const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+  const easeIn = (t: number) => t * t;
+
+  let smoothJ = journey.current;
+  // On desktop the chapter heading sits on top, so frame the run a little lower.
+  let frameLift = 0;
+  let impact = 0;
+
+  function place(j: number, time: number) {
+    const seg = Math.min(4, Math.floor(j));
+    const t = clamp01(j - seg);
+    ball.scale.set(1, 1, 1);
+    impact = 0;
+
+    if (seg === 0) {
+      // The brief: idle hover, then drop into the board.
+      const u = clamp01((t - 0.45) / 0.55);
+      const bob = (1 - u) * Math.sin(time * 1.6) * 0.14;
+      ball.position.set(0, 5.5 + (4.6 - 5.5) * easeIn(u) + bob, 0);
+      camTarget.set(0, 1.8, 17);
+      lookTarget.set(0, 1.4 + frameLift, 0);
+    } else if (seg === 1) {
+      plinko.getPoint(t, tmp);
+      ball.position.copy(tmp);
+      camTarget.set(0, tmp.y + 0.9, 16);
+      lookTarget.set(0, tmp.y - 0.3 + frameLift, 0);
+    } else if (seg === 2) {
+      helix.getPoint(t, tmp);
+      ball.position.copy(tmp);
+      camTarget.set(0, tmp.y + 3.4, 14.5);
+      lookTarget.set(0, tmp.y - 0.9 + frameLift, 0);
+    } else if (seg === 3) {
+      ringPath.getPointAt(t, tmp);
+      ball.position.copy(tmp);
+      camTarget.set(0, tmp.y + 3.8, 14);
+      lookTarget.set(0, tmp.y - 1.3 + frameLift, 0);
+    } else {
+      // Deliver: fall, land, settle with damped bounces.
+      const rest = PLAT_TOP + BALL_R;
+      let y: number;
+      if (t < 0.3) {
+        y = -18.9 + (rest + 18.9) * easeIn(t / 0.3);
+      } else {
+        const u = (t - 0.3) / 0.7;
+        const b = Math.abs(Math.sin(u * Math.PI * 3)) * 1.1 * Math.pow(1 - u, 2);
+        y = rest + b;
+        impact = 1 - u * 0.6;
+        const contact = 1 - clamp01(b / 0.2);
+        const sq = contact * 0.25 * (1 - u);
+        ball.scale.set(1 + sq, 1 - sq, 1 + sq);
+        y -= sq * BALL_R;
+        ripple.scale.setScalar(1 + u * 3.6);
+        rippleMat.opacity = (1 - u) * 0.85;
+      }
+      ball.position.set(0, y, 0);
+      camTarget.set(0, PLAT_TOP + 3.4, 14.5);
+      lookTarget.set(0, PLAT_TOP + 0.4 + frameLift, 0);
+    }
+    if (seg < 4 || t < 0.3) rippleMat.opacity = 0;
+  }
+
+  /* Pointer parallax */
+  let px = 0;
+  let pxTarget = 0;
+  const onPointer = (e: PointerEvent) => { pxTarget = (e.clientX / window.innerWidth - 0.5) * 0.9; };
+  window.addEventListener("pointermove", onPointer, { passive: true });
+
+  /* Size to the stage card */
+  const resize = () => {
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    // Keep the 6.6-wide board in frame on narrow (portrait) stages.
+    camera.fov = w / h < 0.85 ? 52 : 45;
+    frameLift = w >= 1024 ? 2.6 : 0;
+    camera.updateProjectionMatrix();
+  };
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  resize();
+
+  /* Pause rendering when the stage is offscreen */
+  let visible = true;
+  const io = new IntersectionObserver((entries) => { visible = entries[0]?.isIntersecting ?? true; });
+  io.observe(canvas);
+
+  const clock = new THREE.Clock();
+  let raf = 0;
+  const loop = () => {
+    raf = requestAnimationFrame(loop);
+    if (!visible) return;
+    const time = clock.getElapsedTime();
+
+    smoothJ += (journey.current - smoothJ) * 0.085;
+    place(smoothJ, time);
+
+    ball.rotation.x = smoothJ * 9;
+    ball.rotation.z = smoothJ * 5;
+    ballLight.position.set(ball.position.x, ball.position.y + 0.5, ball.position.z + 1.3);
+
+    // Pegs glow when the ball passes, then fade.
+    for (const p of pegs) {
+      const dx = ball.position.x - p.mesh.position.x;
+      const dy = ball.position.y - p.mesh.position.y;
+      const hit = Math.max(0, 1 - Math.sqrt(dx * dx + dy * dy) / 1.1);
+      p.glow = Math.max(p.glow * 0.94, hit);
+      // Blue pegs light up brighter blue as the ball passes, then fade back.
+      p.mesh.material.emissiveIntensity = p.glow * 0.9;
+    }
+    // Rings light up and swell as the ball passes through.
+    rings.forEach((r: any) => {
+      const near = Math.max(0, 1 - Math.abs(ball.position.y - r.position.y) / 1.1);
+      r.material.emissiveIntensity = 0.12 + near * 1.6;
+      r.scale.setScalar(1 + near * 0.12);
+      r.rotation.z += 0.004;
+    });
+    helixMat.opacity = 0.28 + (Math.floor(smoothJ) === 2 ? 0.1 : 0);
+
+    rimMat.emissiveIntensity = 0.4 + impact * 1.8;
+    platLight.intensity = impact * 9;
+
+    px += (pxTarget - px) * 0.05;
+    camera.position.x += (camTarget.x + px - camera.position.x) * 0.07;
+    camera.position.y += (camTarget.y - camera.position.y) * 0.07;
+    camera.position.z += (camTarget.z - camera.position.z) * 0.07;
+    look.lerp(lookTarget, 0.09);
+    camera.lookAt(look);
+
+    renderer.render(scene, camera);
+  };
+  raf = requestAnimationFrame(loop);
+
+  return () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener("pointermove", onPointer);
+    ro.disconnect();
+    io.disconnect();
+    scene.traverse((o: any) => {
+      o.geometry?.dispose?.();
+      const m = o.material;
+      if (Array.isArray(m)) m.forEach((x) => x.dispose?.());
+      else m?.dispose?.();
+    });
+    renderer.dispose();
+  };
 }

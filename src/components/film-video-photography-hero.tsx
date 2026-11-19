@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 import cinemaStill from "@/assets/film-cinema-still.jpg";
 import behindScenes from "@/assets/film-behind-scenes.jpg";
@@ -21,9 +21,7 @@ export function FilmVideoPhotographyHero() {
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Bring your story into focus
           </p>
-          <Button asChild variant="outline" className="film-project-link">
-            <Link to="/" hash="contact">Start a Production <ArrowUpRight className="size-4" /></Link>
-          </Button>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-5">Start a Production <ArrowUpRight /></GlassButton>
         </div>
 
         <div className="film-showcase" aria-label="Cinematic production frame and film stills">

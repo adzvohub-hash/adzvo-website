@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { useEffect, useMemo, useState } from "react";
 import { FileText, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -78,8 +79,8 @@ function ProjectsPage() {
                     <h2 className="mt-3 font-display text-lg font-bold leading-snug text-navy">{p.title}</h2>
                     <p className="mt-2 flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="size-3.5" />{p.client} · {p.location}</p>
                     <div className="mt-auto flex gap-2 pt-5">
-                      <Button size="sm" className="rounded-lg bg-navy font-semibold text-primary-foreground hover:bg-gold hover:text-navy" onClick={() => setActive(p)}>More</Button>
-                      {p.case_study_url && <Button size="sm" variant="outline" className="rounded-lg border-navy/20 font-semibold text-navy hover:border-navy hover:bg-navy hover:text-primary-foreground" asChild><a href={p.case_study_url} target="_blank" rel="noopener noreferrer"><FileText />Case Study</a></Button>}
+                      <GlassButton as="button" type="button" size="sm" onClick={() => setActive(p)}>More Details</GlassButton>
+                      {p.case_study_url && <GlassButton as="a" size="sm" variant="secondary" href={p.case_study_url} target="_blank" rel="noopener noreferrer"><FileText />Case Study</GlassButton>}
                     </div>
                   </div>
                 </article>
@@ -105,7 +106,7 @@ function ProjectsPage() {
                 <img src={active.image_url || serviceOf(active.service).image} alt={active.title} className="mt-3 h-40 w-56 rounded-xl object-cover" />
               </div>
             )}
-            {active.case_study_url && <Button asChild className="w-fit rounded-xl bg-gold font-bold text-navy hover:bg-gold hover:brightness-110"><a href={active.case_study_url} target="_blank" rel="noopener noreferrer"><FileText />View Case Study</a></Button>}
+            {active.case_study_url && <div><GlassButton as="a" href={active.case_study_url} target="_blank" rel="noopener noreferrer"><FileText />View Case Study</GlassButton></div>}
           </>}
         </DialogContent>
       </Dialog>

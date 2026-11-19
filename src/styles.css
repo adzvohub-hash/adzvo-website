@@ -669,7 +669,7 @@ body { font-family: var(--font-sans); overflow-x: hidden; }
 .branding-swatch code { color: color-mix(in oklab, var(--navy) 46%, transparent); font-family: var(--font-sans); font-size: 7px; }
 .branding-palette-note { margin-top: 11px; color: color-mix(in oklab, var(--navy) 44%, transparent); font-size: 8px; letter-spacing: 0.05em; text-align: center; text-transform: uppercase; }
 .branding-mark-lockup { display: flex; flex-direction: column; align-items: center; padding-top: 13px; text-align: center; }
-.branding-monogram { display: grid; place-items: center; width: 82px; height: 82px; border: 1px solid color-mix(in oklab, var(--card) 74%, transparent); border-radius: 50%; background: color-mix(in oklab, var(--card) 35%, transparent); box-shadow: inset 2px 2px 2px color-mix(in oklab, var(--card) 70%, transparent), inset -5px -5px 10px color-mix(in oklab, var(--navy) 7%, transparent), 5px 8px 16px color-mix(in oklab, var(--navy) 8%, transparent); color: color-mix(in oklab, var(--navy) 82%, transparent); font-size: 51px; font-style: italic; line-height: 1; text-shadow: 1px 1px 0 var(--card); }
+.branding-monogram { display: grid; place-items: center; width: 82px; height: 82px; border: 1px solid color-mix(in oklab, var(--card) 74%, transparent); border-radius: 50%; background: color-mix(in oklab, var(--card) 35%, transparent); box-shadow: inset 2px 2px 2px color-mix(in oklab, var(--card) 70%, transparent), inset -5px -5px 10px color-mix(in oklab, var(--navy) 7%, transparent), 5px 8px 16px color-mix(in oklab, var(--navy) 8%, transparent); color: color-mix(in oklab, var(--navy) 82%, transparent); font-size: 51px; font-style: normal; line-height: 1; text-shadow: 1px 1px 0 var(--card); }
 .branding-mark-lockup > strong { margin-top: 10px; font-size: 18px; letter-spacing: 0.22em; text-indent: 0.22em; }
 .branding-mark-lockup > span:last-child { margin-top: 3px; color: color-mix(in oklab, var(--navy) 46%, transparent); font-size: 8px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; }
 .branding-mark-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; color: color-mix(in oklab, var(--navy) 42%, transparent); font-size: 8px; }
@@ -1105,3 +1105,200 @@ body { font-family: var(--font-sans); overflow-x: hidden; }
 }
 @keyframes hero-water-fall { from { transform: translateY(0); } to { transform: translateY(260%); } }
 @media (prefers-reduced-motion: reduce) { .hero-waterfall i { animation: none; opacity: 0 !important; } }
+
+
+@layer components {
+/* ── Liquid glass ─────────────────────────────────────────────────────
+   Modelled on liquid-glass-react: frosted + saturated backdrop, a bright
+   refracting rim, an inner top highlight and a specular sheen that follows
+   the pointer (--mx / --my are set on pointermove). The base stays ~60%
+   white so navy text keeps strong contrast over the blue 3D shapes. */
+.lg-glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.3) 55%, rgba(255,243,226,0.42) 100%);
+  -webkit-backdrop-filter: blur(10px) saturate(200%) brightness(1.06);
+  backdrop-filter: blur(10px) saturate(200%) brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    inset 0 -1px 0 rgba(255,255,255,0.4),
+    inset 0 0 18px rgba(255,255,255,0.35),
+    0 12px 32px -14px rgba(10,14,31,0.22),
+    0 2px 6px rgba(10,14,31,0.05);
+  transition: box-shadow .35s ease, transform .35s ease;
+}
+/* refracting rim: a 1px gradient ring, bright at the light edge, faintly blue on the far side */
+.lg-glass::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.25) 35%, rgba(240,138,28,0.7) 65%, rgba(255,255,255,0.9) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+/* specular sheen that tracks the pointer */
+.lg-glass::after {
+  content: "";
+  position: absolute; inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    radial-gradient(140px 140px at var(--mx, 18%) var(--my, 0%), rgba(255,255,255,0.75), transparent 70%),
+    linear-gradient(180deg, rgba(255,255,255,0.45) 0%, transparent 42%);
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+.lg-glass:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(255,255,255,0.5),
+    inset 0 0 22px rgba(255,255,255,0.45),
+    0 18px 40px -14px rgba(240,138,28,0.3),
+    0 2px 6px rgba(10,14,31,0.06);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg-glass { background: rgba(255,255,255,0.94); }
+}
+
+/* highlighted state (e.g. the active reason on the home page) */
+.lg-glass.lg-glass-active {
+  background: linear-gradient(135deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.55) 55%, rgba(255,243,226,0.6) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(255,255,255,0.5),
+    inset 0 0 22px rgba(255,255,255,0.45),
+    0 0 0 1.5px rgba(240,138,28,0.45),
+    0 22px 44px -16px rgba(240,138,28,0.35),
+    0 2px 6px rgba(10,14,31,0.06);
+}
+}
+
+/* ── LiquidGlass component (src/components/liquid-glass.tsx) ─────────────
+   Port of liquid-glass-react (MIT © 2025 Max Rovensky). Plain CSS so it
+   doesn't depend on which Tailwind utilities a build generates. */
+@layer components {
+  /* note: no `isolation` / `will-change` here — in Chromium they cut the glass off from the page behind it */
+  .lqg { position: relative; display: inline-flex; border-radius: var(--lg-radius, 999px); -webkit-tap-highlight-color: transparent; }
+  .lqg-body {
+    position: relative; display: flex; flex: 1 1 auto; min-width: 0;
+    border-radius: inherit; overflow: hidden;
+    transition: transform .2s ease-out, box-shadow .25s ease;
+  }
+  .lqg-svg { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+  .lqg-warp, .lqg-tint, .lqg-rim, .lqg-shine { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+  .lqg-warp { z-index: 0; }
+  .lqg-tint { z-index: 1; }
+  .lqg-content { position: relative; z-index: 3; display: flex; flex: 1 1 auto; min-width: 0; align-items: center; border-radius: inherit; }
+
+  /* the two rims — angle + brightness follow the pointer (--lg-mx / --lg-my / --lg-ax set in JS) */
+  .lqg-rim {
+    z-index: 2; padding: 1.5px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    box-shadow: 0 0 0 .5px rgba(255,255,255,.5) inset, 0 1px 3px rgba(255,255,255,.25) inset, 0 1px 4px rgba(0,0,0,.35);
+  }
+  .lqg-rim-a {
+    mix-blend-mode: screen; opacity: .2;
+    background: linear-gradient(calc(135deg + var(--lg-mx, 0) * 1.2deg),
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255, calc(.12 + var(--lg-ax, 0) * .008)) calc(max(10%, 33% + var(--lg-my, 0) * .3%)),
+      rgba(255,255,255, calc(.4 + var(--lg-ax, 0) * .012)) calc(min(90%, 66% + var(--lg-my, 0) * .4%)),
+      rgba(255,255,255,0) 100%);
+  }
+  .lqg-rim-b {
+    mix-blend-mode: overlay;
+    background: linear-gradient(calc(135deg + var(--lg-mx, 0) * 1.2deg),
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255, calc(.32 + var(--lg-ax, 0) * .008)) calc(max(10%, 33% + var(--lg-my, 0) * .3%)),
+      rgba(255,255,255, calc(.6 + var(--lg-ax, 0) * .012)) calc(min(90%, 66% + var(--lg-my, 0) * .4%)),
+      rgba(255,255,255,0) 100%);
+  }
+  /* always-on hairline so the edge reads even where the backdrop is flat */
+  .lqg-tint { box-shadow: inset 0 0 0 1px rgba(255,255,255,.22), inset 0 1px 0 rgba(255,255,255,.35); }
+
+  .lqg-shine { z-index: 2; opacity: 0; mix-blend-mode: overlay; transition: opacity .2s ease-out;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); }
+  .lqg-interactive { cursor: pointer; }
+  .lqg-interactive:hover .lqg-shine, .lqg-interactive:focus-visible .lqg-shine { opacity: .4; }
+  .lqg-interactive:active .lqg-shine { opacity: .8; }
+  .lqg-interactive:focus-visible { outline: 2px solid rgba(229,160,32,.9); outline-offset: 3px; }
+
+  /* tints — kept very light, as in the original */
+  .lqg-dark  .lqg-body { box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+  .lqg-dark  .lqg-tint { background: rgba(10,14,31,.16); }
+  .lqg-dark  .lqg-content { color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.4); }
+  .lqg-clear .lqg-body { box-shadow: 0 12px 40px rgba(0,0,0,.22); }
+  .lqg-clear .lqg-tint { background: rgba(255,255,255,.04); }
+  .lqg-clear .lqg-content { color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.45); }
+  .lqg-light .lqg-body { box-shadow: 0 12px 36px rgba(10,14,31,.14); }
+  .lqg-light .lqg-tint { background: rgba(255,255,255,.28); }
+  .lqg-light .lqg-content { color: #0a0e1f; }
+  .lqg-gold  .lqg-body { box-shadow: 0 14px 40px -6px rgba(229,160,32,.55); }
+  .lqg-gold  .lqg-tint { background: linear-gradient(180deg, rgba(240,178,58,.88), rgba(229,150,24,.82)); }
+  .lqg-gold  .lqg-content { color: #0a0e1f; }
+
+  /* stronger wash where longer text sits on a busy photo */
+  .lqg-strong.lqg-dark .lqg-tint { background: rgba(10,14,31,.5); }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .lqg-dark .lqg-tint, .lqg-clear .lqg-tint { background: rgba(10,14,31,.55); }
+    .lqg-light .lqg-tint { background: rgba(255,255,255,.9); }
+  }
+}
+
+/* Site-wide: no italics anywhere (emphasis is carried by the gold underline / weight instead) */
+@layer base {
+  em, i, cite, dfn, var, address { font-style: normal; }
+}
+
+/* ── GlassButton (src/components/glass-button.tsx) — one button style site-wide ── */
+@layer components {
+  .adz-btn { text-decoration: none; vertical-align: middle; }
+  .adz-btn .adz-btn-label {
+    justify-content: center; gap: .5rem; white-space: nowrap;
+    font-weight: 700; letter-spacing: .01em; text-transform: none; line-height: 1.2;
+  }
+  .adz-btn-md .adz-btn-label { padding: .875rem 1.75rem; font-size: 15px; }
+  .adz-btn-sm .adz-btn-label { padding: .5rem 1rem; font-size: 13px; }
+  .adz-btn .adz-btn-label svg { width: 1rem; height: 1rem; flex-shrink: 0; transition: transform .2s ease; }
+  .adz-btn:hover .adz-btn-label svg { transform: translateX(2px); }
+  .adz-btn[disabled], .adz-btn[aria-disabled="true"] { opacity: .6; pointer-events: none; }
+  button.adz-btn { border: 0; background: none; padding: 0; font: inherit; }
+  /* full-width buttons (e.g. forms) */
+  .adz-btn.w-full .lqg-body { width: 100%; }
+}
+/* nav "Let's Talk": desktop only (the mobile menu has its own full-width button) */
+@media (max-width: 767px) { .site-nav-glass-cta { display: none; } }
+/* navy glass button, for gold / bright backgrounds */
+.adz-btn-dark .lqg-tint { background: linear-gradient(180deg, rgba(23,32,66,.92), rgba(10,14,31,.94)); }
+.adz-btn-dark .lqg-body { box-shadow: 0 14px 30px -12px rgba(10,14,31,.55); }
+.adz-btn-dark .lqg-content { color: #fff; text-shadow: none; }
+/* services grid: title bar with an orange glass icon badge */
+.svc-bar .lqg-content { min-height: 64px; }
+.svc-badge { position: relative; display: grid; place-items: center; flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px; color: #fff;
+  background: linear-gradient(145deg, rgba(253,224,130,.85) 0%, rgba(245,158,11,.78) 45%, rgba(234,88,12,.85) 100%);
+  -webkit-backdrop-filter: blur(6px) saturate(160%); backdrop-filter: blur(6px) saturate(160%);
+  border: 1px solid rgba(255,214,150,.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -6px 12px rgba(194,65,12,.25), 0 6px 16px -6px rgba(234,88,12,.7); }
+.svc-badge::after { content: ""; position: absolute; inset: 2px 4px auto 4px; height: 45%; border-radius: 9px 9px 50% 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,0)); pointer-events: none; }
+.svc-badge-svg { position: relative; z-index: 1; width: 20px; height: 20px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+
+/* home hero: scrolling services strip in the brand gold (matches the strip above the footer) */
+.hero-strip-glass.hero-strip-gold {
+  background: linear-gradient(100deg, #f5b335 0%, #e5a020 45%, #f08a1c 100%);
+  border-top: 1px solid rgba(255,255,255,.35);
+  box-shadow: inset 0 -1px 0 rgba(10,14,31,.12);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+.hero-strip-gold .hero-strip-item { color: #0a0e1f; }
+.hero-strip-gold .hero-strip-dot { width: 6px; height: 6px; border-radius: 999px; background: #0a0e1f; opacity: .55; }
+.hero-strip-shine { position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.28) 50%, transparent 65%);
+  background-size: 250% 100%; animation: hcta-sweep 7s ease-in-out infinite; }
+@keyframes hcta-sweep { 0% { background-position: 120% 0; } 60%,100% { background-position: -120% 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-strip-shine { animation: none; } }

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 import ribbon from "@/assets/animation-ribbon.jpg";
 import glass from "@/assets/animation-glass.jpg";
@@ -22,7 +22,7 @@ export function AnimationHero() {
           <SectionLabel>ADZVO Services</SectionLabel>
           <h1 id="animation-title" className="mt-5 font-display text-4xl font-extrabold leading-tight text-navy sm:text-5xl lg:text-6xl">Animation <Highlight>& Content</Highlight></h1>
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>Make every frame move with purpose</p>
-          <Button asChild variant="outline" className="animation-project-link"><Link to="/" hash="contact">Create with us <ArrowUpRight className="size-4" /></Link></Button>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-5">Create With Us <ArrowUpRight /></GlassButton>
         </div>
         <div className="animation-gallery">
           {artwork.map((item, index) => (

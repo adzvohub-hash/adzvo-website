@@ -1,4 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,6 @@ export function SiteNav() {
   const [servicesOpen, setServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 20);
     update();
@@ -60,7 +60,7 @@ export function SiteNav() {
           <li><Link to="/resources" className={navLink("/resources")}>Resources</Link></li>
           <li><Link to="/contact" className={navLink("/contact")}>Contact</Link></li>
         </ul>
-        <Button asChild className="site-nav-cta hidden md:inline-flex"><Link to="/contact" onClick={close}>Let's Talk</Link></Button>
+        <GlassButton as={Link} to="/contact" onClick={close} size="sm" className="site-nav-glass-cta">Let's Talk</GlassButton>
         <Button variant="ghost" size="icon" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen(!open)} className="hover:bg-white/15 hover:text-inherit md:hidden">{open ? <X /> : <Menu />}</Button>
       </nav>
       {open && <div className="site-menu-glass page-shell my-2 max-h-[calc(100dvh-100px)] overflow-y-auto rounded-lg border p-3 md:hidden">
@@ -71,7 +71,7 @@ export function SiteNav() {
         <Link to="/projects" onClick={close} className={mobileNavLink("/projects")}>Projects</Link>
         <Link to="/resources" onClick={close} className={mobileNavLink("/resources")}>Resources</Link>
         <Link to="/contact" onClick={close} className={mobileNavLink("/contact")}>Contact</Link>
-        <Button asChild className="mt-2 w-full"><Link to="/contact" onClick={close}>Let's Talk</Link></Button>
+        <GlassButton as={Link} to="/contact" onClick={close} className="mt-2 w-full">Let's Talk</GlassButton>
       </div>}
     </header>
   );

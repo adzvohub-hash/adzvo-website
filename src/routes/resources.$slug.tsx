@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Footer as SiteFooter } from "@/components/site-footer";
@@ -57,12 +58,9 @@ function ResourcePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-navy/60 via-navy/30 to-navy/80" />
           {/* Back link */}
           <div className="absolute left-0 top-0 p-6 md:p-10">
-            <Link
-              to="/resources"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-navy/50 px-4 py-2 text-sm font-semibold text-white backdrop-blur hover:bg-navy"
-            >
+            <GlassButton as={Link} to="/resources" variant="secondary" on="dark" size="sm">
               <ArrowLeft className="h-4 w-4" /> Resources
-            </Link>
+            </GlassButton>
           </div>
           {/* Tag + title overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-14">
@@ -96,12 +94,9 @@ function ResourcePage() {
           )}
 
           <div className="mt-14">
-            <Link
-              to="/resources"
-              className="inline-flex items-center gap-2 rounded-lg border border-navy/25 px-4 py-2.5 text-sm font-bold text-navy transition hover:border-navy hover:bg-navy hover:text-white"
-            >
+            <GlassButton as={Link} to="/resources" variant="secondary">
               <ArrowLeft className="h-4 w-4" /> Back To Resources
-            </Link>
+            </GlassButton>
           </div>
         </article>
       </main>

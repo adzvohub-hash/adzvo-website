@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { servicePages } from "@/lib/services";
@@ -62,7 +63,7 @@ function ServicePage() {
       <p><SectionLabel>Coming soon</SectionLabel></p>
       <h2 className="mt-5 font-display text-3xl font-extrabold text-navy">More details are on the way.</h2>
       <p className="mt-4 max-w-xl text-muted-foreground">Our {service.title.toLowerCase()} page is taking shape. In the meantime, let’s talk about your project.</p>
-      <Button asChild className="mt-8"><Link to="/" hash="contact">Start a conversation <ArrowRight /></Link></Button>
+      <GlassButton as={Link} to="/" hash="contact" className="mt-8">Start a Conversation <ArrowRight /></GlassButton>
     </section>}
     <Footer />
   </main>;

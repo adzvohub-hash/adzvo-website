@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight, BadgeDollarSign, Gauge, TrendingUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 import { HeroWaterfall } from "@/components/hero-waterfall";
@@ -20,9 +20,7 @@ export function MarketingGrowthHero() {
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Turn attention into measurable growth
           </p>
-          <Button asChild variant="outline" className="marketing-project-link">
-            <Link to="/" hash="contact">Grow with us <ArrowUpRight className="size-4" /></Link>
-          </Button>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-5">Grow With Us <ArrowUpRight /></GlassButton>
         </div>
 
         <div className="marketing-showcase" aria-label="Illustrative marketing performance dashboard">

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { policyLinks } from "@/components/policy-page";
 import { servicePages } from "@/lib/services";
 import { BrandLogo } from "@/components/brand-logo";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 function Logo({ dark = false }: { dark?: boolean }) {
   return (
@@ -18,7 +19,12 @@ const companyLinks = [
   { label: "Careers", to: "/careers" },
 ] as const;
 
-const contactItems = ["hello@adzvo.com", "+91 XX XXXX XXXX", "Mumbai, India"] as const;
+const contactItems = [
+  { label: "adzvohub@gmail.com", href: "mailto:adzvohub@gmail.com", icon: Mail },
+  { label: "+91 70123 76221", href: "tel:+917012376221", icon: Phone },
+  { label: "+91 90198 35261", href: "tel:+919019835261", icon: Phone },
+  { label: "Bangalore, India", href: "https://maps.google.com/?q=Bangalore,+India", icon: MapPin },
+] as const;
 
 export
 function Footer() {
@@ -67,12 +73,16 @@ function Footer() {
             <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground">Contact</h4>
             <ul className="mt-5 space-y-3">
               {contactItems.map((item) => (
-                <li key={item}>
+                <li key={item.label}>
                   <a
-                    href={item.startsWith("hello@") ? `mailto:${item}` : "#"}
-                    className="text-sm text-primary-foreground/45 transition hover:text-gold"
+                    href={item.href}
+                    {...(item.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="group inline-flex items-center gap-3 text-sm text-primary-foreground/45 transition hover:text-gold"
                   >
-                    {item}
+                    <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-primary-foreground/10 bg-primary-foreground/5 text-gold transition group-hover:border-gold/40 group-hover:bg-gold/10">
+                      <item.icon className="size-4" strokeWidth={2} aria-hidden />
+                    </span>
+                    {item.label}
                   </a>
                 </li>
               ))}

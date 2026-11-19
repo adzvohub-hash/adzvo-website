@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight, Braces, Cloud, Code2, Gauge, LayoutDashboard, Layers3, MonitorSmartphone, Settings2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import frost from "@/assets/animation-frosted.jpg";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 import { HeroWaterfall } from "@/components/hero-waterfall";
@@ -20,9 +20,7 @@ export function DigitalTechnologyHero() {
           <p className="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-navy/70 sm:text-sm" style={LOGO_FONT}>
             Digital experiences built to perform
           </p>
-          <Button asChild variant="outline" className="digital-project-link">
-            <Link to="/" hash="contact">Talk to an Expert <ArrowUpRight className="size-4" /></Link>
-          </Button>
+          <GlassButton as={Link} to="/" hash="contact" className="mt-5">Talk to an Expert <ArrowUpRight /></GlassButton>
         </div>
 
         <div className="digital-showcase" aria-label="Digital product interface concept">
