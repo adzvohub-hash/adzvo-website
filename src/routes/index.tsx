@@ -13,6 +13,7 @@ import { BrandMark, Highlight, LOGO_FONT, SectionLabel } from "@/components/bran
 import { Footer } from "@/components/site-footer";
 import { WhySection } from "@/components/why-section";
 import { HomeCta } from "@/components/home-cta";
+import { ImpactBand } from "@/components/impact-band";
 import { LiquidGlass } from "@/components/liquid-glass";
 import svc1 from "@/assets/svc-1.jpg";
 import svc2 from "@/assets/svc-2.jpg";
@@ -281,54 +282,7 @@ function Impact() {
       ]);
     }).catch(() => {});
   }, []);
-  // Logo palette only: navy, gold and white. The first card is the navy anchor.
-  const icons = [Rocket, Handshake, Users, LayoutGrid];
-  return (
-    <section id="impact" className="bg-off py-28 sm:py-32">
-      <div className="page-shell flex flex-col items-center gap-16">
-        <div className="reveal mx-auto flex w-full flex-col items-center text-center">
-          <SectionLabel>The ADZVO Impact</SectionLabel>
-          <h2 className="font-display mt-6 text-3xl leading-tight font-extrabold text-navy sm:text-4xl whitespace-nowrap">
-            Ideas in Motion, <Highlight>Impact in Numbers.</Highlight>
-          </h2>
-          <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Creative thinking and technology, working together to move brands forward.
-          </p>
-        </div>
-        <div className="reveal grid w-full grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
-            {stats.map((stat, index) => {
-              const Icon = icons[index] ?? TrendingUp;
-              const anchor = index === 0;
-              return (
-              <div
-                key={stat.label}
-                className={`impact-stat-card group flex min-w-0 flex-col rounded-3xl border p-6 text-left transition duration-300 hover:-translate-y-1.5 sm:p-7 ${anchor ? "border-white/[0.12] text-primary-foreground shadow-[0_18px_48px_-16px] shadow-navy/70" : "text-navy shadow-[0_8px_32px_-12px] shadow-navy/15 hover:shadow-[0_14px_40px_-12px] hover:shadow-gold/20"}`}
-                style={anchor ? {
-                  background: "linear-gradient(135deg, rgba(10,14,31,0.88) 0%, rgba(10,14,31,0.75) 100%)",
-                  backdropFilter: "blur(24px) saturate(160%)",
-                  WebkitBackdropFilter: "blur(24px) saturate(160%)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(255,255,255,0.04), 0 18px 48px -16px rgba(10,14,31,0.7)",
-                } : {
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.52) 100%)",
-                  backdropFilter: "blur(20px) saturate(180%)",
-                  WebkitBackdropFilter: "blur(20px) saturate(180%)",
-                  border: "1px solid rgba(255,255,255,0.75)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(255,255,255,0.3), 0 8px 32px -12px rgba(10,14,31,0.12)",
-                }}
-              >
-                <span className="grid size-11 place-items-center rounded-xl bg-gold text-navy transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
-                  <Icon className="size-5" strokeWidth={2.4} />
-                </span>
-                <div className="mt-7 text-3xl font-bold tracking-tight sm:text-4xl" style={LOGO_FONT}><ImpactCounter value={stat.value} /></div>
-                <div className={`mt-2 text-xs font-semibold sm:text-sm ${anchor ? "text-primary-foreground/75" : "text-navy/65"}`}>{stat.label}</div>
-                <span className="mt-6 block h-1 w-8 rounded-full bg-gold transition-all duration-300 group-hover:w-16" />
-              </div>
-              );
-            })}
-        </div>
-      </div>
-    </section>
-  );
+  return <ImpactBand stats={stats} />;
 }
 
 function Services() {

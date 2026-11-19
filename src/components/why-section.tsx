@@ -14,12 +14,12 @@ import { BrandMark, Highlight, LOGO_FONT, SectionLabel } from "@/components/bran
 type Reason = { icon: ReactNode; title: string; desc: string; from: string; to: string };
 
 const REASONS: Reason[] = [
-  { icon: <Lightbulb />,  title: "Creative Excellence",        desc: "Ideas that inspire and make an impact.",            from: "#fcd34d", to: "#f59e0b" }, // amber
-  { icon: <Cpu />,        title: "Tech-Enabled Solutions",     desc: "Leveraging the latest tech for smarter outcomes.", from: "#fdba74", to: "#ea580c" }, // orange
-  { icon: <Users />,      title: "Experienced Team",           desc: "A passionate team that makes it happen.",          from: "#fda4af", to: "#f97316" }, // coral
-  { icon: <Target />,     title: "Strategic Approach",         desc: "Insights-driven, always a step ahead.",            from: "#fde68a", to: "#e5a020" }, // gold
-  { icon: <Handshake />,  title: "Client-Centric Partnership", desc: "Your goals, our commitment.",                      from: "#fed7aa", to: "#f97316" }, // tangerine
-  { icon: <TrendingUp />, title: "Real Business Impact",       desc: "Measurable results for a brighter tomorrow.",      from: "#fb923c", to: "#c2410c" }, // burnt orange
+  { icon: <Lightbulb />,  title: "Creative Excellence",        desc: "Ideas that inspire and make an impact.",            from: "#fde68a", to: "#e5a020" }, // brand gold
+  { icon: <Cpu />,        title: "Tech-Enabled Solutions",     desc: "Leveraging the latest tech for smarter outcomes.", from: "#fcd34d", to: "#d99a1b" }, // amber gold
+  { icon: <Users />,      title: "Experienced Team",           desc: "A passionate team that makes it happen.",          from: "#fde9a8", to: "#e5a020" }, // soft gold
+  { icon: <Target />,     title: "Strategic Approach",         desc: "Insights-driven, always a step ahead.",            from: "#fcd34d", to: "#e5a020" }, // gold
+  { icon: <Handshake />,  title: "Client-Centric Partnership", desc: "Your goals, our commitment.",                      from: "#fde68a", to: "#d99a1b" }, // honey
+  { icon: <TrendingUp />, title: "Real Business Impact",       desc: "Measurable results for a brighter tomorrow.",      from: "#fbbf24", to: "#c98a12" }, // deep amber
 ];
 
 /** where each connector meets the orb (degrees; 0 = right, 90 = down) */
@@ -118,15 +118,15 @@ export function WhySection() {
         <svg viewBox="0 0 1440 800" preserveAspectRatio="none">
           <defs>
             <linearGradient id="why2-rib1" x1="0" x2="1">
-              <stop offset="0" stopColor="#fdba74" stopOpacity="0" />
-              <stop offset=".35" stopColor="#fdba74" stopOpacity=".55" />
+              <stop offset="0" stopColor="#fcd34d" stopOpacity="0" />
+              <stop offset=".35" stopColor="#fcd34d" stopOpacity=".55" />
               <stop offset=".7" stopColor="#fcd34d" stopOpacity=".35" />
               <stop offset="1" stopColor="#fcd34d" stopOpacity="0" />
             </linearGradient>
             <linearGradient id="why2-rib2" x1="0" x2="1">
-              <stop offset="0" stopColor="#fed7aa" stopOpacity="0" />
-              <stop offset=".5" stopColor="#fb923c" stopOpacity=".35" />
-              <stop offset="1" stopColor="#fed7aa" stopOpacity="0" />
+              <stop offset="0" stopColor="#fde68a" stopOpacity="0" />
+              <stop offset=".5" stopColor="#f5b335" stopOpacity=".35" />
+              <stop offset="1" stopColor="#fde68a" stopOpacity="0" />
             </linearGradient>
           </defs>
           <path d="M-50 770 C 300 690, 520 820, 860 730 S 1300 650, 1500 720" stroke="url(#why2-rib1)" strokeWidth="60" fill="none" opacity=".3" />
@@ -183,11 +183,12 @@ export function WhySection() {
                 <span className="why2-tag" style={LOGO_FONT}>IDEAS · PEOPLE · IMPACT</span>
               </div>
             </div>
+            {/* navy platform with a gold rim — same as the landing platform on the About page */}
             <div className="why2-pedestal" aria-hidden>
-              <span className="why2-beam" />
-              <span className="why2-disc why2-disc-1" />
-              <span className="why2-disc why2-disc-2" />
-              <span className="why2-disc why2-disc-3" />
+              <span className="why2-plat-shadow" />
+              <span className="why2-plat-side" />
+              <span className="why2-plat-top" />
+              <span className="why2-plat-glow" />
             </div>
           </div>
 
@@ -201,7 +202,7 @@ export function WhySection() {
 
 const WHY_CSS = `
 .why2 { position: relative; overflow: hidden; padding: 6rem 0 7rem;
-  background: radial-gradient(60% 55% at 50% 58%, #fff3e6 0%, rgba(255,243,230,0) 70%), linear-gradient(180deg, #fffdfb 0%, #fff8f1 55%, #fffaf6 100%); }
+  background: radial-gradient(60% 55% at 50% 58%, #fff7e3 0%, rgba(255,243,230,0) 70%), linear-gradient(180deg, #fffefa 0%, #fffaf0 55%, #fffbf3 100%); }
 .why2-bg { position: absolute; inset: 0; pointer-events: none; }
 .why2-bg svg { width: 100%; height: 100%; }
 .why2-inner { position: relative; z-index: 1; }
@@ -285,49 +286,54 @@ const WHY_CSS = `
 /* ── orb ───────────────────────────────────────────────── */
 .why2-orb { position: relative; z-index: 2; width: min(78vw, 360px); aspect-ratio: 1; border-radius: 999px; display: grid; place-items: center;
   background:
-    radial-gradient(circle at 34% 26%, rgba(255,255,255,1) 0%, rgba(255,255,255,.92) 22%, rgba(255,247,238,.7) 50%, rgba(255,214,170,.4) 78%, rgba(251,146,60,.28) 100%);
+    radial-gradient(circle at 34% 26%, rgba(255,255,255,1) 0%, rgba(255,255,255,.92) 22%, rgba(255,247,238,.7) 50%, rgba(255,226,160,.4) 78%, rgba(240,180,60,.28) 100%);
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   box-shadow:
     inset 0 0 0 1.5px rgba(255,255,255,.95),
     inset 18px 22px 50px rgba(255,255,255,.9),
-    inset -26px -34px 70px rgba(249,115,22,.22),
+    inset -26px -34px 70px rgba(229,160,32,.22),
     0 0 0 10px rgba(255,255,255,.35),
-    0 0 60px 10px rgba(251,146,60,.22),
-    0 40px 80px -30px rgba(234,88,12,.45);
+    0 0 60px 10px rgba(240,180,60,.22),
+    0 40px 80px -30px rgba(201,138,18,.45);
   animation: why2-float 6s ease-in-out infinite; }
 @keyframes why2-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 .why2-orb-rim { position: absolute; inset: -2px; border-radius: inherit; padding: 2.5px; pointer-events: none;
-  background: conic-gradient(from 0deg, rgba(255,255,255,.95), #fdba74, rgba(255,255,255,.2), #fb923c, rgba(255,255,255,.95), #fcd34d, rgba(255,255,255,.2), rgba(255,255,255,.95));
+  background: conic-gradient(from 0deg, rgba(255,255,255,.95), #fcd34d, rgba(255,255,255,.2), #f5b335, rgba(255,255,255,.95), #fcd34d, rgba(255,255,255,.2), rgba(255,255,255,.95));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
   animation: why2-spin 14s linear infinite; }
 @keyframes why2-spin { to { transform: rotate(360deg); } }
 .why2-orb-spec { position: absolute; top: 9%; left: 17%; width: 38%; height: 22%; border-radius: 50%; pointer-events: none;
   background: radial-gradient(ellipse at center, rgba(255,255,255,.95), rgba(255,255,255,0) 70%); transform: rotate(-28deg); filter: blur(2px); }
 .why2-halo { position: absolute; z-index: 0; top: 50%; left: 50%; width: min(92vw, 430px); aspect-ratio: 1; border-radius: 999px; transform: translate(-50%, calc(-50% - 35px));
-  border: 1px solid rgba(251,146,60,.28); box-shadow: 0 0 0 26px rgba(255,237,213,.25), 0 0 90px 20px rgba(253,186,116,.25); pointer-events: none; }
+  border: 1px solid rgba(240,180,60,.28); box-shadow: 0 0 0 26px rgba(255,243,214,.25), 0 0 90px 20px rgba(250,204,110,.25); pointer-events: none; }
 
 .why2-logo { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .why2-mark-wrap { position: relative; display: inline-flex; }
-.why2-mark { width: 6rem; height: 6rem; filter: drop-shadow(0 14px 22px rgba(234,88,12,.35)); }
+.why2-mark { width: 6rem; height: 6rem; filter: drop-shadow(0 14px 22px rgba(201,138,18,.35)); }
 .why2-spark { position: absolute; top: -14px; right: -22px; width: 26px; height: 26px; fill: #f59e0b; filter: drop-shadow(0 0 6px rgba(245,158,11,.7)); animation: why2-twinkle 2.4s ease-in-out infinite; }
 @keyframes why2-twinkle { 0%,100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(.7) rotate(25deg); opacity: .6; } }
 .why2-word { margin-top: 1rem; font-size: 1.9rem; font-weight: 800; letter-spacing: .28em; color: #0a0e1f; padding-left: .28em; }
 .why2-tag { margin-top: .35rem; font-size: .6rem; font-weight: 600; letter-spacing: .32em; color: rgba(10,14,31,.5); }
 
-/* ── pedestal ─────────────────────────────────────────── */
-.why2-pedestal { position: absolute; z-index: 1; left: 50%; bottom: 0; width: min(70vw, 300px); height: 110px; transform: translateX(-50%); pointer-events: none; }
-.why2-beam { position: absolute; left: 50%; bottom: 40px; width: 70%; height: 120px; transform: translateX(-50%);
-  background: radial-gradient(50% 100% at 50% 100%, rgba(253,186,116,.55), rgba(253,186,116,0)); filter: blur(6px); }
-.why2-disc { position: absolute; left: 50%; transform: translateX(-50%); border-radius: 50%; }
-.why2-disc-1 { bottom: 34px; width: 78%; height: 36px; background: linear-gradient(180deg, #fff 0%, #ffe4cc 100%);
-  box-shadow: 0 0 0 2px rgba(251,146,60,.55), 0 0 26px 6px rgba(251,146,60,.45), inset 0 -6px 14px rgba(251,146,60,.35); }
-.why2-disc-2 { bottom: 18px; width: 92%; height: 40px; background: linear-gradient(180deg, rgba(255,237,213,.9), rgba(253,186,116,.55));
-  box-shadow: 0 0 0 1.5px rgba(249,115,22,.4), 0 10px 30px rgba(234,88,12,.25); z-index: -1; }
-.why2-disc-3 { bottom: 0; width: 112%; height: 44px; background: radial-gradient(50% 50% at 50% 50%, rgba(251,146,60,.35), rgba(251,146,60,0)); z-index: -2;
-  box-shadow: 0 0 0 1px rgba(251,146,60,.2); animation: why2-pulse 3s ease-in-out infinite; }
-@keyframes why2-pulse { 0%,100% { opacity: .6; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.05); } }
+/* ── pedestal: navy platform + gold rim (matches the About page) ── */
+.why2-pedestal { position: absolute; z-index: 1; left: 50%; bottom: 0; width: min(74vw, 330px); height: 96px; transform: translateX(-50%); pointer-events: none; }
+.why2-pedestal > span { position: absolute; left: 50%; transform: translateX(-50%); border-radius: 50%; }
+/* soft contact shadow on the page */
+.why2-plat-shadow { bottom: -6px; width: 112%; height: 36px; background: radial-gradient(50% 50% at 50% 50%, rgba(10,14,31,.28), rgba(10,14,31,0)); filter: blur(4px); }
+/* the cylinder's side: metallic navy with a light sheen */
+.why2-plat-side { bottom: 4px; width: 100%; height: 64px;
+  background: linear-gradient(90deg, #1a2246 0%, #2c3666 18%, #7a83aa 42%, #3a4472 60%, #1d2549 82%, #121936 100%);
+  box-shadow: inset 0 -6px 12px rgba(0,0,0,.35); }
+/* the top face: deep navy with the gold rim */
+.why2-plat-top { bottom: 26px; width: 94%; height: 46px;
+  background: radial-gradient(60% 70% at 50% 35%, #1b2450 0%, #0d1330 55%, #070b1d 100%);
+  border: 4px solid #f2c14e;
+  box-shadow: 0 0 0 1px rgba(201,138,18,.7), inset 0 2px 6px rgba(255,255,255,.12), inset 0 -8px 14px rgba(0,0,0,.45), 0 0 18px rgba(242,193,78,.45); }
+/* warm light from the orb landing on the platform */
+.why2-plat-glow { bottom: 34px; width: 46%; height: 22px; background: radial-gradient(50% 50% at 50% 50%, rgba(245,179,53,.55), rgba(245,179,53,0)); filter: blur(3px); animation: why2-pulse 3s ease-in-out infinite; }
+@keyframes why2-pulse { 0%,100% { opacity: .55; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.12); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .why2-orb, .why2-orb-rim, .why2-spark, .why2-disc-3, .why2-flow, .why2-card.is-active .why2-icon::after { animation: none; }
+  .why2-orb, .why2-orb-rim, .why2-spark, .why2-plat-glow, .why2-flow, .why2-card.is-active .why2-icon::after { animation: none; }
 }
 `;
