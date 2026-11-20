@@ -1,35 +1,44 @@
 /**
  * chat-widgets.tsx
- * Floating chat widgets — WhatsApp (direct link) + Web Chat (webhook-powered).
+ * Floating chat widgets — WhatsApp (direct link) + a guided web chat.
  *
- * Configuration via env vars:
- *   VITE_CHAT_WEBHOOK_URL     your n8n / backend webhook POST endpoint
+ * The web chat asks for the visitor's details, then walks a predefined tree of
+ * questions and answers (src/lib/chatbot-flow.ts). No AI and no server.
  *
  * Both buttons are stacked bottom-right, same visual pattern as the
  * reference Nivatier site (green WA circle, gold/navy chat circle).
  */
 
 import { useEffect, useRef, useState } from "react";
-import { useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { CONTACT, FLOW_BY_ID, fill, leadMessage, type Answers, type FlowOption } from "@/lib/chatbot-flow";
+import { requestCallback } from "@/lib/callback";
+import { logChat, type ChatEvent } from "@/lib/chat-log";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ─── Config ────────────────────────────────────────────────────────────────
 // WhatsApp number: country code + number, no "+" or spaces.
 // Set here on purpose (not from VITE_WHATSAPP_NUMBER) so an old .env / hosting value can't override it.
 export const WA_NUMBER: string = "917012376221"; // +91 70123 76221
-const WEBHOOK_URL: string =
-  (import.meta as any).env?.VITE_CHAT_WEBHOOK_URL ?? "";
-const N8N_USERNAME: string =
-  (import.meta as any).env?.VITE_N8N_USERNAME ?? "";
-const N8N_PASSWORD: string =
-  (import.meta as any).env?.VITE_N8N_PASSWORD ?? "";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface Message {
+  id: number;
   role: "user" | "bot";
   text: string;
-  ts: number;
 }
+
+/** Guided-chat state, kept for the browser tab so it survives page changes and closing the panel. */
+interface ChatState {
+  messages: Message[];
+  step: string;
+  history: string[];
+  answers: Answers;
+  sessionId: string;
+}
+const STATE_KEY = "adzvo-chat-flow";
+const newSessionId = () =>
+  (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)).slice(0, 8).toUpperCase();
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
 function WhatsAppIcon() {
@@ -104,14 +113,6 @@ const MASCOT_CSS = `
 }
 `;
 
-function SendIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13" />
-      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-    </svg>
-  );
-}
 
 // ─── Tooltip ────────────────────────────────────────────────────────────────
 function Tooltip({ label }: { label: string }) {
@@ -236,115 +237,164 @@ function PreChatForm({ onSubmit }: { onSubmit: (u: ChatUser) => void }) {
       >
         Start chat
       </button>
+      <p className="text-center text-[11px] leading-snug text-white/50">
+        We save this chat so our team can follow up.{" "}
+        <a href="/privacy-policy" className="underline underline-offset-2 hover:text-white/80">Privacy Policy</a>
+      </p>
     </form>
   );
 }
 
 // ─── Web Chat Panel ──────────────────────────────────────────────────────────
 function WebChatPanel({ onClose }: { onClose: () => void }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState<ChatUser | null>(loadUser);
-  const greeting = (name: string): Message => ({
-    role: "bot",
-    text: `👋 Hi ${name}! I'm ADZVO's assistant. How can I help you today?`,
-    ts: Date.now(),
-  });
-  const [messages, setMessages] = useState<Message[]>(() =>
-    user ? [greeting(user.name)] : [],
-  );
-
-  function startChat(u: ChatUser) {
+  const [chat, setChat] = useState<ChatState>(() => {
     try {
-      sessionStorage.setItem(USER_KEY, JSON.stringify(u));
-    } catch {
-      /* storage unavailable — keep in memory only */
-    }
-    setUser(u);
-    setMessages([greeting(u.name)]);
-  }
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sessionId] = useState(() => crypto.randomUUID());
+      const saved = sessionStorage.getItem(STATE_KEY);
+      if (saved) {
+        const c = JSON.parse(saved) as ChatState;
+        return { ...c, sessionId: c.sessionId || newSessionId() };
+      }
+    } catch { /* ignore */ }
+    return { messages: [], step: "main", history: [], answers: {}, sessionId: newSessionId() };
+  });
+  const [typing, setTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const nextId = useRef(Date.now());
+  const msg = (role: Message["role"], text: string): Message => ({ id: nextId.current++, role, text });
 
-  // Put the cursor in the message box as soon as the chat is ready
+  // remember the conversation for this tab
   useEffect(() => {
-    if (user) inputRef.current?.focus();
+    try { sessionStorage.setItem(STATE_KEY, JSON.stringify(chat)); } catch { /* ignore */ }
+  }, [chat]);
+
+  // first open after the details form: greet with the main menu
+  useEffect(() => {
+    if (user && chat.messages.length === 0) {
+      setChat((c) => ({ ...c, messages: [msg("bot", fill(FLOW_BY_ID["main"]!.text, user, {}))], step: "main", history: [], answers: {} }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
-    // Scroll only the message list (never the panel or the page)
+    // Scroll only the message list (never the panel or the page). A new bot answer is
+    // brought to the top of the list so it's read from its first line, choices below it.
     const list = bottomRef.current?.parentElement;
-    if (list) list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
-  }, [messages, loading]);
+    if (!list) return;
+    const bots = list.querySelectorAll<HTMLElement>("[data-bot-msg]");
+    const last = bots[bots.length - 1];
+    const top = !typing && last ? last.offsetTop - 12 : list.scrollHeight;
+    list.scrollTo({ top, behavior: "smooth" });
+  }, [chat.messages, typing]);
 
-  async function send() {
-    const text = input.trim();
-    if (!text || loading) return;
+  function startChat(u: ChatUser) {
+    try { sessionStorage.setItem(USER_KEY, JSON.stringify(u)); } catch { /* keep in memory only */ }
+    setUser(u);
+    logChat({ sessionId: chat.sessionId, event: "chat started", name: u.name, phone: u.phone, email: u.email, selection: "Details submitted" });
+  }
 
-    const userMsg: Message = { role: "user", text, ts: Date.now() };
-    setMessages((m) => [...m, userMsg]);
-    setInput("");
-    setLoading(true);
-    // Keep the cursor in the message box (also when Send was clicked with the mouse)
-    inputRef.current?.focus();
+  /** Log one event against the current step (who, what the bot asked, what they chose). */
+  function log(event: ChatEvent["event"], selection: string, action: string, who: ChatUser | null = user, answers: Answers = chat.answers) {
+    if (!who) return;
+    const step = FLOW_BY_ID[chat.step];
+    logChat({
+      sessionId: chat.sessionId, event, name: who.name, phone: who.phone, email: who.email,
+      service: answers.service ?? "", stepId: chat.step, botText: step ? fill(step.text, who, chat.answers) : "",
+      selection, action,
+    });
+  }
 
-    try {
-      if (!WEBHOOK_URL) {
-        throw new Error("VITE_CHAT_WEBHOOK_URL is not configured.");
-      }
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (N8N_USERNAME && N8N_PASSWORD) {
-        headers["Authorization"] =
-          "Basic " + btoa(`${N8N_USERNAME}:${N8N_PASSWORD}`);
-      }
+  /** Show a step: the bot "types" briefly, then posts the step's text. */
+  function showStep(id: string, answers: Answers, history: string[], userLabel?: string, who: ChatUser | null = user) {
+    const step = FLOW_BY_ID[id];
+    const u = who;
+    if (!step || !u) return;
+    setChat((c) => ({ ...c, messages: userLabel ? [...c.messages, msg("user", userLabel)] : c.messages, answers, history }));
+    setTyping(true);
+    window.setTimeout(() => {
+      setTyping(false);
+      setChat((c) => ({ ...c, step: id, messages: [...c.messages, msg("bot", fill(step.text, u, answers))] }));
+    }, 450);
+  }
 
-      const res = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          sessionId,
-          user: {
-            name: user?.name ?? "",
-            email: user?.email ?? "",
-            phone: user?.phone ?? "",
-          },
-          message: text,
-          history: messages.slice(-6).map((m) => ({
-            role: m.role,
-            content: m.text,
-          })),
-        }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      // Accept common reply field shapes: reply / message / output / text / response
-      const reply: string =
-        data.reply ??
-        data.message ??
-        data.output ??
-        data.text ??
-        data.response ??
-        "I received your message.";
-      setMessages((m) => [
-        ...m,
-        { role: "bot", text: String(reply), ts: Date.now() },
-      ]);
-    } catch (err) {
-      setMessages((m) => [
-        ...m,
-        {
-          role: "bot",
-          text: "Sorry, I'm having trouble connecting right now. Please try again shortly or reach us at adzvohub@gmail.com.",
-          ts: Date.now(),
-        },
-      ]);
-    } finally {
-      setLoading(false);
+  function say(userLabel: string, botText: string) {
+    setChat((c) => ({ ...c, messages: [...c.messages, msg("user", userLabel), msg("bot", botText)] }));
+  }
+
+  function choose(opt: FlowOption) {
+    if (!user || typing) return;
+    const label = fill(opt.label, user, chat.answers);
+    const answers = opt.set ? { ...chat.answers, ...opt.set } : chat.answers;
+    const did = opt.next ? `→ ${opt.next}` : opt.page ? `opened page ${opt.page}` : opt.href ? `opened ${fill(opt.href, user, answers)}` : opt.action ?? "";
+    if (opt.action !== "callback" || !user.phone) log("selection", label, opt.action === "callback" ? "callback → asked for phone" : did, user, answers);
+
+    if (opt.action === "callback") {
+      // no number yet? ask for it first, then pass the request on
+      if (!user.phone) return showStep("callback-phone", answers, [...chat.history, chat.step], label);
+      requestCallback({ sessionId: chat.sessionId, name: user.name, phone: user.phone, email: user.email, service: answers.service ?? "General enquiry", stepId: chat.step, botText: fill(FLOW_BY_ID[chat.step]?.text ?? "", user, answers) });
+      return showStep("callback-done", answers, [...chat.history, chat.step], label);
+    }
+
+    if (opt.next) return showStep(opt.next, answers, [...chat.history, chat.step], label);
+
+    if (opt.page) {
+      const [to, hash] = opt.page.split("#");
+      navigate(hash ? { to: to || "/", hash } : { to: to || "/" });
+      say(label, "Done — I've opened that page for you. Anything else I can help with?");
+      if (window.innerWidth < 640) onClose(); // on phones, get out of the way so the page is visible
+      return;
+    }
+    if (opt.href) {
+      const href = fill(opt.href, user, answers);
+      if (href.startsWith("http")) window.open(href, "_blank", "noopener,noreferrer");
+      else window.location.href = href;
+      say(label, "Opening that for you now.");
+      return;
+    }
+    if (opt.action === "whatsapp") {
+      window.open(`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(leadMessage(user, answers))}`, "_blank", "noopener,noreferrer");
+      say(label, "I've opened WhatsApp with your details filled in — just press send and our team will reply.");
+      return;
+    }
+    if (opt.action === "email") {
+      const subject = encodeURIComponent(answers.service ? `Project enquiry — ${answers.service}` : `Enquiry from ${user.name}`);
+      window.location.href = `mailto:${CONTACT.email}?subject=${subject}&body=${encodeURIComponent(leadMessage(user, answers))}`;
+      say(label, `I've opened your email app with a message to ${CONTACT.email} — just press send.`);
     }
   }
+
+  /** Phone number typed in for a call back. */
+  const [phoneInput, setPhoneInput] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  function submitPhone(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user) return;
+    const ph = phoneInput.trim();
+    if (!/^[+\d][\d\s()-]{5,}$/.test(ph)) { setPhoneError("Please enter a valid phone number"); return; }
+    setPhoneError("");
+    setPhoneInput("");
+    const updated = { ...user, phone: ph };
+    try { sessionStorage.setItem(USER_KEY, JSON.stringify(updated)); } catch { /* ignore */ }
+    setUser(updated);
+    log("phone entered", ph, "phone saved", updated);
+    requestCallback({ sessionId: chat.sessionId, name: updated.name, phone: ph, email: updated.email, service: chat.answers.service ?? "General enquiry", stepId: chat.step, botText: fill(FLOW_BY_ID[chat.step]?.text ?? "", updated, chat.answers) });
+    showStep("callback-done", chat.answers, [...chat.history, chat.step], ph, updated);
+  }
+
+  function goBack() {
+    if (typing || chat.history.length === 0) return;
+    const history = chat.history.slice(0, -1);
+    log("navigation", "← Back", `→ ${chat.history[chat.history.length - 1]}`);
+    showStep(chat.history[chat.history.length - 1]!, chat.answers, history, "← Back");
+  }
+  function goMain() {
+    if (typing) return;
+    log("navigation", "Main menu", "→ main");
+    showStep("main", {}, [], "Main menu");
+  }
+
+  const current = FLOW_BY_ID[chat.step] ?? FLOW_BY_ID["main"]!;
 
   return (
     <motion.div
@@ -384,7 +434,7 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
           </span>
           <div>
             <p className="text-sm font-semibold leading-none text-white">ADZVO Assistant</p>
-            <p className="mt-1 text-[11px] text-white/60">Online · replies instantly</p>
+            <p className="mt-1 text-[11px] text-white/60">Online · tap an option to begin</p>
           </div>
         </div>
         <button
@@ -402,63 +452,108 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
         <PreChatForm onSubmit={startChat} />
       ) : (
         <>
-      {/* Messages */}
+      {/* Conversation */}
       <div className="relative flex-1 space-y-3 overflow-y-auto px-4 py-4 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.2)_transparent]">
-        {messages.map((msg) => (
-          <div
-            key={msg.ts}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
+        {chat.messages.map((m) => (
+          <div key={m.id} data-bot-msg={m.role === "bot" ? "" : undefined} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-                msg.role === "user"
+              className={`max-w-[85%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                m.role === "user"
                   ? "rounded-br-md bg-gradient-to-br from-[#E3C255] to-[#B08920] font-medium text-[#0A1628] shadow-[0_6px_16px_-6px_rgba(201,162,39,0.6)]"
                   : "rounded-bl-md border border-white/15 bg-white/[0.09] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
               }`}
               style={{ wordBreak: "break-word" }}
             >
-              {msg.text}
+              {m.text}
             </div>
           </div>
         ))}
-        {loading && (
+        {typing && (
           <div className="flex justify-start">
             <div className="rounded-2xl rounded-bl-md border border-white/15 bg-white/[0.09] px-4 py-3">
               <span className="flex gap-1">
                 {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/60"
-                    style={{ animationDelay: `${i * 0.15}s` }}
-                  />
+                  <span key={i} className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/60" style={{ animationDelay: `${i * 0.15}s` }} />
                 ))}
               </span>
             </div>
           </div>
         )}
+
+        {/* the current step's choices */}
+        {!typing && user && (
+          <div className="flex flex-col items-end gap-2 pt-1" role="group" aria-label="Choose an option">
+            {current.options.map((o) => {
+              const external = !!(o.page || o.href || (o.action && o.action !== "callback"));
+              return (
+                <button
+                  key={o.label}
+                  type="button"
+                  onClick={() => choose(o)}
+                  className="inline-flex max-w-[90%] items-center gap-1.5 rounded-full border border-[#E3C255]/55 bg-white/[0.06] px-3.5 py-2 text-left text-[13px] font-semibold text-[#F5D76E] transition hover:border-[#E3C255] hover:bg-[#E3C255]/15 focus-visible:outline-2 focus-visible:outline-[#E3C255]"
+                >
+                  {fill(o.label, user, chat.answers)}
+                  {external && (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M7 17 17 7M8 7h9v9" />
+                    </svg>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+        {/* phone box (only on the "what's your number?" step) */}
+        {!typing && user && current.input === "phone" && (
+          <form onSubmit={submitPhone} className="flex flex-col items-end gap-1.5 pt-1" noValidate>
+            <label htmlFor="adz-chat-callback-phone" className="sr-only">Your phone number</label>
+            <div className="flex w-[90%] items-center gap-2">
+              <input
+                id="adz-chat-callback-phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                autoFocus
+                value={phoneInput}
+                onChange={(e) => setPhoneInput(e.target.value)}
+                placeholder="+91 98765 43210"
+                aria-invalid={!!phoneError}
+                className={`min-w-0 flex-1 rounded-full border bg-white/[0.08] px-4 py-2.5 text-sm text-white placeholder-white/40 outline-none transition focus:border-[#C9A227]/70 ${phoneError ? "border-red-400" : "border-white/15"}`}
+              />
+              <button
+                type="submit"
+                className="shrink-0 rounded-full bg-gradient-to-br from-[#E3C255] to-[#B08920] px-4 py-2.5 text-[13px] font-bold text-[#0A1628] transition hover:brightness-110"
+              >
+                Call me
+              </button>
+            </div>
+            {phoneError && <p className="text-xs text-red-300">{phoneError}</p>}
+          </form>
+        )}
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div className="relative flex items-center gap-2 border-t border-white/10 bg-white/[0.04] px-3 py-3">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
-          ref={inputRef}
-          placeholder="Type a message…"
-          className="flex-1 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2.5 text-sm text-white placeholder-white/45 outline-none transition focus:border-[#C9A227]/70 focus:bg-white/[0.12]"
-        />
-        <button
-          onClick={send}
-          disabled={!input.trim() || loading}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#E3C255] to-[#B08920] text-[#0A1628] shadow-[0_6px_16px_-6px_rgba(201,162,39,0.7)] transition hover:brightness-110 disabled:opacity-40 disabled:shadow-none"
-          aria-label="Send message"
-        >
-          <SendIcon />
-        </button>
-      </div>
+      {/* Back / main menu */}
+      {user && chat.step !== "main" && (
+        <div className="relative flex items-center justify-between gap-2 border-t border-white/10 bg-white/[0.04] px-3 py-2.5">
+          <button
+            type="button"
+            onClick={goBack}
+            disabled={chat.history.length === 0 || typing}
+            className="rounded-full px-3 py-1.5 text-xs font-semibold text-white/75 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
+          >
+            ← Back
+          </button>
+          <button
+            type="button"
+            onClick={goMain}
+            disabled={typing}
+            className="rounded-full border border-white/15 px-3 py-1.5 text-xs font-semibold text-white/85 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
+          >
+            Main menu
+          </button>
+        </div>
+      )}
         </>
       )}
 

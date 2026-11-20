@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { GlassButton } from "@/components/glass-button";
 import { useState, useEffect, type FormEvent } from "react";
 import { Toaster, toast } from "sonner";
+import { sendEnquiry } from "@/lib/chat-log";
 import contactImg from "@/assets/contact.jpg";
 import { Button } from "@/components/ui/button";
 import { Highlight, SectionLabel } from "@/components/brand-logo";
@@ -49,15 +50,24 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   useReveal();
   const [sending, setSending] = useState(false);
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSending(true);
     const form = e.currentTarget;
-    setTimeout(() => {
-      setSending(false);
+    const f = new FormData(form);
+    const get = (k: string) => String(f.get(k) ?? "").trim();
+    // hidden field only bots fill in: pretend it worked and drop it
+    if (get("company_website")) { form.reset(); toast.success("Thanks! We'll get back to you within one business day."); return; }
+    const phone = get("phone");
+    if (phone && !/^[+\d][\d\s()-]{5,}$/.test(phone)) { toast.error("Please enter a valid phone number, or leave it empty."); return; }
+    setSending(true);
+    const ok = await sendEnquiry({ name: get("name"), email: get("email"), phone, message: get("message") });
+    setSending(false);
+    if (ok) {
       form.reset();
       toast.success("Thanks! We'll get back to you within one business day.");
-    }, 700);
+    } else {
+      toast.error("Sorry, that didn't send. Please check your connection, or email adzvohub@gmail.com.");
+    }
   };
   const input = "w-full rounded-[10px] border border-border bg-off px-4 py-3 text-sm text-ink outline-none transition placeholder:text-muted-foreground/60 focus:border-navy focus:ring-[3px] focus:ring-gold/40";
 
@@ -97,16 +107,22 @@ function ContactPage() {
               <p className="pb-2 text-sm text-muted-foreground">We'll get back to you within one business day.</p>
               <div>
                 <label className="mb-1.5 block text-xs font-semibold text-navy/70">Name <span className="text-gold">*</span></label>
-                <input required className={input} placeholder="Your name" aria-label="Name" />
+                <input required name="name" autoComplete="name" maxLength={120} className={input} placeholder="Your name" aria-label="Name" />
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-semibold text-navy/70">Email <span className="text-gold">*</span></label>
-                <input required type="email" className={input} placeholder="you@company.com" aria-label="Email" />
+                <input required name="email" type="email" autoComplete="email" maxLength={160} className={input} placeholder="you@company.com" aria-label="Email" />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-navy/70">Phone <span className="font-normal text-navy/45">(optional)</span></label>
+                <input name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={30} className={input} placeholder="+91 XXXXX XXXXX" aria-label="Phone (optional)" />
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-semibold text-navy/70">Message <span className="text-gold">*</span></label>
-                <textarea required rows={5} className={input} placeholder="Tell us about your project and goals…" aria-label="Project description" />
+                <textarea required name="message" rows={5} maxLength={3000} className={input} placeholder="Tell us about your project and goals…" aria-label="Project description" />
               </div>
+              {/* spam trap: hidden from people, bots fill it in */}
+              <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
               <GlassButton as="button" type="submit" disabled={sending} className="w-full">
                 {sending ? "Sending…" : <>Send Enquiry <ArrowRight /></>}
               </GlassButton>
