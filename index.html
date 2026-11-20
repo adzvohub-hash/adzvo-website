@@ -5,6 +5,19 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate icon" href="/favicon.ico" type="image/x-icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <!-- Apply the saved (or system) theme before first paint, so there's no flash -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("adzvo-theme");
+          if (t !== "light" && t !== "dark") t = "light"; // light by default; dark only when the visitor picks it
+          var r = document.documentElement;
+          r.classList.toggle("dark", t === "dark");
+          r.style.colorScheme = t;
+        } catch (e) {}
+      })();
+    </script>
     <meta name="description" content="ADZVO is a full-service creative digital agency in India — branding, social, web, video, SEO and paid media that move the needle." />
     <title>ADZVO — Ideas That Inspire. Digital That Delivers.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />

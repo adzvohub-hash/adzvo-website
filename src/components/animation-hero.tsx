@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { HeroAurora } from "@/components/hero-aurora";
 import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight } from "lucide-react";
 import frost from "@/assets/animation-frosted.jpg";
@@ -17,6 +18,7 @@ export function AnimationHero() {
   return (
     <section className="animation-hero" aria-labelledby="animation-title">
       <img className="animation-backdrop" src={frost} alt="" width={1920} height={1088} />
+      <HeroAurora />
       <div className="page-shell relative z-10">
         <div className="animation-intro">
           <SectionLabel>ADZVO Services</SectionLabel>

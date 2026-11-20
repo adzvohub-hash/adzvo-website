@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { HeroAurora } from "@/components/hero-aurora";
 import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight, Braces, Cloud, Code2, Gauge, LayoutDashboard, Layers3, MonitorSmartphone, Settings2 } from "lucide-react";
 import frost from "@/assets/animation-frosted.jpg";
@@ -9,6 +10,7 @@ export function DigitalTechnologyHero() {
   return (
     <section className="digital-hero hero-glass-brand" aria-labelledby="digital-title">
       <img className="digital-backdrop" src={frost} alt="" width={1920} height={1088} />
+      <HeroAurora />
       <HeroWaterfall />
       <div className="digital-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">

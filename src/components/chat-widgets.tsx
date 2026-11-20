@@ -479,9 +479,13 @@ export function ChatWidgets() {
   useEffect(() => {
     const show = setTimeout(() => setShowHint(true), 1500);
     const hide = setTimeout(() => setShowHint(false), 9000);
+    // on phones the bubble sits over the page text, so tuck it away as soon as the visitor scrolls
+    const onScroll = () => { if (window.innerWidth < 768) { clearTimeout(show); setShowHint(false); } };
+    window.addEventListener("scroll", onScroll, { passive: true, once: true });
     return () => {
       clearTimeout(show);
       clearTimeout(hide);
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 

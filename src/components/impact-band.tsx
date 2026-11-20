@@ -73,7 +73,7 @@ const IMPACT_CSS = `
 .imp-head { text-align: center; }
 .imp-title { margin-top: 1.5rem; font-weight: 800; line-height: 1.15; color: #0a0e1f; font-size: clamp(1.6rem, 2.8vw, 2.5rem); }
 .imp-sub { margin-top: 1rem; color: rgba(10,14,31,.62); font-size: clamp(1rem, 1.2vw, 1.1rem); }
-@media (min-width: 768px) { .imp-title, .imp-sub { white-space: nowrap; } }
+@media (min-width: 1024px) { .imp-title, .imp-sub { white-space: nowrap; } }
 
 .imp-row { margin-top: 4rem; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); row-gap: 3rem; }
 @media (min-width: 1024px) { .imp-row { grid-template-columns: repeat(4, minmax(0,1fr)); } }
@@ -100,5 +100,12 @@ const IMPACT_CSS = `
 
 .imp-label { margin-top: .9rem; font-size: .8rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: #0a0e1f; }
 .imp-note { margin-top: .45rem; font-size: .9rem; line-height: 1.45; color: rgba(10,14,31,.58); }
+/* dark theme */
+.dark .imp { color: var(--adz-ink); background: radial-gradient(70% 90% at 50% 100%, rgba(229,160,32,.14) 0%, rgba(229,160,32,0) 70%), var(--adz-section); }
+.dark .imp-grid { background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); }
+.dark .imp-title, .dark .imp-label { color: var(--adz-ink); }
+.dark .imp-sub, .dark .imp-note { color: var(--adz-ink-soft); }
+.dark .imp-num { color: #f5b335; text-shadow: 0 6px 26px rgba(229,160,32,.35); }
+.dark .imp .impact-stat-card { --impact-flap-surface: var(--adz-page); --impact-flap-seam: rgba(255,255,255,.12); }
 @media (prefers-reduced-motion: reduce) { .imp-stat { opacity: 1; transform: none; transition: none; } }
 `;

@@ -301,7 +301,7 @@ function Services() {
       <div className="page-shell relative">
           <div className="reveal mx-auto flex flex-col items-center text-center">
             <SectionLabel light>What We Do</SectionLabel>
-            <h2 className="font-display mt-6 text-4xl leading-tight font-extrabold text-primary-foreground sm:text-5xl whitespace-nowrap">
+            <h2 className="font-display mt-6 text-3xl leading-tight font-extrabold text-primary-foreground sm:text-4xl lg:text-5xl lg:whitespace-nowrap">
               Full-Spectrum <Highlight dark>Digital Services</Highlight>
             </h2>
             <p className="mt-5 max-w-xl text-primary-foreground/60">

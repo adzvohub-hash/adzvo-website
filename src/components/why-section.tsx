@@ -210,7 +210,7 @@ const WHY_CSS = `
 .why2-head { text-align: center; }
 .why2-h2 { margin-top: 1.5rem; font-weight: 800; line-height: 1.15; color: #0a0e1f; font-size: clamp(1.5rem, 2.6vw, 2.5rem); }
 .why2-sub { margin-top: 1.1rem; color: rgba(10,14,31,.62); font-size: clamp(1rem, 1.3vw, 1.125rem); }
-@media (min-width: 768px) { .why2-h2, .why2-sub { white-space: nowrap; } }
+@media (min-width: 1024px) { .why2-h2, .why2-sub { white-space: nowrap; } }
 
 /* ── stage ───────────────────────────────────────────── */
 .why2-stage { position: relative; margin-top: 3rem; display: grid; gap: 1.25rem;
@@ -332,6 +332,35 @@ const WHY_CSS = `
 /* warm light from the orb landing on the platform */
 .why2-plat-glow { bottom: 34px; width: 46%; height: 22px; background: radial-gradient(50% 50% at 50% 50%, rgba(245,179,53,.55), rgba(245,179,53,0)); filter: blur(3px); animation: why2-pulse 3s ease-in-out infinite; }
 @keyframes why2-pulse { 0%,100% { opacity: .55; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.12); } }
+
+/* ── dark theme ───────────────────────────────────────── */
+.dark .why2 { background: radial-gradient(60% 55% at 50% 58%, rgba(229,160,32,.16) 0%, rgba(229,160,32,0) 70%), var(--adz-page); }
+.dark .why2-bg { opacity: .5; }
+.dark .why2-h2, .dark .why2-title { color: var(--adz-ink); }
+.dark .why2-sub, .dark .why2-desc { color: var(--adz-ink-soft); }
+.dark .why2-card {
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--a1) 22%, transparent) 0%, color-mix(in srgb, var(--a1) 6%, transparent) 40%, rgba(255,255,255,.03) 72%, rgba(255,255,255,.05) 100%),
+    rgba(17,23,49,.72);
+  border-color: rgba(255,255,255,.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 18px 40px -18px rgba(0,0,0,.8); }
+.dark .why2-card::after { background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,0)); }
+.dark .why2-card.is-active {
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--a1) 32%, transparent) 0%, color-mix(in srgb, var(--a1) 10%, transparent) 42%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.07) 100%),
+    rgba(24,32,66,.8);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 0 1.5px color-mix(in srgb, var(--a2) 55%, transparent), 0 24px 48px -18px color-mix(in srgb, var(--a2) 45%, transparent); }
+.dark .why2-icon { border-color: rgba(255,255,255,.22); }
+.dark .why2-orb {
+  background: radial-gradient(circle at 34% 26%, rgba(255,255,255,.22) 0%, rgba(60,70,120,.45) 30%, rgba(20,26,54,.75) 62%, rgba(229,160,32,.22) 100%);
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.18), inset 18px 22px 50px rgba(255,255,255,.08), inset -26px -34px 70px rgba(229,160,32,.2),
+    0 0 0 10px rgba(255,255,255,.04), 0 0 70px 10px rgba(229,160,32,.2), 0 40px 80px -30px rgba(0,0,0,.8); }
+.dark .why2-orb-spec { opacity: .45; }
+.dark .why2-word { color: var(--adz-ink); }
+.dark .why2-tag { color: var(--adz-ink-soft); }
+.dark .why2-halo { border-color: rgba(229,160,32,.22); box-shadow: 0 0 0 26px rgba(229,160,32,.04), 0 0 90px 20px rgba(229,160,32,.12); }
+.dark .why2-plat-shadow { background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.6), rgba(0,0,0,0)); }
+.dark .why2-plat-side { background: linear-gradient(90deg, #121936 0%, #232c56 18%, #5a6390 42%, #2b3460 60%, #161d3d 82%, #0c1129 100%); }
 
 @media (prefers-reduced-motion: reduce) {
   .why2-orb, .why2-orb-rim, .why2-spark, .why2-plat-glow, .why2-flow, .why2-card.is-active .why2-icon::after { animation: none; }

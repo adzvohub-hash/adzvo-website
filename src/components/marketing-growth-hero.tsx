@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { HeroAurora } from "@/components/hero-aurora";
 import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight, BadgeDollarSign, Gauge, TrendingUp } from "lucide-react";
 import frost from "@/assets/animation-frosted.jpg";
@@ -9,6 +10,7 @@ export function MarketingGrowthHero() {
   return (
     <section className="marketing-hero hero-glass-pearl" aria-labelledby="marketing-title">
       <img className="marketing-backdrop" src={frost} alt="" width={1920} height={1088} />
+      <HeroAurora />
       <HeroWaterfall />
       <div className="marketing-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">

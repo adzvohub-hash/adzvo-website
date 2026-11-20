@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { GlassButton } from "@/components/glass-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,9 +42,9 @@ export function SiteNav() {
 
   return (
     <header className={`site-nav-glass fixed inset-x-0 top-0 z-50 border-b ${scrolled ? "site-nav-scrolled" : ""}`} onKeyDown={(event) => { if (event.key === "Escape") close(); }}>
-      <nav aria-label="Main navigation" className="page-shell grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-3 md:flex md:justify-between">
+      <nav aria-label="Main navigation" className="page-shell grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-3 lg:flex lg:justify-between">
         <Link to="/" onClick={close} aria-label="ADZVO home" className="min-w-0"><BrandLogo /></Link>
-        <ul className="hidden items-center gap-8 text-xs font-semibold uppercase tracking-[0.16em] md:flex">
+        <ul className="hidden shrink-0 items-center gap-5 text-xs font-semibold uppercase tracking-[0.1em] lg:flex xl:gap-8 xl:tracking-[0.16em]">
           <li><Link to="/" className={navLink("/")}>Home</Link></li>
           <li><Link to="/about" className={navLink("/about")}>About</Link></li>
           <li className="relative" onMouseEnter={() => setServicesOpen(true)} onMouseLeave={() => setServicesOpen(false)}
@@ -60,10 +61,13 @@ export function SiteNav() {
           <li><Link to="/resources" className={navLink("/resources")}>Resources</Link></li>
           <li><Link to="/contact" className={navLink("/contact")}>Contact</Link></li>
         </ul>
-        <GlassButton as={Link} to="/contact" onClick={close} size="sm" className="site-nav-glass-cta">Let's Talk</GlassButton>
-        <Button variant="ghost" size="icon" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen(!open)} className="hover:bg-white/15 hover:text-inherit md:hidden">{open ? <X /> : <Menu />}</Button>
+        <div className="site-nav-actions">
+          <ThemeToggle />
+          <GlassButton as={Link} to="/contact" onClick={close} size="sm" className="site-nav-glass-cta">Let's Talk</GlassButton>
+          <Button variant="ghost" size="icon" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen(!open)} className="hover:bg-white/15 hover:text-inherit lg:hidden">{open ? <X /> : <Menu />}</Button>
+        </div>
       </nav>
-      {open && <div className="site-menu-glass page-shell my-2 max-h-[calc(100dvh-100px)] overflow-y-auto rounded-lg border p-3 md:hidden">
+      {open && <div className="site-menu-glass page-shell my-2 max-h-[calc(100dvh-100px)] overflow-y-auto rounded-lg border p-3 lg:hidden">
         <Link to="/" onClick={close} className={mobileNavLink("/")}>Home</Link>
         <Link to="/about" onClick={close} className={mobileNavLink("/about")}>About</Link>
         <Button variant="ghost" className={`w-full justify-between px-3 ${isServices ? "text-gold" : "text-navy"}`} aria-expanded={servicesOpen} onClick={() => setServicesOpen(!servicesOpen)}>Services <ChevronDown className={`transition-transform ${servicesOpen ? "rotate-180" : ""}`} /></Button>

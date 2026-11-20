@@ -159,7 +159,8 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 :root {
-  --navy: oklch(0.17 0.03 270);
+  --navy-base: oklch(0.17 0.03 270);
+  --navy: var(--navy-base);
   --gold: oklch(0.78 0.16 70);
   --electric: oklch(0.55 0.22 263);
   --sky: oklch(0.69 0.16 252);
@@ -1272,7 +1273,7 @@ body { font-family: var(--font-sans); overflow-x: hidden; }
   .adz-btn.w-full .lqg-body { width: 100%; }
 }
 /* nav "Let's Talk": desktop only (the mobile menu has its own full-width button) */
-@media (max-width: 767px) { .site-nav-glass-cta { display: none; } }
+@media (max-width: 1023px) { .site-nav-glass-cta { display: none; } }
 /* navy glass button, for gold / bright backgrounds */
 .adz-btn-dark .lqg-tint { background: linear-gradient(180deg, rgba(23,32,66,.92), rgba(10,14,31,.94)); }
 .adz-btn-dark .lqg-body { box-shadow: 0 14px 30px -12px rgba(10,14,31,.55); }
@@ -1302,3 +1303,165 @@ body { font-family: var(--font-sans); overflow-x: hidden; }
   background-size: 250% 100%; animation: hcta-sweep 7s ease-in-out infinite; }
 @keyframes hcta-sweep { 0% { background-position: 120% 0; } 60%,100% { background-position: -120% 0; } }
 @media (prefers-reduced-motion: reduce) { .hero-strip-shine { animation: none; } }
+
+/* ════════════════════════════════════════════════════════════════════════
+   DARK THEME  — toggled by the sun/moon button (adds .dark to <html>)
+   Light theme is untouched; everything below only applies under .dark.
+   ════════════════════════════════════════════════════════════════════════ */
+:root { --adz-ink: #0a0e1f; --adz-ink-soft: rgba(10,14,31,.62); }
+.dark {
+  --adz-page: #0a0e1d;          /* page background            */
+  --adz-section: #10162f;       /* alternate (lifted) sections */
+  --adz-surface: #161d3c;       /* cards / panels             */
+  --adz-surface-2: #1e2752;     /* raised / hover surfaces    */
+  --adz-ink: #eef1f8;           /* main text                  */
+  --adz-ink-soft: rgba(226,231,244,.66);
+  --adz-line: rgba(255,255,255,.09);
+  --adz-text-on-dark: oklch(0.95 0.008 260);
+
+  --off: var(--adz-page);
+  --background: var(--adz-page);
+  --foreground: var(--adz-ink);
+  --card: var(--adz-surface);
+  --card-foreground: var(--adz-ink);
+  --popover: var(--adz-surface);
+  --popover-foreground: var(--adz-ink);
+  --primary: #222b57;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: var(--adz-surface-2);
+  --secondary-foreground: var(--adz-ink);
+  --muted: var(--adz-surface-2);
+  --muted-foreground: oklch(0.74 0.02 260);
+  --accent: var(--adz-surface-2);
+  --accent-foreground: var(--adz-ink);
+  --border: var(--adz-line);
+  --input: rgba(255,255,255,.14);
+  --ink: #05070f;               /* footer — a step darker than the page */
+
+  /* nav / menus */
+  --nav-glass-scrolled: color-mix(in oklab, #0a0e1d 82%, transparent);
+  --nav-glass-edge: rgba(255,255,255,.08);
+  --nav-glass-shadow: 0 8px 28px -14px rgba(0,0,0,.7);
+  --menu-glass-surface: color-mix(in oklab, #111731 92%, transparent);
+  --menu-glass-shadow: 0 24px 48px -18px rgba(0,0,0,.75);
+}
+.dark body { background-color: var(--adz-page); color: var(--adz-ink); }
+html.theme-switching, html.theme-switching *, html.theme-switching *::before, html.theme-switching *::after {
+  transition: background-color .35s ease, color .35s ease, border-color .35s ease, fill .35s ease !important;
+}
+
+/* "navy" is both the text colour and the dark-section colour.
+   In dark mode, text-navy (and its opacity variants) flips to light text,
+   while anything painted with a navy background keeps the original navy. */
+.dark [class*="text-navy"], .dark [class*="border-navy"], .dark [class*="divide-navy"] { --navy: var(--adz-text-on-dark); }
+.dark [class*="bg-navy"], .dark [class*="from-navy"], .dark [class*="via-navy"], .dark [class*="to-navy"],
+.dark [class*="bg-gold"], .dark [class*="bg-[#e5a020]"], .dark .lqg-gold, .dark .hcta, .dark .hero-strip-gold,
+.dark footer, .dark .homepage-hero, .dark #services { --navy: var(--navy-base); }
+/* text that sits on gold stays navy */
+.dark [class*="bg-gold"] [class*="text-navy"], .dark [class*="bg-gold"][class*="text-navy"],
+.dark .hcta [class*="text-navy"], .dark .hero-strip-gold [class*="text-navy"] { --navy: var(--navy-base); }
+/* on dark sections that already use white text, keep any navy accents navy */
+.dark footer [class*="text-navy"], .dark .homepage-hero [class*="text-navy"]:not([class*="bg-"]) { --navy: var(--adz-text-on-dark); }
+
+/* plain white panels become dark surfaces (the translucent white overlays used on dark sections are left alone) */
+.dark .bg-white { background-color: var(--adz-surface); }
+.dark .bg-white\/60 { background-color: color-mix(in oklab, var(--adz-surface) 70%, transparent); }
+.dark .bg-background { background-color: var(--adz-page); }
+/* alternate sections are lifted a step and edged with a hairline, so each section reads separately */
+.dark .bg-off { background-color: var(--adz-section); }
+.dark section.bg-off, .dark .cta-band, .dark .imp, .dark #services { box-shadow: inset 0 1px 0 rgba(255,255,255,.06), inset 0 -1px 0 rgba(255,255,255,.06); }
+.dark .cta-band { box-shadow: inset 0 1px 0 rgba(229,160,32,.28), inset 0 -1px 0 rgba(229,160,32,.28); }
+.dark .bg-card { background-color: var(--adz-surface); }
+.dark .shadow-navy\/10, .dark .shadow-navy\/20, .dark .shadow-navy\/25, .dark .shadow-navy\/30, .dark .shadow-navy\/40 { --tw-shadow-color: rgba(0,0,0,.5); }
+.dark .text-muted-foreground { color: oklch(0.74 0.02 260); }
+
+/* forms */
+.dark input, .dark textarea, .dark select { background-color: var(--adz-surface); color: var(--adz-ink); border-color: rgba(255,255,255,.14); }
+.dark input::placeholder, .dark textarea::placeholder { color: rgba(226,231,244,.4); }
+
+/* frosted cards (about page) */
+.dark .lg-glass {
+  background: linear-gradient(135deg, rgba(30,38,76,.72) 0%, rgba(17,23,49,.62) 55%, rgba(40,32,20,.5) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), inset 0 -1px 0 rgba(255,255,255,.04), inset 0 0 18px rgba(255,255,255,.03), 0 14px 34px -14px rgba(0,0,0,.7);
+}
+.dark .lg-glass::before { background: linear-gradient(135deg, rgba(255,255,255,.35) 0%, rgba(255,255,255,.06) 35%, rgba(240,138,28,.55) 65%, rgba(255,255,255,.25) 100%); }
+.dark .lg-glass::after { background: radial-gradient(140px 140px at var(--mx, 18%) var(--my, 0%), rgba(255,255,255,.14), transparent 70%), linear-gradient(180deg, rgba(255,255,255,.06) 0%, transparent 42%); }
+.dark .lg-glass.lg-glass-active { background: linear-gradient(135deg, rgba(40,50,96,.8) 0%, rgba(22,29,60,.7) 55%, rgba(60,44,20,.6) 100%); }
+
+/* liquid-glass "light" buttons/pills become dark glass with light text */
+.dark .lqg-light .lqg-tint { background: rgba(255,255,255,.07); }
+.dark .lqg-light .lqg-content { color: var(--adz-ink); }
+.dark .lqg-light .lqg-body { box-shadow: 0 12px 30px -12px rgba(0,0,0,.7); }
+
+/* nav: "Let's Talk" etc. already glass; make the menu links readable */
+.dark .site-nav-scrolled { color: var(--adz-ink); }
+
+/* theme toggle */
+.site-nav-actions { display: flex; align-items: center; gap: .6rem; justify-self: end; }
+.theme-toggle { position: relative; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 999px; overflow: hidden; cursor: pointer;
+  color: currentColor; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.22);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: background .25s ease, border-color .25s ease, transform .2s ease; }
+.site-nav-scrolled .theme-toggle { background: rgba(10,14,31,.05); border-color: rgba(10,14,31,.14); }
+.dark .site-nav-scrolled .theme-toggle { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.14); }
+.theme-toggle:hover { transform: rotate(-12deg); border-color: #e5a020; }
+.theme-toggle:focus-visible { outline: 2px solid #e5a020; outline-offset: 2px; }
+.theme-toggle-icon { grid-area: 1 / 1; display: grid; place-items: center; transition: transform .45s cubic-bezier(.3,1.4,.5,1), opacity .3s ease; }
+.theme-toggle-icon svg { width: 18px; height: 18px; }
+.theme-toggle-sun { color: #e5a020; transform: translateY(0) rotate(0); }
+.theme-toggle-moon { transform: translateY(130%) rotate(-60deg); opacity: 0; }
+.theme-toggle.is-dark .theme-toggle-sun { transform: translateY(-130%) rotate(60deg); opacity: 0; }
+.theme-toggle.is-dark .theme-toggle-moon { transform: translateY(0) rotate(0); opacity: 1; color: #f5d27a; }
+
+
+/* contact page form panel */
+.dark .bg-primary-foreground { background-color: var(--adz-surface); }
+.dark .text-ink { color: var(--adz-ink); }
+
+/* about page: page colour, stage fades and text halo follow the theme */
+.about-page { --about-bg: #ffffff; background: var(--about-bg); }
+.dark .about-page { --about-bg: #0a0e1d; }
+.about-bg { background: var(--about-bg); }
+.about-stage-fade { background: linear-gradient(to bottom, var(--about-bg) 0%, transparent 14%, transparent 74%, var(--about-bg) 100%); }
+@media (min-width: 1024px) {
+  .about-stage-fade { background: linear-gradient(to bottom, var(--about-bg) 0%, var(--about-bg) 24%, transparent 34%, transparent 76%, var(--about-bg) 100%); }
+  .about-halo > p { text-shadow: 0 0 14px var(--about-bg), 0 0 6px var(--about-bg), 0 0 2px var(--about-bg); }
+}
+
+/* ── Service heroes: aurora sky (dark theme only) ───────────────────────── */
+.hero-aurora { display: none; }
+.dark :is(.automation-hero, .animation-hero, .branding-hero, .localization-hero, .digital-hero, .film-hero, .marketing-hero, .strategy-hero) {
+  background: linear-gradient(180deg, #050816 0%, #0a1030 45%, #0b1128 70%, #0a0e1d 100%);
+}
+/* the light frosted photo, waterfall and pastel washes are switched off */
+.dark :is(.automation-hero, .animation-hero, .branding-hero, .localization-hero, .digital-hero, .film-hero, .marketing-hero, .strategy-hero)
+  :is([class$="-backdrop"], [class$="-ambient"], .hero-waterfall) { display: none; }
+.dark .hero-aurora { display: block; position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.ha-stars { position: absolute; inset: 0; background-image: radial-gradient(1.7px 1.7px at 37% 53%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.5px 1.5px at 74% 44%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.3px 1.3px at 11% 35%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.1px 1.1px at 48% 26%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.8px 1.8px at 85% 17%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.6px 1.6px at 22% 8%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.4px 1.4px at 59% 61%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.2px 1.2px at 96% 52%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.0px 1.0px at 33% 43%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.7px 1.7px at 70% 34%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.5px 1.5px at 7% 25%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.3px 1.3px at 44% 16%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.1px 1.1px at 81% 7%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.8px 1.8px at 18% 60%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.6px 1.6px at 55% 51%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.4px 1.4px at 92% 42%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.2px 1.2px at 29% 33%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.0px 1.0px at 66% 24%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.7px 1.7px at 3% 15%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.5px 1.5px at 40% 6%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.3px 1.3px at 77% 59%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.1px 1.1px at 14% 50%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.8px 1.8px at 51% 41%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.6px 1.6px at 88% 32%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.4px 1.4px at 25% 23%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.2px 1.2px at 62% 14%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.0px 1.0px at 99% 5%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.7px 1.7px at 36% 58%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.5px 1.5px at 73% 49%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.3px 1.3px at 10% 40%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.1px 1.1px at 47% 31%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.8px 1.8px at 84% 22%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.6px 1.6px at 21% 13%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.4px 1.4px at 58% 4%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.2px 1.2px at 95% 57%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.0px 1.0px at 32% 48%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.7px 1.7px at 69% 39%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.5px 1.5px at 6% 30%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.3px 1.3px at 43% 21%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.1px 1.1px at 80% 12%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.8px 1.8px at 17% 3%, rgba(255,255,255,.7) 50%, transparent 100%), radial-gradient(1.6px 1.6px at 54% 56%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.4px 1.4px at 91% 47%, rgba(255,255,255,.9) 50%, transparent 100%), radial-gradient(1.2px 1.2px at 28% 38%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.0px 1.0px at 65% 29%, rgba(255,255,255,.7) 50%, transparent 100%); animation: ha-twinkle 6s ease-in-out infinite alternate; }
+.ha-lights { position: absolute; inset: 0; opacity: .85; animation: ha-hue 24s ease-in-out infinite alternate; }
+.ha-band { --c: 245,179,53; --a: .85; --c2: 255,214,120; --a2: .55; position: absolute; border-radius: 50%; filter: blur(46px); mix-blend-mode: screen; will-change: transform, opacity;
+  background: linear-gradient(90deg, rgba(var(--c),0) 0%, rgba(var(--c),var(--a)) 28%, rgba(var(--c2),var(--a2)) 55%, rgba(var(--c),var(--a)) 76%, rgba(var(--c),0) 100%);
+  animation: ease-in-out infinite alternate; }
+.ha-b1 { left: -20%; top: 6%;  width: 150%; height: 30%; transform: rotate(-6deg); animation-name: ha-m1; animation-duration: 26s; }
+.ha-b2 { left: -10%; top: 20%; width: 140%; height: 26%; transform: rotate(5deg);  --c: 240,138,28; --a: .7; --c2: 245,179,53; --a2: .45; animation-name: ha-m2; animation-duration: 31s; animation-delay: -8s; }
+.ha-b3 { left: -30%; top: -4%; width: 160%; height: 24%; transform: rotate(-12deg); --c: 255,214,120; --a: .5; --c2: 240,138,28; --a2: .35; animation-name: ha-m3; animation-duration: 36s; animation-delay: -14s; }
+.ha-b4 { left: 0;    top: 32%; width: 130%; height: 22%; transform: rotate(8deg);  --c: 110,140,255; --a: .35; --c2: 150,110,255; --a2: .25; animation-name: ha-m2; animation-duration: 40s; animation-delay: -20s; }
+.ha-b5 { left: -15%; top: 42%; width: 150%; height: 20%; transform: rotate(-3deg); --a: .4; --c2: 240,138,28; --a2: .3; animation-name: ha-m1; animation-duration: 34s; animation-delay: -5s; }
+.ha-horizon { position: absolute; left: 15%; top: 62%; width: 70%; height: 45%; border-radius: 50%; filter: blur(80px); mix-blend-mode: screen;
+  background: radial-gradient(ellipse at center, rgba(240,138,28,.35) 0%, rgba(240,138,28,0) 70%); }
+.ha-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 30%;
+  background: linear-gradient(180deg, rgba(10,14,29,0) 0%, rgba(10,14,29,.7) 65%, #0a0e1d 100%); }
+@keyframes ha-m1 { 0% { transform: translate(-4%,0) rotate(-6deg) scaleY(1); opacity: .85; } 50% { transform: translate(3%,-6%) rotate(-1deg) scaleY(1.35); opacity: 1; } 100% { transform: translate(7%,4%) rotate(-9deg) scaleY(.85); opacity: .7; } }
+@keyframes ha-m2 { 0% { transform: translate(5%,2%) rotate(5deg) scaleY(.9); opacity: .7; } 50% { transform: translate(-2%,-5%) rotate(9deg) scaleY(1.3); opacity: 1; } 100% { transform: translate(-7%,3%) rotate(2deg) scaleY(1); opacity: .8; } }
+@keyframes ha-m3 { 0% { transform: translate(0,0) rotate(-12deg) scaleY(1.1); opacity: .6; } 50% { transform: translate(6%,4%) rotate(-7deg) scaleY(.8); opacity: .95; } 100% { transform: translate(-4%,-3%) rotate(-15deg) scaleY(1.25); opacity: .65; } }
+@keyframes ha-hue { 0% { filter: hue-rotate(-8deg) saturate(1); } 50% { filter: hue-rotate(10deg) saturate(1.15); } 100% { filter: hue-rotate(-4deg) saturate(.95); } }
+@keyframes ha-twinkle { from { opacity: .55; } to { opacity: .9; } }
+@media (prefers-reduced-motion: reduce) { .ha-band, .ha-lights, .ha-stars { animation: none; } }
+
+/* ── Service heroes: readable mock-up cards in dark ──────────────────────
+   The hero mock-ups colour their text with var(--navy). In dark, flip it to
+   light text for everything inside the hero, then keep navy where navy is
+   genuinely a fill (brand swatch, film overlays, text on gold). */
+.dark :is(.automation-hero, .animation-hero, .branding-hero, .localization-hero, .digital-hero, .film-hero, .marketing-hero, .strategy-hero) { --navy: var(--adz-text-on-dark); }
+.dark :is(.automation-hero, .animation-hero, .branding-hero, .localization-hero, .digital-hero, .film-hero, .marketing-hero, .strategy-hero)
+  :is(.branding-swatch-navy, .film-rec, .film-resolution, .lqg-gold, [class*="bg-gold"]) { --navy: var(--navy-base); }
+.dark .branding-swatch-navy { box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }

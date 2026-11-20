@@ -164,28 +164,28 @@ function AboutPage() {
   const setChapterRef = (i: number) => (el: HTMLElement | null) => { chapterRefs.current[i] = el; };
 
   return (
-    <main className="relative bg-white text-[#0a0e1f]">
+    <main className="about-page relative text-navy">
       <div ref={storyRef} className="relative">
 
         {/* ── STAGE: centred animation, pinned while the story scrolls ── */}
-        <div className="sticky top-16 z-20 h-[40svh] bg-white lg:top-0 lg:z-0 lg:h-screen">
-          <div className="relative h-full overflow-hidden bg-white">
+        <div className="about-bg sticky top-16 z-20 h-[40svh] lg:top-0 lg:z-0 lg:h-screen">
+          <div className="about-bg relative h-full overflow-hidden">
             <canvas
               ref={canvasRef}
               aria-hidden
               className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ${glReady ? "opacity-100" : "opacity-0"}`}
             />
             {/* soft white fade at top/bottom so it melts into the page */}
-            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,#fff_0%,transparent_14%,transparent_74%,#fff_100%)] lg:bg-[linear-gradient(to_bottom,#fff_0%,#fff_24%,transparent_34%,transparent_76%,#fff_100%)]" />
+            <div aria-hidden className="about-stage-fade pointer-events-none absolute inset-0" />
 
             {/* caption + stepper, centred under the animation */}
             <div className="absolute inset-x-0 bottom-0 z-10 mx-auto max-w-md px-4 pb-4 text-center lg:pb-7">
               <div key={active} className="animate-[stageCaption_600ms_ease-out]">
-                <p className="text-[11px] font-bold tabular-nums tracking-[0.2em] text-[#0a0e1f]/45" style={LOGO_FONT}>
+                <p className="text-[11px] font-bold tabular-nums tracking-[0.2em] text-navy/45" style={LOGO_FONT}>
                   <span className="text-[#e5a020]">{String(active + 1).padStart(2, "0")}</span> / {String(CHAPTERS.length).padStart(2, "0")}
                 </p>
                 <p className="font-display mt-1 text-base font-bold uppercase tracking-wider sm:text-xl">{chapter.step}</p>
-                <p className="mt-0.5 hidden text-sm text-[#0a0e1f]/60 sm:block">{chapter.caption}</p>
+                <p className="mt-0.5 hidden text-sm text-navy/60 sm:block">{chapter.caption}</p>
               </div>
               <div className="mt-3 grid grid-cols-5 gap-1.5">
                 {CHAPTERS.map((c, i) => (
@@ -212,15 +212,15 @@ function AboutPage() {
               </h1>
             </>}
             left={<>
-              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-navy/75 xl:text-2xl xl:leading-relaxed`}>
                 We look beyond individual deliverables to understand the bigger picture — so every piece of work moves the whole brand forward.
               </p>
-              <div data-reveal className={`${REVEAL} mt-8 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-[#0a0e1f]/40`} style={LOGO_FONT}>
+              <div data-reveal className={`${REVEAL} mt-8 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-navy/40`} style={LOGO_FONT}>
                 <ArrowDown className="size-4 animate-bounce" /> Scroll to follow the idea
               </div>
             </>}
             right={<>
-              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-navy/75 xl:text-2xl xl:leading-relaxed`}>
                 Brand, content, digital, film and AI — connected by one team and one way of thinking.
               </p>
               <div data-reveal className={`${REVEAL} mt-7 flex flex-wrap gap-3`}>
@@ -241,24 +241,24 @@ function AboutPage() {
               </h2>
             </>}
             left={<>
-              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-navy/75 xl:text-2xl xl:leading-relaxed`}>
                 We help businesses build stronger brands, connect with the right audiences and create meaningful digital experiences.
               </p>
               <div data-reveal className={`${REVEAL} mt-7 flex flex-wrap gap-2`}>
                 {CAPABILITIES.map((c) => (
-                  <span key={c} className="lg-glass rounded-full px-4 py-2.5 text-base font-semibold text-[#0a0e1f]/85">{c}</span>
+                  <span key={c} className="lg-glass rounded-full px-4 py-2.5 text-base font-semibold text-navy/85">{c}</span>
                 ))}
               </div>
             </>}
             right={<>
-              <p data-reveal className={`${REVEAL} text-sm font-bold uppercase tracking-[0.2em] text-[#0a0e1f]/50`} style={LOGO_FONT}>Before we act, we look at</p>
+              <p data-reveal className={`${REVEAL} text-sm font-bold uppercase tracking-[0.2em] text-navy/50`} style={LOGO_FONT}>Before we act, we look at</p>
               <div className="mt-4 space-y-3">
                 {LENSES.map((l, i) => (
                   <div key={l.title} data-reveal className={`${REVEAL} lg-glass flex gap-4 rounded-2xl p-4`}>
                     <span className="text-base font-bold text-[#e5a020]" style={LOGO_FONT}>{String(i + 1).padStart(2, "0")}</span>
                     <div>
                       <p className="font-display text-lg font-bold">{l.title}</p>
-                      <p className="mt-0.5 text-base leading-relaxed text-[#0a0e1f]/65">{l.text}</p>
+                      <p className="mt-0.5 text-base leading-relaxed text-navy/65">{l.text}</p>
                     </div>
                   </div>
                 ))}
@@ -291,7 +291,7 @@ function AboutPage() {
               </h2>
             </>}
             left={
-              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-navy/75 xl:text-2xl xl:leading-relaxed`}>
                 So we take time to understand each brief, and build the solution around what you actually need — not a one-size-fits-all package.
               </p>
             }
@@ -304,7 +304,7 @@ function AboutPage() {
                     </span>
                     <div>
                       <p className="font-display text-xl font-bold">{a.title}</p>
-                      <p className="mt-1 text-lg leading-relaxed text-[#0a0e1f]/70">{a.text}</p>
+                      <p className="mt-1 text-lg leading-relaxed text-navy/70">{a.text}</p>
                     </div>
                   </li>
                 ))}
@@ -323,7 +323,7 @@ function AboutPage() {
               </h2>
             </>}
             left={
-              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-[#0a0e1f]/75 xl:text-2xl xl:leading-relaxed`}>
+              <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-navy/75 xl:text-2xl xl:leading-relaxed`}>
                 Have an idea that needs to land? Let's talk about where you want to take your brand.
               </p>
             }
@@ -347,7 +347,7 @@ function AboutPage() {
 
       <style>{`@keyframes stageCaption { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }`}</style>
 
-      <div className="relative z-10 bg-white"><Footer /></div>
+      <div className="relative z-10"><Footer /></div>
     </main>
   );
 }
@@ -367,14 +367,14 @@ function Chapter({ refCb, current, top, left, right }: {
   return (
     <section
       ref={refCb}
-      className={`flex min-h-[90svh] flex-col py-16 lg:absolute lg:inset-0 lg:min-h-0 lg:pb-40 lg:pt-24 lg:transition-all lg:duration-700 lg:ease-out ${current ? "lg:translate-y-0 lg:opacity-100" : "lg:pointer-events-none lg:translate-y-6 lg:opacity-0"}`}
+      className={`flex min-h-[70svh] flex-col py-14 lg:absolute lg:inset-0 lg:min-h-0 lg:pb-40 lg:pt-24 lg:transition-all lg:duration-700 lg:ease-out ${current ? "lg:translate-y-0 lg:opacity-100" : "lg:pointer-events-none lg:translate-y-6 lg:opacity-0"}`}
     >
       <div className="page-shell"><div className="mx-auto max-w-[880px] lg:text-center lg:[&_.chapter-tag]:justify-center">{top}</div></div>
-      <div className="page-shell mt-10 grid flex-1 items-center gap-10 lg:mt-6 lg:grid-cols-[minmax(0,1fr)_minmax(220px,21vw)_minmax(0,1fr)] lg:gap-0">
+      <div className="page-shell mt-8 grid flex-1 content-start items-start gap-8 sm:grid-cols-2 lg:mt-6 lg:content-normal lg:items-center lg:grid-cols-[minmax(0,1fr)_minmax(220px,21vw)_minmax(0,1fr)] lg:gap-0">
         {/* side columns hug the animation and tuck slightly over its edges */}
-        <div className="relative min-w-0 lg:-mr-8 lg:[&>p]:[text-shadow:0_0_14px_#fff,0_0_6px_#fff,0_0_2px_#fff]">{left}</div>
+        <div className="relative min-w-0 lg:-mr-8 about-halo">{left}</div>
         <div aria-hidden className="hidden lg:block" />
-        <div className="relative min-w-0 lg:-ml-8 lg:[&>p]:[text-shadow:0_0_14px_#fff,0_0_6px_#fff,0_0_2px_#fff]">{right}</div>
+        <div className="relative min-w-0 lg:-ml-8 about-halo">{right}</div>
       </div>
     </section>
   );
@@ -384,12 +384,12 @@ function PillarCard({ icon: Icon, label, text }: (typeof PILLARS)[number]) {
   return (
     <article data-reveal className={`${REVEAL} lg-glass rounded-2xl p-5`}>
       <div className="flex items-center gap-3">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#e5a020] text-[#0a0e1f]">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#e5a020] text-navy">
           <Icon className="size-5" strokeWidth={2.4} />
         </span>
         <h3 className="font-display text-xl font-bold">{label}</h3>
       </div>
-      <p className="mt-3 text-lg leading-relaxed text-[#0a0e1f]/70">{text}</p>
+      <p className="mt-3 text-lg leading-relaxed text-navy/70">{text}</p>
     </article>
   );
 }
@@ -399,7 +399,7 @@ function ChapterTag({ n, label }: { n: number; label: string }) {
     <div data-reveal className={`${REVEAL} chapter-tag flex items-center gap-3`}>
       <span className="font-display text-sm font-black text-[#e5a020]">{String(n).padStart(2, "0")}</span>
       <span className="h-px w-8 bg-[#0a0e1f]/20" />
-      <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#0a0e1f]/55" style={LOGO_FONT}>{label}</span>
+      <span className="text-xs font-bold uppercase tracking-[0.2em] text-navy/55" style={LOGO_FONT}>{label}</span>
     </div>
   );
 }
@@ -408,7 +408,8 @@ function ChapterTag({ n, label }: { n: number; label: string }) {
 /* `three` is loaded dynamically, so it is typed loosely here. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildScene(THREE: any, canvas: HTMLCanvasElement, journey: { current: number }) {
-  const BG = 0xffffff;
+  const isDark = () => document.documentElement.classList.contains("dark");
+  const BG = isDark() ? 0x0a0e1d : 0xffffff;
   const GOLD = 0xe5a020;
   const BALL_R = 0.34;
 
@@ -420,12 +421,22 @@ function buildScene(THREE: any, canvas: HTMLCanvasElement, journey: { current: n
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(BG);
   scene.fog = new THREE.Fog(BG, 14, 32);
+  const applySceneTheme = () => {
+    const c = isDark() ? 0x0a0e1d : 0xffffff;
+    scene.background = new THREE.Color(c);
+    scene.fog = new THREE.Fog(c, 14, 32);
+    hemi.groundColor = new THREE.Color(isDark() ? 0x1a2142 : 0xdfe5f2);
+    hemi.intensity = isDark() ? 1.0 : 1.4;
+  };
+  window.addEventListener("adzvo-theme", applySceneTheme);
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 80);
   camera.position.set(0, 1.6, 12.5);
 
   /* Lights */
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xdfe5f2, 1.4));
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xdfe5f2, 1.4);
+  scene.add(hemi);
+  applySceneTheme();
   const key = new THREE.DirectionalLight(0xffffff, 2.2);
   key.position.set(4, 8, 10);
   scene.add(key);
@@ -682,6 +693,7 @@ function buildScene(THREE: any, canvas: HTMLCanvasElement, journey: { current: n
 
   return () => {
     cancelAnimationFrame(raf);
+    window.removeEventListener("adzvo-theme", applySceneTheme);
     window.removeEventListener("pointermove", onPointer);
     ro.disconnect();
     io.disconnect();

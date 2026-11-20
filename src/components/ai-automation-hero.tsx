@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { HeroAurora } from "@/components/hero-aurora";
 import { GlassButton } from "@/components/glass-button";
 import {
   ArrowRight,
@@ -20,6 +21,7 @@ export function AiAutomationHero() {
   return (
     <section className="automation-hero" aria-labelledby="automation-title">
       <img className="automation-backdrop" src={frost} alt="" width={1920} height={1088} />
+      <HeroAurora />
       <div className="automation-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="automation-intro">

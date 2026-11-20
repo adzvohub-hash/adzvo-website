@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { HeroAurora } from "@/components/hero-aurora";
 import { GlassButton } from "@/components/glass-button";
 import { ArrowUpRight, Globe2, Languages } from "lucide-react";
 import frost from "@/assets/animation-frosted.jpg";
@@ -8,6 +9,7 @@ export function ContentLocalizationHero() {
   return (
     <section className="localization-hero" aria-labelledby="localization-title">
       <img className="localization-backdrop" src={frost} alt="" width={1920} height={1088} />
+      <HeroAurora />
       <div className="localization-ambient" aria-hidden="true" />
       <div className="page-shell relative z-10">
         <div className="localization-intro">
