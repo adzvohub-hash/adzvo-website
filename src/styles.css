@@ -1450,12 +1450,23 @@ html.theme-switching, html.theme-switching *, html.theme-switching *::before, ht
   background: radial-gradient(ellipse at center, rgba(240,138,28,.35) 0%, rgba(240,138,28,0) 70%); }
 .ha-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 30%;
   background: linear-gradient(180deg, rgba(10,14,29,0) 0%, rgba(10,14,29,.7) 65%, #0a0e1d 100%); }
+.ha-planet { position: absolute; left: -35%; width: 170%; top: 84%; height: 140%; border-radius: 50%;
+  background: linear-gradient(180deg, #182148 0, #0e1432 45px, #0a0e1d 120px);
+  box-shadow:
+    0 -1.5px 0 rgba(255,214,120,.9),
+    0 -6px 18px rgba(245,179,53,.6),
+    0 -30px 90px rgba(240,138,28,.38),
+    inset 0 24px 50px rgba(245,179,53,.14); }
+.ha-planet::before { content: ""; position: absolute; left: 30%; right: 30%; top: -2px; height: 3px; border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #fff3c4, transparent); filter: blur(1px); animation: ha-glint 7s ease-in-out infinite; }
+@keyframes ha-glint { 0%,100% { opacity: .6; transform: scaleX(.85); } 50% { opacity: 1; transform: scaleX(1.1); } }
+@media (max-width: 767px) { .ha-planet { top: 90%; left: -90%; width: 280%; } }
 @keyframes ha-m1 { 0% { transform: translate(-4%,0) rotate(-6deg) scaleY(1); opacity: .85; } 50% { transform: translate(3%,-6%) rotate(-1deg) scaleY(1.35); opacity: 1; } 100% { transform: translate(7%,4%) rotate(-9deg) scaleY(.85); opacity: .7; } }
 @keyframes ha-m2 { 0% { transform: translate(5%,2%) rotate(5deg) scaleY(.9); opacity: .7; } 50% { transform: translate(-2%,-5%) rotate(9deg) scaleY(1.3); opacity: 1; } 100% { transform: translate(-7%,3%) rotate(2deg) scaleY(1); opacity: .8; } }
 @keyframes ha-m3 { 0% { transform: translate(0,0) rotate(-12deg) scaleY(1.1); opacity: .6; } 50% { transform: translate(6%,4%) rotate(-7deg) scaleY(.8); opacity: .95; } 100% { transform: translate(-4%,-3%) rotate(-15deg) scaleY(1.25); opacity: .65; } }
 @keyframes ha-hue { 0% { filter: hue-rotate(-8deg) saturate(1); } 50% { filter: hue-rotate(10deg) saturate(1.15); } 100% { filter: hue-rotate(-4deg) saturate(.95); } }
 @keyframes ha-twinkle { from { opacity: .55; } to { opacity: .9; } }
-@media (prefers-reduced-motion: reduce) { .ha-band, .ha-lights, .ha-stars { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .ha-band, .ha-lights, .ha-stars, .ha-planet::before { animation: none; } }
 
 /* ── Service heroes: readable mock-up cards in dark ──────────────────────
    The hero mock-ups colour their text with var(--navy). In dark, flip it to
@@ -1465,3 +1476,286 @@ html.theme-switching, html.theme-switching *, html.theme-switching *::before, ht
 .dark :is(.automation-hero, .animation-hero, .branding-hero, .localization-hero, .digital-hero, .film-hero, .marketing-hero, .strategy-hero)
   :is(.branding-swatch-navy, .film-rec, .film-resolution, .lqg-gold, [class*="bg-gold"]) { --navy: var(--navy-base); }
 .dark .branding-swatch-navy { box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+
+/* about page — phones/tablets: chapters along a gold timeline (no 3D) */
+@media (max-width: 1023px) {
+  .about-page { padding-top: 4rem; }
+  .about-ch-body { position: relative; padding-left: 1.5rem; border-left: 2px solid rgba(229,160,32,.35); }
+  .about-ch:first-child .about-ch-body { border-image: linear-gradient(to bottom, transparent 0, rgba(229,160,32,.35) 2.5rem) 1; }
+  .about-ch:last-of-type .about-ch-body { border-image: linear-gradient(to bottom, rgba(229,160,32,.35) 60%, transparent) 1; }
+  .about-ch .chapter-tag { display: none; }
+  .about-step { position: relative; margin-bottom: 1rem; font-size: .72rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--adz-ink-soft); }
+  .about-step::before { content: ""; position: absolute; left: calc(-1.5rem - 7px); top: 50%; width: 12px; height: 12px; border-radius: 999px; transform: translateY(-50%);
+    background: #e5a020; box-shadow: 0 0 0 4px rgba(229,160,32,.2), 0 0 14px rgba(229,160,32,.6); }
+}
+
+/* chat "Hi! Chat with us" bubble: dark glass in dark mode */
+.dark .chat-hint-bubble { background: rgba(22,29,60,.92); color: #fff; border: 1px solid rgba(229,160,32,.45);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,.7); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+
+/* home hero on phones: grow to fit the copy, start below the navbar, leave room for
+   the slide indicator, the gold strip and the floating chat buttons */
+@media (max-width: 767px) {
+  .homepage-hero { height: auto !important; min-height: 0 !important; align-items: flex-start !important; padding-top: 6.5rem !important; padding-bottom: 9rem !important; }
+  .homepage-hero .adz-btn .adz-btn-label { white-space: normal; text-align: center; }
+}
+
+/* ───────── Site footer — design A (big CTA + giant wordmark) ───────── */
+.ftA{position:relative;overflow:hidden;background:#05070f;color:#eef1f8;font-family:Inter,system-ui,sans-serif}
+.ftA-glow{position:absolute;left:50%;top:-260px;width:min(900px,140%);height:420px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(245,179,53,.18),rgba(245,179,53,0));pointer-events:none}
+.ftA-inner{position:relative;z-index:1;padding-top:4rem}
+.ftA-cta{display:flex;flex-direction:column;gap:1.75rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,.08)}
+@media (min-width:1024px){.ftA-cta{flex-direction:row;align-items:flex-end;justify-content:space-between;gap:2.5rem}}
+.ftA-eyebrow{margin:0;font-size:.75rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:#f5b335}
+.ftA-title{margin:.85rem 0 0;font-size:clamp(2rem,5vw,3.5rem);line-height:1.06;font-weight:800;letter-spacing:-.02em;color:#eef1f8}
+.ftA-title-gold{display:block;color:#f5b335}
+.ftA-cta-actions{display:flex;flex-wrap:wrap;gap:.85rem;flex-shrink:0}
+.ftA-cta-actions svg{width:18px;height:18px}
+.ftA-grid{display:grid;grid-template-columns:1fr;gap:2.5rem;padding-top:2.75rem}
+@media (min-width:640px){.ftA-grid{grid-template-columns:1fr 1fr}}
+@media (min-width:1024px){.ftA-grid{grid-template-columns:1.25fr 2fr .9fr 1.25fr;gap:3rem}}
+.ftA-logo{display:inline-flex;color:#fff}
+.ftA-about{margin:1.1rem 0 0;max-width:20rem;font-size:.875rem;line-height:1.7;color:rgba(238,241,248,.62)}
+.ftA-socials{display:flex;gap:.6rem;margin-top:1.4rem}
+.ftA-social{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:rgba(238,241,248,.75);transition:transform .2s,background .2s,color .2s,border-color .2s}
+.ftA-social:hover{transform:translateY(-2px);background:#f5b335;border-color:#f5b335;color:#0b0f1e}
+.ftA-head{margin:0;font-size:.75rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#f5b335}
+.ftA-services-cols{display:grid;grid-template-columns:1fr;gap:.7rem 2rem}
+@media (min-width:420px){.ftA-services-cols{grid-template-columns:1fr 1fr}}
+.ftA-list{list-style:none;margin:1.1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+.ftA-services-cols .ftA-list{margin-top:1.1rem}
+.ftA-link{font-size:.875rem;color:rgba(238,241,248,.7);text-decoration:none;transition:color .2s}
+.ftA-link:hover{color:#f5b335}
+.ftA-link:focus-visible,.ftA-contact:focus-visible,.ftA-social:focus-visible,.ftA-login:focus-visible{outline:2px solid #f5b335;outline-offset:3px;border-radius:6px}
+.ftA-contact{display:inline-flex;align-items:center;gap:.65rem;font-size:.875rem;color:rgba(238,241,248,.7);text-decoration:none;transition:color .2s}
+.ftA-contact:hover{color:#f5b335}
+.ftA-contact-icon{width:16px;height:16px;color:#f5b335;flex-shrink:0}
+.ftA-contact-main{font-size:1rem;font-weight:600;color:#eef1f8}
+.ftA-mark{position:relative;z-index:0;margin-top:2rem;text-align:center;font-family:'Space Grotesk',Inter,system-ui,sans-serif;font-weight:700;font-size:clamp(4.5rem,18vw,16rem);line-height:.9;letter-spacing:.1em;padding-left:.1em;color:transparent;-webkit-text-stroke:1px rgba(245,179,53,.3);background:linear-gradient(180deg,rgba(245,179,53,.24),rgba(245,179,53,0) 88%);-webkit-background-clip:text;background-clip:text;pointer-events:none;user-select:none;white-space:nowrap}
+@media (min-width:1024px){.ftA-mark{margin-top:-2.5rem}}
+@media (max-width:639px){.ftA-services-cols{gap:.7rem 2rem}.ftA-services-cols .ftA-list + .ftA-list{margin-top:.7rem}.ftA-bar-left{flex-direction:column;gap:.4rem;text-align:center}}
+.ftA-bar{position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.08);background:rgba(5,7,15,.88);margin-top:-1.2rem}
+.ftA-bar-inner{display:flex;flex-direction:column;align-items:center;gap:.9rem;padding-top:1.25rem;padding-bottom:1.25rem}
+@media (min-width:768px){.ftA-bar-inner{flex-direction:row;justify-content:space-between}}
+.ftA-bar-left{display:flex;align-items:center;gap:1.5rem;font-size:.8rem;color:rgba(238,241,248,.5)}
+.ftA-bar-left p{margin:0}
+.ftA-login{font-size:.8rem;color:rgba(238,241,248,.3);text-decoration:none}
+.ftA-login:hover{color:rgba(238,241,248,.65)}
+.ftA-policies{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem 1.5rem}
+.ftA-policies .ftA-link{font-size:.8rem}
+@media (max-width:767px){.ftA-bar-inner{padding-bottom:6rem}}
+
+.ftA-nocta .ftA-inner{padding-top:1rem}
+.ftA-nocta .ftA-glow{display:none}
+/* the home CTA band is orange in both themes: keep its white-glass button light */
+.dark .hcta .lqg-light .lqg-tint { background: rgba(255,255,255,.28); }
+.dark .hcta .lqg-light .lqg-content { color: #0a0e1f; }
+.dark .hcta .lqg-light .lqg-body { box-shadow: 0 12px 36px rgba(10,14,31,.14); }
+
+/* Footer accent: thin orange separator strip that blends down into the footer (home page) */
+.ftA-strip{position:relative;z-index:2;height:10px;overflow:hidden;background:linear-gradient(90deg,#f5b335 0%,#e5a020 45%,#f08a1c 100%);box-shadow:0 0 24px rgba(245,160,40,.55),0 6px 40px rgba(240,138,28,.35)}
+.ftA-strip-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;animation:hcta-sweep 7s ease-in-out infinite}
+@keyframes hcta-sweep{0%{background-position:120% 0}60%,100%{background-position:-120% 0}}
+.ftA-blend{position:absolute;left:0;right:0;top:10px;height:380px;pointer-events:none;background:radial-gradient(120% 90% at 50% 0%,rgba(245,150,35,.30),rgba(245,150,35,0) 70%),linear-gradient(180deg,rgba(240,138,28,.62) 0%,rgba(236,140,30,.40) 22%,rgba(229,150,32,.18) 50%,rgba(5,7,15,0) 100%)}
+.ftA-accent .ftA-glow{top:-200px;background:radial-gradient(closest-side,rgba(245,179,53,.22),rgba(245,179,53,0))}
+@media (prefers-reduced-motion:reduce){.ftA-strip-shine{animation:none}}
+.ftA-accent .ftA-eyebrow{color:#ffe2a6}
+
+/* home: a faint orange wash at the top of the footer, continuing the CTA band */
+.ftA-joined::before{content:"";position:absolute;left:0;right:0;top:0;height:160px;pointer-events:none;background:linear-gradient(180deg,rgba(240,138,28,.22),rgba(240,138,28,0))}
+
+/* ───────── Home "What We Do": themed background + glass tiles ───────── */
+.svc-sec { isolation: isolate;
+  background:
+    radial-gradient(55% 45% at 12% 0%, rgba(245,179,53,.16), rgba(245,179,53,0) 70%),
+    radial-gradient(50% 45% at 92% 100%, rgba(240,138,28,.14), rgba(240,138,28,0) 70%),
+    radial-gradient(70% 60% at 50% 45%, rgba(46,62,130,.38), rgba(46,62,130,0) 75%),
+    linear-gradient(180deg, #0c1228 0%, #0a0e1d 55%, #070a16 100%); }
+/* faint grid that fades out toward the edges */
+.svc-sec::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(70% 60% at 50% 45%, #000 30%, transparent 100%); mask-image: radial-gradient(70% 60% at 50% 45%, #000 30%, transparent 100%); }
+/* a soft gold glow behind the heading */
+.svc-sec-glow { position: absolute; z-index: -1; left: 50%; top: -120px; width: min(900px, 120%); height: 360px; transform: translateX(-50%);
+  border-radius: 50%; background: radial-gradient(closest-side, rgba(245,179,53,.16), rgba(245,179,53,0)); pointer-events: none; }
+
+/* glass tile */
+.svc-tile { isolation: isolate; background: rgba(255,255,255,.04);
+  box-shadow: 0 24px 48px -24px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.06);
+  transition: transform .5s ease, box-shadow .5s ease; }
+.svc-tile:hover { transform: translateY(-4px);
+  box-shadow: 0 30px 60px -24px rgba(0,0,0,.8), 0 0 0 1px rgba(245,179,53,.25), 0 0 40px -8px rgba(245,179,53,.35); }
+/* frosted bottom: blur + tint that fades upward, no hard edge */
+.svc-frost { position: absolute; inset: auto 0 0 0; height: 46%; pointer-events: none;
+  background: linear-gradient(0deg, rgba(10,14,31,.72) 0%, rgba(10,14,31,.38) 55%, rgba(10,14,31,0) 100%);
+  backdrop-filter: blur(12px) saturate(140%); -webkit-backdrop-filter: blur(12px) saturate(140%);
+  -webkit-mask-image: linear-gradient(0deg, #000 45%, transparent 100%); mask-image: linear-gradient(0deg, #000 45%, transparent 100%); }
+.svc-label { position: absolute; left: 1.1rem; right: 1.1rem; bottom: 1.1rem; display: flex; align-items: center; gap: .8rem;
+  text-shadow: 0 1px 10px rgba(0,0,0,.45); }
+/* glass sheen (top light) + glass edge (bright top-left, gold bottom-right) */
+.svc-sheen { position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(160deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.04) 22%, rgba(255,255,255,0) 40%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 -1px 0 rgba(255,255,255,.06); }
+.svc-sheen::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px;
+  background: linear-gradient(140deg, rgba(255,255,255,.55), rgba(255,255,255,.08) 35%, rgba(255,255,255,.04) 60%, rgba(245,179,53,.45));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+.svc-tile:hover .svc-sheen::after { background: linear-gradient(140deg, rgba(255,255,255,.6), rgba(245,179,53,.25) 40%, rgba(245,179,53,.7)); }
+/* liquid-glass look: the photo is slightly see-through over a frosted, tinted glass base */
+.svc-tile { background: linear-gradient(150deg, rgba(255,255,255,.14), rgba(255,255,255,.04) 45%, rgba(245,179,53,.08));
+  backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%); }
+.svc-tile > img { opacity: .72; mix-blend-mode: normal; transition: transform .7s ease-out, opacity .5s ease; }
+.svc-tile:hover > img { opacity: .85; }
+.svc-sheen { box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(255,255,255,.08), inset 0 0 30px rgba(255,255,255,.06); }
+
+/* ───────── Aurora sky: twinkling stars + shooting stars (dark theme only) ───────── */
+.ha-twinkles { position: absolute; inset: 0; }
+.ha-tw { position: absolute; border-radius: 50%; background: #fff; opacity: .25;
+  box-shadow: 0 0 6px 1px rgba(255,255,255,.55); animation: ha-tw 3s ease-in-out infinite; }
+.ha-tw-gold { background: #ffe3a3; box-shadow: 0 0 8px 1px rgba(255,205,110,.65); }
+/* a few bigger stars get a 4-point glint */
+.ha-tw-sparkle::before, .ha-tw-sparkle::after { content: ""; position: absolute; left: 50%; top: 50%; border-radius: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent); transform: translate(-50%,-50%); }
+.ha-tw-sparkle::before { width: 900%; height: 1px; }
+.ha-tw-sparkle::after { width: 1px; height: 900%; background: linear-gradient(180deg, transparent, rgba(255,255,255,.9), transparent); }
+@keyframes ha-tw {
+  0%, 100% { opacity: .15; transform: scale(.6); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+.ha-shoot { position: absolute; width: 170px; height: 1.6px; border-radius: 999px; opacity: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,226,160,.45) 60%, #fff);
+  filter: drop-shadow(0 0 6px rgba(255,214,140,.9));
+  transform-origin: 100% 50%; transform: rotate(var(--ha-angle, 150deg)) translateX(0);
+  animation: ha-shoot 12s linear infinite; }
+.ha-shoot::after { content: ""; position: absolute; right: -2px; top: 50%; width: 4px; height: 4px; border-radius: 50%; transform: translateY(-50%);
+  background: #fff; box-shadow: 0 0 10px 3px rgba(255,230,170,.9); }
+@keyframes ha-shoot {
+  0%   { opacity: 0; transform: rotate(var(--ha-angle, 150deg)) translateX(0); }
+  1%   { opacity: 1; }
+  7%   { opacity: 1; }
+  9%   { opacity: 0; transform: rotate(var(--ha-angle, 150deg)) translateX(clamp(420px, 60vw, 900px)); }
+  100% { opacity: 0; transform: rotate(var(--ha-angle, 150deg)) translateX(clamp(420px, 60vw, 900px)); }
+}
+@media (prefers-reduced-motion: reduce) { .ha-tw, .ha-shoot { animation: none; } .ha-shoot { display: none; } }
+
+/* ───────── About page backdrop (desktop): colour fields + giant chapter words ───────── */
+@media (min-width: 1024px) {
+  .about-page { --about-bg: #fffaf1; }
+  .dark .about-page { --about-bg: #0a0e1d; }
+  /* the 3D now draws on a transparent canvas; this mask does what the old white fade did */
+  .about-canvas { -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 24%, #000 34%, #000 76%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, transparent 24%, #000 34%, #000 76%, transparent 100%); }
+  .about-stage-fade { display: none; }
+}
+.about-sky { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; --about-drift: 0; }
+.about-sky-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s ease; }
+.about-sky-layer.is-on { opacity: 1; }
+/* light theme: one mood per chapter */
+.about-sky-0 { background: radial-gradient(60% 55% at 18% 25%, rgba(255,214,140,.50), rgba(255,214,140,0) 70%), radial-gradient(55% 50% at 85% 75%, rgba(245,179,53,.24), rgba(245,179,53,0) 70%), linear-gradient(180deg,#fffaf0,#fff5e3); }
+.about-sky-1 { background: radial-gradient(60% 55% at 82% 22%, rgba(255,186,120,.45), rgba(255,186,120,0) 70%), radial-gradient(55% 50% at 15% 80%, rgba(245,179,53,.22), rgba(245,179,53,0) 70%), linear-gradient(180deg,#fff7ef,#fff1e2); }
+.about-sky-2 { background: radial-gradient(60% 55% at 80% 22%, rgba(150,180,255,.32), rgba(150,180,255,0) 70%), radial-gradient(55% 50% at 15% 80%, rgba(245,179,53,.16), rgba(245,179,53,0) 70%), linear-gradient(180deg,#f6f8ff,#eef2fd); }
+.about-sky-3 { background: radial-gradient(60% 55% at 20% 22%, rgba(140,200,220,.30), rgba(140,200,220,0) 70%), radial-gradient(55% 50% at 85% 80%, rgba(150,180,255,.22), rgba(150,180,255,0) 70%), linear-gradient(180deg,#f4fafc,#eef5fb); }
+.about-sky-4 { background: radial-gradient(65% 60% at 50% 30%, rgba(255,205,110,.55), rgba(255,205,110,0) 70%), radial-gradient(55% 50% at 90% 90%, rgba(240,138,28,.20), rgba(240,138,28,0) 70%), linear-gradient(180deg,#fff8ea,#ffefd2); }
+/* giant outlined word, drifting slowly up as you scroll through its chapter */
+.about-sky-word { position: absolute; left: 0; right: 0; top: 30%; text-align: center; white-space: nowrap;
+  font-family: 'Space Grotesk', Inter, system-ui, sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; line-height: 1;
+  font-size: clamp(9rem, 21vw, 22rem); color: transparent;
+  -webkit-text-stroke: 1.5px var(--sky-stroke, rgba(229,160,32,.38));
+  background: linear-gradient(180deg, var(--sky-fill, rgba(245,179,53,.16)), rgba(255,255,255,0) 85%); -webkit-background-clip: text; background-clip: text;
+  opacity: 0; transform: translateY(calc(40px - var(--about-drift) * 80px)) scale(.97);
+  transition: opacity 1.2s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+.about-sky-word.is-on { opacity: 1; transform: translateY(calc(20px - var(--about-drift) * 80px)) scale(1); }
+.about-sky-word-1 { --sky-stroke: rgba(240,138,28,.36); --sky-fill: rgba(240,138,28,.12); }
+.about-sky-word-2, .about-sky-word-3 { --sky-stroke: rgba(47,98,216,.26); --sky-fill: rgba(47,98,216,.09); }
+.about-sky-stars { display: none; }
+/* dark theme: navy night with tinted glows, a few stars, gold/blue outlines */
+.dark .about-sky-0 { background: radial-gradient(60% 55% at 20% 20%, rgba(245,179,53,.20), rgba(245,179,53,0) 70%), radial-gradient(55% 55% at 85% 80%, rgba(46,62,130,.55), rgba(46,62,130,0) 70%), linear-gradient(180deg,#0c1228,#070a16); }
+.dark .about-sky-1 { background: radial-gradient(60% 55% at 82% 20%, rgba(240,138,28,.20), rgba(240,138,28,0) 70%), radial-gradient(55% 55% at 15% 80%, rgba(46,62,130,.5), rgba(46,62,130,0) 70%), linear-gradient(180deg,#0d1229,#070a16); }
+.dark .about-sky-2 { background: radial-gradient(60% 55% at 80% 22%, rgba(80,120,255,.26), rgba(80,120,255,0) 70%), radial-gradient(55% 55% at 15% 80%, rgba(245,179,53,.10), rgba(245,179,53,0) 70%), linear-gradient(180deg,#0b1330,#070a16); }
+.dark .about-sky-3 { background: radial-gradient(60% 55% at 20% 22%, rgba(70,170,200,.20), rgba(70,170,200,0) 70%), radial-gradient(55% 55% at 85% 80%, rgba(80,120,255,.22), rgba(80,120,255,0) 70%), linear-gradient(180deg,#0a1430,#070a16); }
+.dark .about-sky-4 { background: radial-gradient(65% 60% at 50% 30%, rgba(245,179,53,.26), rgba(245,179,53,0) 70%), radial-gradient(55% 55% at 90% 90%, rgba(240,138,28,.16), rgba(240,138,28,0) 70%), linear-gradient(180deg,#0e1226,#070a16); }
+.dark .about-sky-word { --sky-stroke: rgba(245,179,53,.34); --sky-fill: rgba(245,179,53,.14); }
+.dark .about-sky-word-2, .dark .about-sky-word-3 { --sky-stroke: rgba(120,160,255,.32); --sky-fill: rgba(120,160,255,.10); }
+.dark .about-sky-stars { display: block; position: absolute; inset: 0;
+  background-image: radial-gradient(1.6px 1.6px at 12% 18%, rgba(255,255,255,.8) 50%, transparent 100%), radial-gradient(1.2px 1.2px at 27% 62%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.8px 1.8px at 41% 12%, rgba(255,227,163,.85) 50%, transparent 100%), radial-gradient(1.3px 1.3px at 58% 74%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.5px 1.5px at 69% 28%, rgba(255,255,255,.75) 50%, transparent 100%), radial-gradient(1.2px 1.2px at 83% 55%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.7px 1.7px at 92% 16%, rgba(255,227,163,.8) 50%, transparent 100%), radial-gradient(1.1px 1.1px at 6% 82%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.4px 1.4px at 35% 88%, rgba(255,255,255,.65) 50%, transparent 100%), radial-gradient(1.3px 1.3px at 76% 90%, rgba(255,255,255,.6) 50%, transparent 100%), radial-gradient(1.5px 1.5px at 50% 40%, rgba(255,255,255,.5) 50%, transparent 100%), radial-gradient(1.2px 1.2px at 18% 45%, rgba(255,255,255,.55) 50%, transparent 100%);
+  animation: ha-twinkle 6s ease-in-out infinite alternate; }
+@media (prefers-reduced-motion: reduce) { .about-sky-word, .about-sky-layer { transition: none; } .dark .about-sky-stars { animation: none; } }
+/* phones/tablets (no 3D): a gentle version of the chapter-01 mood behind the timeline */
+@media (max-width: 1023px) {
+  .about-page { background: radial-gradient(80% 40% at 10% 0%, rgba(255,214,140,.40), rgba(255,214,140,0) 70%), radial-gradient(70% 35% at 100% 45%, rgba(150,180,255,.18), rgba(150,180,255,0) 70%), linear-gradient(180deg,#fffaf0,#ffffff 60%); }
+  .dark .about-page { background: radial-gradient(80% 40% at 10% 0%, rgba(245,179,53,.16), rgba(245,179,53,0) 70%), radial-gradient(70% 35% at 100% 45%, rgba(46,62,130,.45), rgba(46,62,130,0) 70%), #0a0e1d; }
+}
+
+/* About page (desktop): see-through glass cards so the giant chapter word shows through */
+@media (min-width: 1024px) {
+  .about-page .lg-glass {
+    background: linear-gradient(135deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,.12) 55%, rgba(255,243,226,.20) 100%);
+    -webkit-backdrop-filter: blur(2.5px) saturate(160%); backdrop-filter: blur(2.5px) saturate(160%); }
+  .dark .about-page .lg-glass, .about-page.dark .lg-glass {
+    background: linear-gradient(135deg, rgba(30,38,76,.34) 0%, rgba(17,23,49,.22) 55%, rgba(40,32,20,.18) 100%); }
+  .about-page .lg-glass.lg-glass-active { background: linear-gradient(135deg, rgba(255,255,255,.4), rgba(255,243,226,.28)); }
+  .dark .about-page .lg-glass.lg-glass-active { background: linear-gradient(135deg, rgba(40,50,96,.42), rgba(60,44,20,.3)); }
+}
+@media (min-width: 1024px) {
+  html:not(.dark) .about-page .lg-glass {
+    background: linear-gradient(135deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 55%, rgba(255,243,226,.10) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(255,255,255,.35), 0 12px 32px -16px rgba(10,14,31,.18); }
+  html:not(.dark) .about-page .lg-glass::after { opacity: .5; }
+}
+
+/* About backdrop: faint colour-washed photo per chapter, clear in the centre so the 3D sits on clean colour */
+.about-sky-photo { position: absolute; inset: -40px 0; opacity: 0; transition: opacity 1.6s ease;
+  -webkit-mask-image: radial-gradient(ellipse 34% 48% at 50% 56%, transparent 0%, transparent 35%, #000 85%);
+  mask-image: radial-gradient(ellipse 34% 48% at 50% 56%, transparent 0%, transparent 35%, #000 85%); }
+.about-sky-photo.is-on { opacity: .09; } /* light mode photo strength: raise for a stronger photo */
+.about-sky-photo img { width: 100%; height: 100%; object-fit: cover; display: block;
+  filter: grayscale(1) sepia(.55) saturate(1.5) hue-rotate(-8deg) blur(1.5px) contrast(1.05);
+  mix-blend-mode: multiply;
+  transform: translateY(calc(var(--about-drift) * -36px)) scale(1.06); transition: transform .9s cubic-bezier(.2,.7,.2,1); }
+.dark .about-sky-photo.is-on { opacity: .26; }
+.dark .about-sky-photo img { filter: grayscale(1) sepia(.35) saturate(1.3) hue-rotate(185deg) brightness(.9) blur(1.5px); mix-blend-mode: luminosity; }
+@media (prefers-reduced-motion: reduce) { .about-sky-photo, .about-sky-photo img { transition: none; } }
+/* clearer chapter photos */
+.about-sky-photo { -webkit-mask-image: radial-gradient(ellipse 26% 40% at 50% 56%, transparent 0%, transparent 25%, #000 75%); mask-image: radial-gradient(ellipse 26% 40% at 50% 56%, transparent 0%, transparent 25%, #000 75%); }
+.about-sky-photo.is-on { opacity: .24; }
+.about-sky-photo img { filter: grayscale(.35) sepia(.3) saturate(1.15) contrast(1.05); mix-blend-mode: multiply; }
+.dark .about-sky-photo.is-on { opacity: .42; }
+.dark .about-sky-photo img { filter: grayscale(.4) sepia(.15) saturate(1.1) brightness(.85) contrast(1.05); mix-blend-mode: luminosity; }
+
+/* About page: full-strength text over the photo backdrop — near-black in light mode, white in dark mode */
+html:not(.dark) .about-page .about-ch [class*="text-navy/"], html:not(.dark) .about-page .about-bg [class*="text-navy/"] { color: #0a0e1f !important; }
+html:not(.dark) .about-page .about-ch, html:not(.dark) .about-page .about-bg { color: #0a0e1f; }
+@media (min-width: 1024px) {
+  .about-page .about-ch p { font-weight: 500; }
+  /* a soft glow in the page colour behind the words lifts them off the photo */
+  .about-page .about-ch h1, .about-page .about-ch h2, .about-page .about-ch p, .about-page .about-bg p {
+    text-shadow: 0 0 18px var(--about-bg), 0 0 8px var(--about-bg), 0 0 3px var(--about-bg); }
+  .dark .about-page .about-ch h1, .dark .about-page .about-ch h2, .dark .about-page .about-ch p, .dark .about-page .about-bg p {
+    text-shadow: 0 0 18px rgba(7,10,22,.95), 0 0 8px rgba(7,10,22,.9), 0 1px 3px rgba(0,0,0,.8); }
+  /* text inside the glass cards doesn't need the glow */
+  .about-page .lg-glass p { text-shadow: none; }
+}
+
+/* About backdrop: Shape and Align in the brand orange/gold family (no blue) */
+.about-sky-2 { background: radial-gradient(60% 55% at 80% 22%, rgba(255,196,110,.42), rgba(255,196,110,0) 70%), radial-gradient(55% 50% at 15% 80%, rgba(240,138,28,.18), rgba(240,138,28,0) 70%), linear-gradient(180deg,#fff9ee,#fff2dc); }
+.about-sky-3 { background: radial-gradient(60% 55% at 20% 22%, rgba(255,170,110,.40), rgba(255,170,110,0) 70%), radial-gradient(55% 50% at 85% 80%, rgba(245,179,53,.22), rgba(245,179,53,0) 70%), linear-gradient(180deg,#fff7f0,#fff0e0); }
+.about-sky-word-2, .about-sky-word-3 { --sky-stroke: rgba(240,138,28,.36); --sky-fill: rgba(240,138,28,.12); }
+.dark .about-sky-2 { background: radial-gradient(60% 55% at 80% 22%, rgba(245,179,53,.22), rgba(245,179,53,0) 70%), radial-gradient(55% 55% at 15% 80%, rgba(46,62,130,.45), rgba(46,62,130,0) 70%), linear-gradient(180deg,#0d1229,#070a16); }
+.dark .about-sky-3 { background: radial-gradient(60% 55% at 20% 22%, rgba(240,138,28,.22), rgba(240,138,28,0) 70%), radial-gradient(55% 55% at 85% 80%, rgba(46,62,130,.45), rgba(46,62,130,0) 70%), linear-gradient(180deg,#0e1228,#070a16); }
+.dark .about-sky-word-2, .dark .about-sky-word-3 { --sky-stroke: rgba(245,179,53,.34); --sky-fill: rgba(245,179,53,.14); }
+.dark .about-sky-photo img { filter: grayscale(.4) sepia(.35) saturate(1.15) brightness(.85) contrast(1.05); }
+
+/* light mode: chapter photos more visible (dark mode stays as is) */
+.about-sky-photo.is-on { opacity: .42; }
+.dark .about-sky-photo.is-on { opacity: .42; }
+
+/* light mode: the giant chapter word stands out over the photo — bolder orange outline, frosted cream fill and a soft light glow */
+html:not(.dark) .about-sky-word {
+  -webkit-text-stroke: 2.5px rgba(229,140,20,.85);
+  background: linear-gradient(180deg, rgba(255,250,238,.72), rgba(255,240,210,.35) 70%, rgba(255,240,210,.1));
+  -webkit-background-clip: text; background-clip: text;
+  filter: drop-shadow(0 0 14px rgba(255,246,228,.85)) drop-shadow(0 2px 2px rgba(150,80,0,.18)); }
+/* light mode: clearer chapter photos (natural colour, stronger) */
+html:not(.dark) .about-sky-photo.is-on { opacity: .62; }
+html:not(.dark) .about-sky-photo img { mix-blend-mode: normal; filter: sepia(.12) saturate(1.05) contrast(1.06) brightness(1.04); }

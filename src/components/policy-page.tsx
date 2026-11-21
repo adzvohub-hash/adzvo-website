@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import { Footer } from "@/components/site-footer";
 
 export const policyLinks = [
   { title: "Privacy Policy", to: "/privacy-policy" },
@@ -24,7 +25,7 @@ export function PolicyPage({ title, intro, sections }: {
   sections: { title: string; text: string }[];
 }) {
   return (
-    <main className="min-h-screen bg-off text-navy">
+    <main className="bg-off text-navy">
       <header className="bg-navy pb-14 pt-32 text-primary-foreground sm:pb-16">
         <div className="page-shell">
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-primary-foreground/70 transition-colors hover:text-gold"><ArrowLeft className="size-4" /> Back to ADZVO</Link>
@@ -33,7 +34,7 @@ export function PolicyPage({ title, intro, sections }: {
           <p className="mt-5 max-w-2xl leading-relaxed text-primary-foreground/70">{intro}</p>
         </div>
       </header>
-      <div className="page-shell grid gap-10 py-12 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16 sm:py-16">
+      <div className="page-shell grid gap-10 pb-28 pt-12 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16 sm:pb-24 sm:pt-16">
         <aside>
           <nav aria-label="Legal pages" className="flex flex-wrap gap-x-6 gap-y-3 lg:sticky lg:top-28 lg:flex-col lg:items-start">
             {policyLinks.map((policy) => <Link key={policy.to} to={policy.to} activeProps={{ className: "font-semibold text-electric", "aria-current": "page" }} className="text-sm text-muted-foreground transition-colors hover:text-electric">{policy.title}</Link>)}
@@ -47,9 +48,10 @@ export function PolicyPage({ title, intro, sections }: {
               <p className="mt-3 leading-relaxed text-muted-foreground">{section.text}</p>
             </section>)}
           </div>
-          <div className="mt-12 border-t border-border pt-6 text-sm text-muted-foreground">For questions about this {title.toLowerCase()}, <Link to="/" hash="contact" className="font-medium text-electric underline underline-offset-4">contact ADZVO</Link>.</div>
+          <div className="mt-12 border-t border-border pt-6 text-sm text-muted-foreground">For questions about this {title.toLowerCase()}, <Link to="/contact" className="font-medium text-electric underline underline-offset-4">contact ADZVO</Link>.</div>
         </article>
       </div>
+      <Footer />
     </main>
   );
 }

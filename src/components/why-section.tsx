@@ -362,6 +362,42 @@ const WHY_CSS = `
 .dark .why2-plat-shadow { background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.6), rgba(0,0,0,0)); }
 .dark .why2-plat-side { background: linear-gradient(90deg, #121936 0%, #232c56 18%, #5a6390 42%, #2b3460 60%, #161d3d 82%, #0c1129 100%); }
 
+/* desktop: a more compact cards + globe area (about 80% of the original size); the heading stays as in other sections */
+@media (min-width: 1024px) {
+  .why2-stage { margin-top: 2.5rem; grid-template-columns: minmax(0,1fr) minmax(300px, 360px) minmax(0,1fr); }
+  .why2-col { gap: 1.2rem; }
+  .why2-card { max-width: min(340px, calc(100% - 3rem)); gap: .9rem; padding: .8rem 1.3rem .8rem .8rem; border-radius: 1.9rem; }
+  .why2-icon { width: 3.25rem; height: 3.25rem; }
+  .why2-icon svg { width: 1.3rem; height: 1.3rem; }
+  .why2-num { font-size: .8rem; }
+  .why2-title { font-size: .95rem; }
+  .why2-desc { margin-top: .2rem; font-size: .82rem; }
+  .why2-center { padding-bottom: 58px; }
+  .why2-orb { width: 290px; }
+  .why2-halo { width: 348px; transform: translate(-50%, calc(-50% - 29px)); }
+  .why2-mark { width: 4.75rem; height: 4.75rem; }
+  .why2-spark { width: 21px; height: 21px; }
+  .why2-word { margin-top: .8rem; font-size: 1.55rem; }
+  .why2-tag { font-size: .55rem; }
+  .why2-pedestal { width: 270px; height: 80px; }
+}
+
+/* small laptops: shrink the centre so the cards keep room for their text */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .why2-stage { grid-template-columns: minmax(0,1fr) 250px minmax(0,1fr); }
+  .why2-col-left { padding-right: 1.25rem; }
+  .why2-col-right { padding-left: 1.25rem; }
+  .why2-card { max-width: calc(100% - 1rem); }
+  .why2-left.why2-pos-0, .why2-left.why2-pos-2 { margin-right: -.5rem; }
+  .why2-right.why2-pos-0, .why2-right.why2-pos-2 { margin-left: -.5rem; }
+  .why2-orb { width: 236px; }
+  .why2-halo { width: 284px; transform: translate(-50%, calc(-50% - 26px)); }
+  .why2-mark { width: 3.9rem; height: 3.9rem; }
+  .why2-word { font-size: 1.3rem; }
+  .why2-pedestal { width: 220px; height: 70px; }
+  .why2-center { padding-bottom: 52px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .why2-orb, .why2-orb-rim, .why2-spark, .why2-plat-glow, .why2-flow, .why2-card.is-active .why2-icon::after { animation: none; }
 }

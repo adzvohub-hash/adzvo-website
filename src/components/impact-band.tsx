@@ -92,7 +92,7 @@ const IMPACT_CSS = `
 
 .imp-num { margin-top: 1.1rem; display: flex; justify-content: center;
   font-weight: 800; line-height: 1; letter-spacing: -.02em;
-  font-size: clamp(3.25rem, 6.2vw, 5.5rem); color: #e5a020;
+  font-size: clamp(2.6rem, 4.6vw, 4.1rem); color: #e5a020;
   text-shadow: 0 6px 22px rgba(229,160,32,.28); }
 /* split-flap roll: flaps match the band background */
 .imp .impact-stat-card { --impact-flap-surface: #f8f9fc; --impact-flap-seam: rgba(10,14,31,.12); }

@@ -606,7 +606,7 @@ export function ChatWidgets() {
           {!chatOpen && (
             <span
               aria-hidden
-              className={`pointer-events-none absolute right-[calc(100%+12px)] top-1/2 -translate-y-1/2 whitespace-nowrap rounded-2xl rounded-br-sm bg-white px-3.5 py-2 text-[13px] font-semibold text-[#0A1628] shadow-xl ring-1 ring-black/5 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 ${
+              className={`pointer-events-none absolute right-[calc(100%+12px)] top-1/2 -translate-y-1/2 whitespace-nowrap rounded-2xl rounded-br-sm bg-white chat-hint-bubble px-3.5 py-2 text-[13px] font-semibold text-[#0A1628] shadow-xl ring-1 ring-black/5 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 ${
                 showHint ? "translate-x-0 opacity-100" : "translate-x-2 opacity-0"
               }`}
             >

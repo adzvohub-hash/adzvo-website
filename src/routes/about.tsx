@@ -18,9 +18,15 @@
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GlassButton } from "@/components/glass-button";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { ArrowDown, ArrowRight, Check, Eye, Handshake, Target } from "lucide-react";
 import { Footer } from "@/components/site-footer";
+/* Faint, colour-washed photos behind each chapter (desktop backdrop). Swap any of these for your own images. */
+import skyImg0 from "@/assets/about-hero.jpg";
+import skyImg1 from "@/assets/insights-hero.jpg";
+import skyImg2 from "@/assets/film-behind-scenes.jpg";
+import skyImg3 from "@/assets/contact.jpg";
+import skyImg4 from "@/assets/projects-hero.jpg";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 /* ─── Route ──────────────────────────────────────────────────────────── */
@@ -68,6 +74,9 @@ const APPROACH = [
   { title: "We keep it clear", text: "Considered, transparent collaboration from the first conversation to delivery." },
 ];
 
+/* Subtitle shown with each step on the phone/tablet timeline (desktop shows it in the chapter tag). */
+const STEP_SUBTITLES = ["", "What we do", "What guides us", "How we work with you", "The result"];
+
 /* Fade-up when a block scrolls into view (class added by IntersectionObserver). */
 const REVEAL = "opacity-0 translate-y-6 transition-all duration-700 ease-out [&.is-in]:opacity-100 [&.is-in]:translate-y-0";
 
@@ -76,6 +85,7 @@ function AboutPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chapterRefs = useRef<(HTMLElement | null)[]>([]);
   const progressRef = useRef<HTMLDivElement>(null);
+  const skyRef = useRef<HTMLDivElement>(null);
   const storyRef = useRef<HTMLDivElement>(null);
   const journey = useRef(0);
   const [active, setActive] = useState(0);
@@ -135,6 +145,8 @@ function AboutPage() {
       journey.current = j;
       if (progressRef.current) progressRef.current.style.transform = `scaleX(${Math.min(1, j / CHAPTERS.length)})`;
       const idx = Math.min(CHAPTERS.length - 1, Math.floor(j));
+      // background word drifts slowly through each chapter (0 → 1)
+      skyRef.current?.style.setProperty("--about-drift", String(Math.min(1, Math.max(0, j - idx)).toFixed(3)));
       if (idx !== last) { last = idx; setActive(idx); }
       raf = requestAnimationFrame(read);
     };
@@ -148,16 +160,24 @@ function AboutPage() {
     if (!canvas) return;
     let cleanup: (() => void) | undefined;
     let cancelled = false;
+    let started = false;
+    // Phones and tablets get the simple timeline layout: the 3D code isn't even downloaded there.
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const start = () => {
+      if (started || !mq.matches) return;
+      started = true;
+      import("three")
+        .then((mod) => {
+          if (cancelled) return;
+          cleanup = buildScene(mod, canvas, journey);
+          setGlReady(true);
+        })
+        .catch((err) => console.error("About page 3D stage failed to load:", err));
+    };
+    start();
+    mq.addEventListener("change", start);
 
-    import("three")
-      .then((mod) => {
-        if (cancelled) return;
-        cleanup = buildScene(mod, canvas, journey);
-        setGlReady(true);
-      })
-      .catch((err) => console.error("About page 3D stage failed to load:", err));
-
-    return () => { cancelled = true; cleanup?.(); };
+    return () => { cancelled = true; mq.removeEventListener("change", start); cleanup?.(); };
   }, []);
 
   const chapter = CHAPTERS[active] ?? CHAPTERS[0]!;
@@ -168,12 +188,14 @@ function AboutPage() {
       <div ref={storyRef} className="relative">
 
         {/* ── STAGE: centred animation, pinned while the story scrolls ── */}
-        <div className="about-bg sticky top-16 z-20 h-[40svh] lg:top-0 lg:z-0 lg:h-screen">
+        <div className="about-bg hidden lg:sticky lg:top-0 lg:z-0 lg:block lg:h-screen">
           <div className="about-bg relative h-full overflow-hidden">
+            {/* creative backdrop: colour + giant outlined word that change per chapter (behind the 3D) */}
+            <AboutSky active={active} skyRef={skyRef} />
             <canvas
               ref={canvasRef}
               aria-hidden
-              className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ${glReady ? "opacity-100" : "opacity-0"}`}
+              className={`about-canvas absolute inset-0 h-full w-full transition-opacity duration-1000 ${glReady ? "opacity-100" : "opacity-0"}`}
             />
             {/* soft white fade at top/bottom so it melts into the page */}
             <div aria-hidden className="about-stage-fade pointer-events-none absolute inset-0" />
@@ -181,10 +203,7 @@ function AboutPage() {
             {/* caption + stepper, centred under the animation */}
             <div className="absolute inset-x-0 bottom-0 z-10 mx-auto max-w-md px-4 pb-4 text-center lg:pb-7">
               <div key={active} className="animate-[stageCaption_600ms_ease-out]">
-                <p className="text-[11px] font-bold tabular-nums tracking-[0.2em] text-navy/45" style={LOGO_FONT}>
-                  <span className="text-[#e5a020]">{String(active + 1).padStart(2, "0")}</span> / {String(CHAPTERS.length).padStart(2, "0")}
-                </p>
-                <p className="font-display mt-1 text-base font-bold uppercase tracking-wider sm:text-xl">{chapter.step}</p>
+                <p className="font-display text-base font-bold uppercase tracking-wider sm:text-xl">{chapter.step}</p>
                 <p className="mt-0.5 hidden text-sm text-navy/60 sm:block">{chapter.caption}</p>
               </div>
               <div className="mt-3 grid grid-cols-5 gap-1.5">
@@ -204,6 +223,7 @@ function AboutPage() {
           {/* 01 · Hero */}
           <Chapter
             refCb={setChapterRef(0)}
+            index={0}
             current={active === 0}
             top={<>
               <div data-reveal className={REVEAL}><SectionLabel>About ADZVO</SectionLabel></div>
@@ -215,7 +235,7 @@ function AboutPage() {
               <p data-reveal className={`${REVEAL} text-xl leading-relaxed text-navy/75 xl:text-2xl xl:leading-relaxed`}>
                 We look beyond individual deliverables to understand the bigger picture — so every piece of work moves the whole brand forward.
               </p>
-              <div data-reveal className={`${REVEAL} mt-8 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-navy/40`} style={LOGO_FONT}>
+              <div data-reveal className={`${REVEAL} mt-8 hidden items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-navy/40 lg:flex`} style={LOGO_FONT}>
                 <ArrowDown className="size-4 animate-bounce" /> Scroll to follow the idea
               </div>
             </>}
@@ -233,6 +253,7 @@ function AboutPage() {
           {/* 02 · What we do */}
           <Chapter
             refCb={setChapterRef(1)}
+            index={1}
             current={active === 1}
             top={<>
               <ChapterTag n={2} label="Explore · What we do" />
@@ -269,6 +290,7 @@ function AboutPage() {
           {/* 03 · What guides us */}
           <Chapter
             refCb={setChapterRef(2)}
+            index={2}
             current={active === 2}
             top={<>
               <ChapterTag n={3} label="Shape · What guides us" />
@@ -283,6 +305,7 @@ function AboutPage() {
           {/* 04 · Client approach */}
           <Chapter
             refCb={setChapterRef(3)}
+            index={3}
             current={active === 3}
             top={<>
               <ChapterTag n={4} label="Align · How we work with you" />
@@ -315,6 +338,7 @@ function AboutPage() {
           {/* 05 · Deliver */}
           <Chapter
             refCb={setChapterRef(4)}
+            index={4}
             current={active === 4}
             top={<>
               <ChapterTag n={5} label="Deliver · The result" />
@@ -352,13 +376,38 @@ function AboutPage() {
   );
 }
 
+/* Background words, one per chapter (shown behind the animation, desktop). */
+const SKY_WORDS = ["Brief", "Explore", "Shape", "Align", "Deliver"];
+/* One photo per chapter, in the same order as SKY_WORDS. */
+const SKY_IMAGES = [skyImg0, skyImg1, skyImg2, skyImg3, skyImg4];
+
+/** Desktop backdrop behind the 3D stage: soft colour fields + a giant outlined word, both cross-fading per chapter. */
+function AboutSky({ active, skyRef }: { active: number; skyRef: RefObject<HTMLDivElement | null> }) {
+  const [reached, setReached] = useState(0);
+  useEffect(() => { setReached((r) => Math.max(r, active)); }, [active]);
+  return (
+    <div ref={skyRef} aria-hidden className="about-sky">
+      {SKY_WORDS.map((w, i) => <span key={`l${w}`} className={`about-sky-layer about-sky-${i} ${i === active ? "is-on" : ""}`} />)}
+      {/* photos load only as they're reached (current + next chapter), then stay */}
+      {SKY_IMAGES.map((src, i) => (
+        <span key={`p${i}`} className={`about-sky-photo ${i === active ? "is-on" : ""}`}>
+          {i <= reached + 1 && <img src={src} alt="" decoding="async" />}
+        </span>
+      ))}
+      <span className="about-sky-stars" />
+      {SKY_WORDS.map((w, i) => <span key={w} className={`about-sky-word about-sky-word-${i} ${i === active ? "is-on" : ""}`}>{w}</span>)}
+    </div>
+  );
+}
+
 /**
  * One chapter: heading centred on top, then two side columns with an empty
  * centre lane that the pinned animation shows through (desktop).
- * On mobile everything stacks under the sticky animation band.
+ * Phones/tablets (<1024px): no animation; chapters stack along a gold timeline.
  */
-function Chapter({ refCb, current, top, left, right }: {
+function Chapter({ refCb, index, current, top, left, right }: {
   refCb: (el: HTMLElement | null) => void;
+  index: number;
   current: boolean;
   top: ReactNode;
   left: ReactNode;
@@ -367,14 +416,22 @@ function Chapter({ refCb, current, top, left, right }: {
   return (
     <section
       ref={refCb}
-      className={`flex min-h-[70svh] flex-col py-14 lg:absolute lg:inset-0 lg:min-h-0 lg:pb-40 lg:pt-24 lg:transition-all lg:duration-700 lg:ease-out ${current ? "lg:translate-y-0 lg:opacity-100" : "lg:pointer-events-none lg:translate-y-6 lg:opacity-0"}`}
+      className={`about-ch flex flex-col py-12 sm:py-14 lg:absolute lg:inset-0 lg:min-h-0 lg:pb-40 lg:pt-24 lg:transition-all lg:duration-700 lg:ease-out ${current ? "lg:translate-y-0 lg:opacity-100" : "lg:pointer-events-none lg:translate-y-6 lg:opacity-0"}`}
     >
-      <div className="page-shell"><div className="mx-auto max-w-[880px] lg:text-center lg:[&_.chapter-tag]:justify-center">{top}</div></div>
-      <div className="page-shell mt-8 grid flex-1 content-start items-start gap-8 sm:grid-cols-2 lg:mt-6 lg:content-normal lg:items-center lg:grid-cols-[minmax(0,1fr)_minmax(220px,21vw)_minmax(0,1fr)] lg:gap-0">
-        {/* side columns hug the animation and tuck slightly over its edges */}
-        <div className="relative min-w-0 lg:-mr-8 about-halo">{left}</div>
-        <div aria-hidden className="hidden lg:block" />
-        <div className="relative min-w-0 lg:-ml-8 about-halo">{right}</div>
+      <div className="page-shell flex flex-1 flex-col">
+        <div className="about-ch-body flex flex-1 flex-col">
+          {/* phones/tablets: step marker on the timeline */}
+          <p className="about-step lg:hidden" style={LOGO_FONT}>
+            {CHAPTERS[index]?.step}{STEP_SUBTITLES[index] ? ` · ${STEP_SUBTITLES[index]}` : ""}
+          </p>
+          <div className="mx-auto w-full max-w-[880px] lg:text-center lg:[&_.chapter-tag]:justify-center">{top}</div>
+          <div className="mt-8 grid flex-1 content-start items-start gap-8 sm:grid-cols-2 lg:mt-6 lg:content-normal lg:items-center lg:grid-cols-[minmax(0,1fr)_minmax(220px,21vw)_minmax(0,1fr)] lg:gap-0">
+            {/* side columns hug the animation and tuck slightly over its edges */}
+            <div className="relative min-w-0 lg:-mr-8 about-halo">{left}</div>
+            <div aria-hidden className="hidden lg:block" />
+            <div className="relative min-w-0 lg:-ml-8 about-halo">{right}</div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -394,11 +451,10 @@ function PillarCard({ icon: Icon, label, text }: (typeof PILLARS)[number]) {
   );
 }
 
-function ChapterTag({ n, label }: { n: number; label: string }) {
+function ChapterTag({ label }: { n?: number; label: string }) {
   return (
     <div data-reveal className={`${REVEAL} chapter-tag flex items-center gap-3`}>
-      <span className="font-display text-sm font-black text-[#e5a020]">{String(n).padStart(2, "0")}</span>
-      <span className="h-px w-8 bg-[#0a0e1f]/20" />
+      <span className="h-px w-8 bg-[#e5a020]/70" />
       <span className="text-xs font-bold uppercase tracking-[0.2em] text-navy/55" style={LOGO_FONT}>{label}</span>
     </div>
   );
@@ -413,17 +469,16 @@ function buildScene(THREE: any, canvas: HTMLCanvasElement, journey: { current: n
   const GOLD = 0xe5a020;
   const BALL_R = 0.34;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setClearColor(0x000000, 0); // transparent: the AboutSky backdrop shows through
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(BG);
   scene.fog = new THREE.Fog(BG, 14, 32);
   const applySceneTheme = () => {
     const c = isDark() ? 0x0a0e1d : 0xffffff;
-    scene.background = new THREE.Color(c);
     scene.fog = new THREE.Fog(c, 14, 32);
     hemi.groundColor = new THREE.Color(isDark() ? 0x1a2142 : 0xdfe5f2);
     hemi.intensity = isDark() ? 1.0 : 1.4;

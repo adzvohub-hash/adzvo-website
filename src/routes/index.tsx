@@ -12,7 +12,6 @@ import { servicePages } from "@/lib/services";
 import { BrandMark, Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 import { Footer } from "@/components/site-footer";
 import { WhySection } from "@/components/why-section";
-import { HomeCta } from "@/components/home-cta";
 import { ImpactBand } from "@/components/impact-band";
 import { LiquidGlass } from "@/components/liquid-glass";
 import svc1 from "@/assets/svc-1.jpg";
@@ -192,9 +191,9 @@ export function Hero() {
           <div key={k} aria-hidden={k !== i}
             className={`homepage-hero-copy col-start-1 row-start-1 mx-auto flex w-full max-w-4xl flex-col items-center text-center transition-all duration-[1200ms] ease-out ${k === i ? "translate-y-0 opacity-100 delay-300" : "pointer-events-none translate-y-6 opacity-0"}`}>
             <SectionLabel light>Creative Digital Agency</SectionLabel>
-            <h1 className="font-display mt-4 text-5xl leading-[1.04] font-extrabold tracking-normal text-primary-foreground sm:text-6xl lg:text-7xl xl:text-[4.75rem]">{s.title}</h1>
+            <h1 className="font-display mt-4 text-[2.4rem] leading-[1.06] min-[400px]:text-5xl sm:leading-[1.04] font-extrabold tracking-normal text-primary-foreground sm:text-6xl lg:text-7xl xl:text-[4.75rem]">{s.title}</h1>
             {s.bar && <div className="mt-4 h-1 w-24 rounded-full bg-gold" />}
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/90 sm:text-lg">{s.body}</p>
+            <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-primary-foreground/90 sm:text-lg">{s.body}</p>
             {s.tags.length > 0 && (
               <div className="mt-4 flex flex-wrap justify-center gap-2">
                 {s.tags.map((t) => (
@@ -205,9 +204,9 @@ export function Hero() {
                 ))}
               </div>
             )}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-              <GlassButton as="a" href="/contact">{s.cta} <ArrowRight /></GlassButton>
-              <GlassButton as="a" href="#services" variant="secondary" on="dark">{s.link} <ArrowUpRight /></GlassButton>
+            <div className="mt-6 flex w-full max-w-[22rem] flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
+              <GlassButton as="a" href="/contact" className="w-full sm:w-auto">{s.cta} <ArrowRight /></GlassButton>
+              <GlassButton as="a" href="#services" variant="secondary" on="dark" className="w-full sm:w-auto">{s.link} <ArrowUpRight /></GlassButton>
             </div>
           </div>
         ))}
@@ -297,7 +296,8 @@ function Services() {
   }, []);
 
   return (
-    <section id="services" className="bg-services grain relative overflow-hidden py-20 sm:py-24">
+    <section id="services" className="svc-sec relative overflow-hidden py-20 sm:py-24">
+      <div aria-hidden className="svc-sec-glow" />
       <div className="page-shell relative">
           <div className="reveal mx-auto flex flex-col items-center text-center">
             <SectionLabel light>What We Do</SectionLabel>
@@ -319,7 +319,7 @@ function Services() {
                 to="/services/$service"
                 params={{ service: service.slug }}
                 aria-label={t}
-                className="reveal group relative block aspect-square w-full min-w-0 overflow-hidden rounded-2xl shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                className="reveal svc-tile group relative block aspect-square w-full min-w-0 overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 style={{ transitionDelay: `${(i % 4) * 60}ms` }}
               >
                 {/* Background image — always visible, zooms on hover */}
@@ -331,15 +331,14 @@ function Services() {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
 
-                {/* Default: soft shade + liquid-glass title bar */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent transition-opacity duration-500 group-hover:opacity-0" />
-                {/* glass title bar: orange glass icon badge + title, left-aligned, fixed height */}
-                <div className="absolute inset-x-3 bottom-3 flex transition-all duration-500 group-hover:translate-y-2 group-hover:opacity-0">
-                  <LiquidGlass tint="dark" radius={18} refraction={26} elasticity={0.05} className="svc-bar w-full" contentClassName="gap-3 px-3 py-2.5">
-                    <span className="svc-badge"><Icon className="svc-badge-svg" strokeWidth={2} /></span>
-                    <h3 className="font-display text-sm font-bold uppercase leading-snug tracking-widest sm:text-[15px]">{t}</h3>
-                  </LiquidGlass>
+                {/* Default: frosted glass fading up from the bottom, with the icon + title sitting on it (no box) */}
+                <div className="svc-frost transition-opacity duration-500 group-hover:opacity-0" aria-hidden />
+                <div className="svc-label transition-all duration-500 group-hover:translate-y-2 group-hover:opacity-0">
+                  <span className="svc-badge"><Icon className="svc-badge-svg" strokeWidth={2} /></span>
+                  <h3 className="font-display text-sm font-bold uppercase leading-snug tracking-widest text-white sm:text-[15px]">{t}</h3>
                 </div>
+                {/* glass sheen + glass edge on top of everything */}
+                <span className="svc-sheen" aria-hidden />
 
                 {/* Hover: the whole tile turns to dark frosted glass (no inner panel / borders) */}
                 <div
@@ -375,9 +374,7 @@ function Services() {
         </div>
 
         <div className="mt-10 flex justify-center">
-          <a href="/contact" className="group inline-flex items-center gap-2 font-semibold text-gold">
-            Start a Project <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-          </a>
+          <GlassButton as={Link} to="/contact">Start a Project <ArrowRight /></GlassButton>
         </div>
       </div>
     </section>
@@ -393,7 +390,6 @@ function Index() {
       <Impact />
       <Services />
       <WhySection />
-      <HomeCta />
       <Footer />
     </main>
   );
