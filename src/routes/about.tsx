@@ -21,12 +21,9 @@ import { GlassButton } from "@/components/glass-button";
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { ArrowDown, ArrowRight, Check, Eye, Handshake, Target } from "lucide-react";
 import { Footer } from "@/components/site-footer";
-/* Faint, colour-washed photos behind each chapter (desktop backdrop). Swap any of these for your own images. */
-import skyImg0 from "@/assets/about-hero.jpg";
-import skyImg1 from "@/assets/insights-hero.jpg";
-import skyImg2 from "@/assets/film-behind-scenes.jpg";
-import skyImg3 from "@/assets/contact.jpg";
-import skyImg4 from "@/assets/projects-hero.jpg";
+/* Chapter background photos: R2 link from the admin first, built-in image as fallback. */
+import { ABOUT_IMAGE_SLOTS } from "@/lib/about-images";
+import { getServiceImages } from "@/lib/api";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 /* ─── Route ──────────────────────────────────────────────────────────── */
@@ -378,20 +375,35 @@ function AboutPage() {
 
 /* Background words, one per chapter (shown behind the animation, desktop). */
 const SKY_WORDS = ["Brief", "Explore", "Shape", "Align", "Deliver"];
-/* One photo per chapter, in the same order as SKY_WORDS. */
-const SKY_IMAGES = [skyImg0, skyImg1, skyImg2, skyImg3, skyImg4];
+/* Built-in photo per chapter (same order as SKY_WORDS) — used until an R2 image is set in the admin. */
+const SKY_FALLBACKS = ABOUT_IMAGE_SLOTS.map((s) => s.fallback);
 
 /** Desktop backdrop behind the 3D stage: soft colour fields + a giant outlined word, both cross-fading per chapter. */
 function AboutSky({ active, skyRef }: { active: number; skyRef: RefObject<HTMLDivElement | null> }) {
   const [reached, setReached] = useState(0);
   useEffect(() => { setReached((r) => Math.max(r, active)); }, [active]);
+  // R2 images chosen in the admin (About tab); any missing one falls back to the built-in photo.
+  const [images, setImages] = useState<string[]>(SKY_FALLBACKS);
+  useEffect(() => {
+    let alive = true;
+    getServiceImages()
+      .then((rows) => {
+        if (!alive || !Array.isArray(rows)) return;
+        const map = new Map(rows.map((r) => [r.slug, r.image_url]));
+        setImages(ABOUT_IMAGE_SLOTS.map((slot) => map.get(slot.key) || slot.fallback));
+      })
+      .catch(() => { /* keep the built-in photos */ });
+    return () => { alive = false; };
+  }, []);
+  // if an R2 image fails to load, switch that chapter back to its built-in photo
+  const revertToFallback = (i: number) => setImages((list) => list.map((src, j) => (j === i ? SKY_FALLBACKS[i]! : src)));
   return (
     <div ref={skyRef} aria-hidden className="about-sky">
       {SKY_WORDS.map((w, i) => <span key={`l${w}`} className={`about-sky-layer about-sky-${i} ${i === active ? "is-on" : ""}`} />)}
       {/* photos load only as they're reached (current + next chapter), then stay */}
-      {SKY_IMAGES.map((src, i) => (
+      {images.map((src, i) => (
         <span key={`p${i}`} className={`about-sky-photo ${i === active ? "is-on" : ""}`}>
-          {i <= reached + 1 && <img src={src} alt="" decoding="async" />}
+          {i <= reached + 1 && <img src={src} alt="" decoding="async" onError={() => { if (src !== SKY_FALLBACKS[i]) revertToFallback(i); }} />}
         </span>
       ))}
       <span className="about-sky-stars" />

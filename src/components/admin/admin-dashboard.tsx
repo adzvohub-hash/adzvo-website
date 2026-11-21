@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MediaField, MediaPreview } from "./media-field";
 import { ProjectEditor, InsightEditor, selectClass } from "./content-editor";
+import { AboutImagesEditor } from "./about-images-editor";
 import { validMediaUrl, upsertItem, r2img } from "@/lib/admin-preview";
 import { servicePages } from "@/lib/services";
 import { projectLocations } from "@/lib/projects";
@@ -401,13 +402,23 @@ export function AdminDashboard() {
           </form>
         )}
 
-        {/* About / Services placeholder */}
-        {(tab === "About" || tab === "Services") && (
+        {/* About tab: chapter background images (R2, with built-in fallback) */}
+        {tab === "About" && (
+          <AboutImagesEditor
+            saved={serviceImages}
+            onSaved={(next) => { setServiceImages(next); setSvcImgDrafts((d) => ({ ...d, ...Object.fromEntries(Object.entries(next).filter(([k]) => k.startsWith("about-"))) })); }}
+            notify={notify}
+            fail={fail}
+          />
+        )}
+
+        {/* Services placeholder */}
+        {tab === "Services" && (
           <div className="flex min-h-72 flex-col items-center justify-center border-y py-16 text-center">
             <Settings2 className="size-8 text-muted-foreground" />
-            <h2 className="mt-5 font-display text-2xl">{tab} content</h2>
+            <h2 className="mt-5 font-display text-2xl">Services content</h2>
             <p className="mt-3 text-sm text-muted-foreground">Awaiting your content requirements.</p>
-            {tab === "Services" && (
+            {(
               <div className="mt-8 grid gap-x-8 gap-y-3 text-left text-sm text-muted-foreground sm:grid-cols-2">
                 {servicePages.map((svc) => <span key={svc.slug}>{svc.title}</span>)}
               </div>
