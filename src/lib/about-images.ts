@@ -12,18 +12,18 @@ import aboutShape from "@/assets/film-behind-scenes.jpg";
 import aboutAlign from "@/assets/contact.jpg";
 import aboutDeliver from "@/assets/projects-hero.jpg";
 
-export type AboutImageSlot = {
+export type MediaSlot = {
   /** Storage key (saved alongside the service images). */
   key: string;
   /** Chapter name shown in the admin. */
   label: string;
   /** What the chapter is about, as a hint for choosing the photo. */
   hint: string;
-  /** Built-in fallback image. */
+  /** Built-in fallback (bundled image, or the original R2 file). */
   fallback: string;
 };
 
-export const ABOUT_IMAGE_SLOTS: AboutImageSlot[] = [
+export const ABOUT_IMAGE_SLOTS: MediaSlot[] = [
   {
     key: "about-brief",
     label: "The Brief",

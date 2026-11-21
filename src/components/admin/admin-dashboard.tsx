@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { MediaField, MediaPreview } from "./media-field";
 import { ProjectEditor, InsightEditor, selectClass } from "./content-editor";
 import { AboutImagesEditor } from "./about-images-editor";
+import { ServiceVideosEditor } from "./service-videos-editor";
 import { validMediaUrl, upsertItem, r2img } from "@/lib/admin-preview";
 import { servicePages } from "@/lib/services";
 import { projectLocations } from "@/lib/projects";
@@ -412,18 +413,17 @@ export function AdminDashboard() {
           />
         )}
 
-        {/* Services placeholder */}
+        {/* Services tab: the looping video on each service page (R2, original video as fallback) */}
         {tab === "Services" && (
-          <div className="flex min-h-72 flex-col items-center justify-center border-y py-16 text-center">
-            <Settings2 className="size-8 text-muted-foreground" />
-            <h2 className="mt-5 font-display text-2xl">Services content</h2>
-            <p className="mt-3 text-sm text-muted-foreground">Awaiting your content requirements.</p>
-            {(
-              <div className="mt-8 grid gap-x-8 gap-y-3 text-left text-sm text-muted-foreground sm:grid-cols-2">
-                {servicePages.map((svc) => <span key={svc.slug}>{svc.title}</span>)}
-              </div>
-            )}
-          </div>
+          <ServiceVideosEditor
+            saved={serviceImages}
+            onSaved={(next) => {
+              setServiceImages(next);
+              setSvcImgDrafts((d) => ({ ...d, ...Object.fromEntries(Object.entries(next).filter(([k]) => k.startsWith("video-"))) }));
+            }}
+            notify={notify}
+            fail={fail}
+          />
         )}
 
         {/* Projects / Insights */}

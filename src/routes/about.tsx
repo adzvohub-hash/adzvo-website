@@ -23,7 +23,7 @@ import { ArrowDown, ArrowRight, Check, Eye, Handshake, Target } from "lucide-rea
 import { Footer } from "@/components/site-footer";
 /* Chapter background photos: R2 link from the admin first, built-in image as fallback. */
 import { ABOUT_IMAGE_SLOTS } from "@/lib/about-images";
-import { getServiceImages } from "@/lib/api";
+import { loadSiteMedia } from "@/lib/site-media";
 import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 /* ─── Route ──────────────────────────────────────────────────────────── */
@@ -386,13 +386,9 @@ function AboutSky({ active, skyRef }: { active: number; skyRef: RefObject<HTMLDi
   const [images, setImages] = useState<string[]>(SKY_FALLBACKS);
   useEffect(() => {
     let alive = true;
-    getServiceImages()
-      .then((rows) => {
-        if (!alive || !Array.isArray(rows)) return;
-        const map = new Map(rows.map((r) => [r.slug, r.image_url]));
-        setImages(ABOUT_IMAGE_SLOTS.map((slot) => map.get(slot.key) || slot.fallback));
-      })
-      .catch(() => { /* keep the built-in photos */ });
+    void loadSiteMedia().then((map) => {
+      if (alive) setImages(ABOUT_IMAGE_SLOTS.map((slot) => map.get(slot.key) || slot.fallback));
+    });
     return () => { alive = false; };
   }, []);
   // if an R2 image fails to load, switch that chapter back to its built-in photo

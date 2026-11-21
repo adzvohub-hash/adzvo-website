@@ -1,13 +1,17 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { CTA_VIDEOS } from "@/lib/videos";
+import { useSiteMedia } from "@/lib/site-media";
+import { serviceVideoKey } from "@/lib/service-videos";
 
 /** 16:9 looping service clip; poster image as fallback. (Kept for any standalone use.) */
 export function CtaVideo({ slug, poster, label }: { slug: string; poster: string; label: string }) {
   const ref = useRef<HTMLVideoElement>(null);
+  // video chosen in the admin (R2) if set, otherwise the original
+  const video = useSiteMedia(serviceVideoKey(slug), CTA_VIDEOS[slug] ?? "");
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) ref.current?.pause();
   }, []);
-  return <video ref={ref} src={CTA_VIDEOS[slug]} poster={poster} aria-label={label} autoPlay loop muted playsInline preload="metadata"
+  return <video ref={ref} key={video.src} src={video.src} onError={video.onError} poster={poster} aria-label={label} autoPlay loop muted playsInline preload="metadata"
     className="aspect-video w-full rounded-[2rem] border border-primary-foreground/10 object-cover shadow-2xl" />;
 }
 
@@ -19,12 +23,14 @@ export function CtaVideo({ slug, poster, label }: { slug: string; poster: string
  */
 export function CtaBand({ slug, poster, label, children }: { slug: string; poster: string; label: string; children: ReactNode }) {
   const ref = useRef<HTMLVideoElement>(null);
+  // video chosen in the admin (R2) if set, otherwise the original
+  const video = useSiteMedia(serviceVideoKey(slug), CTA_VIDEOS[slug] ?? "");
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) ref.current?.pause();
   }, []);
   return (
     <section className="cta-band text-primary-foreground">
-      <video ref={ref} className="cta-band-video" src={CTA_VIDEOS[slug]} poster={poster} aria-label={label}
+      <video ref={ref} key={video.src} className="cta-band-video" src={video.src} onError={video.onError} poster={poster} aria-label={label}
         autoPlay loop muted playsInline preload="metadata" />
       <div aria-hidden className="cta-band-fade" />
       <div className="page-shell cta-band-inner">
