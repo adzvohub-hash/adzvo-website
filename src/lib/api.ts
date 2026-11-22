@@ -1,6 +1,6 @@
 // Central API client for the ADZVO Hono backend
 
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "https://adzvo-api.adzvohub.workers.dev";
+export const API_BASE = import.meta.env.VITE_API_BASE ?? "https://api.adzvo.com";
 /**
  * Public address of the media bucket (adzvo-media), on our own domain.
  * Change MEDIA_DOMAIN here if you connect the bucket to a different address.

@@ -68,26 +68,12 @@ media.post("/upload", requireAuth, async (ctx) => {
     httpMetadata: { contentType: file.type },
   });
 
-  // Public URL — R2 custom domain or the R2.dev dev URL
-  // Set R2_PUBLIC_URL in your Cloudflare env/secret for production
+  // Public URL — the R2 bucket's custom domain (media.adzvo.com).
+  // Set R2_PUBLIC_URL in wrangler.toml [vars] for production.
   const baseUrl   = (ctx.env as unknown as Record<string, string>)["R2_PUBLIC_URL"] ?? "";
-  const url       = baseUrl ? `${baseUrl}/${key}` : `/api/media/${key}`;
+  const url       = baseUrl ? `${baseUrl}/${key}` : "";
 
   return ctx.json({ url, key });
-});
-
-// ─── GET /api/media/* ─────────────────────────────────────────────────────────
-// Serves a file from R2 (use a public R2 custom domain in production instead)
-media.get("/*", async (ctx) => {
-  const key = ctx.req.param("*");
-  const object = await ctx.env.MEDIA.get(key);
-  if (!object) return ctx.json({ error: "Not found" }, 404);
-
-  const headers = new Headers();
-  object.writeHttpMetadata(headers);
-  headers.set("Cache-Control", "public, max-age=31536000, immutable");
-
-  return new Response(object.body, { headers });
 });
 
 // ─── DELETE /api/media ────────────────────────────────────────────────────────
