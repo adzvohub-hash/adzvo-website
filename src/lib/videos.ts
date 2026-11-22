@@ -1,4 +1,4 @@
-const R2 = "https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev";
+import { R2_BASE as R2 } from "@/lib/api";
 
 /** Hero section background video on the homepage. */
 export const HERO_VIDEO_URL = `${R2}/videos/adzvo-hero-services.mp4`;

@@ -1,7 +1,27 @@
 // Central API client for the ADZVO Hono backend
 
 export const API_BASE = import.meta.env.VITE_API_BASE ?? "https://adzvo-api.adzvohub.workers.dev";
-export const R2_BASE  = "https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev";
+/**
+ * Public address of the media bucket (adzvo-media), on our own domain.
+ * Change MEDIA_DOMAIN here if you connect the bucket to a different address.
+ */
+export const R2_BASE = "https://media.adzvo.com";
+
+/** The bucket's old r2.dev address. Links saved with it are rewritten to R2_BASE when read. */
+export const LEGACY_R2_BASE = "https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev";
+
+/** Rewrite an old r2.dev link to the media domain (anything else is returned unchanged). */
+export function toMediaUrl(url: string): string {
+  return typeof url === "string" && url.startsWith(LEGACY_R2_BASE) ? R2_BASE + url.slice(LEGACY_R2_BASE.length) : url;
+}
+
+/** The file's key in the bucket (e.g. "videos/clip.mp4") for a link on either address, or null if it isn't a bucket link. */
+export function r2KeyOf(url: string): string | null {
+  for (const base of [R2_BASE, LEGACY_R2_BASE]) {
+    if (typeof url === "string" && url.startsWith(base + "/")) return url.slice(base.length + 1);
+  }
+  return null;
+}
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
@@ -46,7 +66,8 @@ export type Settings = {
 
 export async function getSettings(): Promise<Settings> {
   const res = await fetch(`${API_BASE}/api/home/settings`);
-  return res.json<Settings>();
+  const data = await res.json<Settings>();
+  return data && { ...data, hero_video_url: toMediaUrl(data.hero_video_url) };
 }
 
 export async function saveSettings(settings: Partial<Settings>): Promise<void> {
@@ -64,7 +85,8 @@ export type ServiceImage = { slug: string; image_url: string };
 
 export async function getServiceImages(): Promise<ServiceImage[]> {
   const res = await fetch(`${API_BASE}/api/home/service-images`);
-  return res.json<ServiceImage[]>();
+  const rows = await res.json<ServiceImage[]>();
+  return Array.isArray(rows) ? rows.map((r) => ({ ...r, image_url: toMediaUrl(r.image_url) })) : rows;
 }
 
 export async function saveServiceImages(images: ServiceImage[]): Promise<void> {
@@ -85,9 +107,13 @@ export type Project = {
   created_at: string; updated_at: string;
 };
 
+const fixProjectLinks = (p: Project): Project =>
+  p && { ...p, image_url: toMediaUrl(p.image_url), case_study_url: toMediaUrl(p.case_study_url) };
+
 export async function getProjects(): Promise<Project[]> {
   const res = await fetch(`${API_BASE}/api/projects`);
-  return res.json<Project[]>();
+  const rows = await res.json<Project[]>();
+  return Array.isArray(rows) ? rows.map(fixProjectLinks) : rows;
 }
 
 export async function saveProject(project: Omit<Project, "created_at" | "updated_at">, isNew: boolean): Promise<Project> {
@@ -97,7 +123,7 @@ export async function saveProject(project: Omit<Project, "created_at" | "updated
     body: JSON.stringify(project),
   });
   if (!res.ok) throw new Error("Failed to save project");
-  return res.json<Project>();
+  return fixProjectLinks(await res.json<Project>());
 }
 
 export async function deleteProject(id: string): Promise<void> {
@@ -115,7 +141,8 @@ export type Insight = {
 
 export async function getInsights(): Promise<Insight[]> {
   const res = await fetch(`${API_BASE}/api/insights`);
-  return res.json<Insight[]>();
+  const rows = await res.json<Insight[]>();
+  return Array.isArray(rows) ? rows.map((i) => ({ ...i, images: Array.isArray(i.images) ? i.images.map(toMediaUrl) : i.images })) : rows;
 }
 
 export async function saveInsight(insight: Omit<Insight, "created_at" | "updated_at">, isNew: boolean): Promise<Insight> {
@@ -142,13 +169,13 @@ export async function uploadMedia(file: File, folder: "images" | "videos"): Prom
   const res = await authFetch("/api/media/upload", { method: "POST", body: formData });
   if (!res.ok) throw new Error("Upload failed");
   const data = await res.json<{ url: string }>();
-  return data.url;
+  return toMediaUrl(data.url);
 }
 
 /** Delete a file from R2. Pass the full public URL — the key is extracted automatically. */
 export async function deleteMedia(url: string): Promise<void> {
-  // Extract the R2 key from the public URL: strip the R2_BASE prefix
-  const key = url.startsWith(R2_BASE) ? url.slice(R2_BASE.length + 1) : null;
+  // Extract the R2 key from the public URL (works for the media domain and the old r2.dev address)
+  const key = r2KeyOf(url);
   if (!key) return; // not an R2 URL — don't try to delete
   const res = await authFetch("/api/media", {
     method: "DELETE",

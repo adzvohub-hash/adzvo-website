@@ -3,7 +3,7 @@ import { Check, Copy, ExternalLink, ImageOff, Loader2, RotateCcw, Upload } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { MediaSlot } from "@/lib/about-images";
-import { R2_BASE, deleteMedia, saveServiceImages, uploadMedia } from "@/lib/api";
+import { deleteMedia, r2KeyOf, saveServiceImages, uploadMedia } from "@/lib/api";
 
 /**
  * A set of replaceable images or videos (one per "slot"), stored in R2.
@@ -17,7 +17,7 @@ import { R2_BASE, deleteMedia, saveServiceImages, uploadMedia } from "@/lib/api"
  * - Files listed in `protectedUrls` (the built-in originals) are never deleted.
  */
 
-const isR2 = (url: string) => Boolean(url) && url.startsWith(R2_BASE);
+const isR2 = (url: string) => Boolean(url) && r2KeyOf(url) !== null;
 
 export function MediaSlotsEditor({
   kind,
@@ -264,7 +264,7 @@ function PathField({
   unsaved: boolean;
 }) {
   const [copied, setCopied] = useState(false);
-  const key = inR2 ? url.slice(R2_BASE.length + 1) : "";
+  const key = inR2 ? (r2KeyOf(url) ?? "") : "";
   async function copy() {
     try {
       await navigator.clipboard.writeText(url);
