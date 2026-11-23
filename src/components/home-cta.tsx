@@ -6,6 +6,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { GlassButton } from "@/components/glass-button";
+import { gtagEvent } from "@/routes/__root";
 
 const WA_NUMBER = "917012376221"; // +91 70123 76221
 
@@ -31,7 +32,7 @@ export function HomeCta() {
         </div>
         <div className="hcta-actions">
           <GlassButton as={Link} to="/contact" variant="dark">Contact Us Today <ArrowRight /></GlassButton>
-          <GlassButton as="a" href={`https://wa.me/${WA_NUMBER}`} target="_blank" rel="noopener noreferrer" variant="secondary">
+          <GlassButton as="a" href={`https://wa.me/${WA_NUMBER}`} target="_blank" rel="noopener noreferrer" variant="secondary" onClick={() => gtagEvent("whatsapp_clicked", { location: "cta_strip" })}>
             <WhatsAppIcon /> WhatsApp Us
           </GlassButton>
         </div>

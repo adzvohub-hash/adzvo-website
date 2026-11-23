@@ -15,6 +15,7 @@ import { CONTACT, FLOW_BY_ID, fill, leadMessage, type Answers, type FlowOption }
 import { requestCallback } from "@/lib/callback";
 import { logChat, type ChatEvent } from "@/lib/chat-log";
 import { motion, AnimatePresence } from "framer-motion";
+import { gtagEvent } from "@/routes/__root";
 
 // ─── Config ────────────────────────────────────────────────────────────────
 // WhatsApp number: country code + number, no "+" or spaces.
@@ -126,7 +127,7 @@ function Tooltip({ label }: { label: string }) {
   );
 }
 
-// ─── Pre-chat form (name required; email + phone optional) ──────────────────
+// ─── Visitor details (only asked for when they request a call back) ─────────
 interface ChatUser {
   name: string;
   email: string;
@@ -134,21 +135,23 @@ interface ChatUser {
 }
 
 const USER_KEY = "adzvoChatUser";
+const NO_USER: ChatUser = { name: "", email: "", phone: "" };
 
-function loadUser(): ChatUser | null {
+function loadUser(): ChatUser {
   try {
     const raw = sessionStorage.getItem(USER_KEY);
-    return raw ? (JSON.parse(raw) as ChatUser) : null;
+    return raw ? { ...NO_USER, ...(JSON.parse(raw) as ChatUser) } : NO_USER;
   } catch {
-    return null;
+    return NO_USER;
   }
 }
 
-function PreChatForm({ onSubmit }: { onSubmit: (u: ChatUser) => void }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
+/** Name is required; phone and email are each optional, but at least one must be given. */
+function ContactForm({ initial, onSubmit }: { initial: ChatUser; onSubmit: (u: ChatUser) => void }) {
+  const [name, setName] = useState(initial.name);
+  const [email, setEmail] = useState(initial.email);
+  const [phone, setPhone] = useState(initial.phone);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string; either?: string }>({});
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -159,86 +162,46 @@ function PreChatForm({ onSubmit }: { onSubmit: (u: ChatUser) => void }) {
     if (!n) next.name = "Please enter your name";
     if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) next.email = "Please enter a valid email";
     if (ph && !/^[+\d][\d\s()-]{5,}$/.test(ph)) next.phone = "Please enter a valid phone number";
+    if (!em && !ph) next.either = "Please give a phone number or an email, so we can reach you";
     setErrors(next);
     if (Object.keys(next).length) return;
     onSubmit({ name: n, email: em, phone: ph });
   }
 
   const field =
-    "mt-1.5 w-full rounded-xl border border-white/15 bg-white/[0.08] px-4 py-2.5 text-sm text-white placeholder-white/40 outline-none transition focus:border-[#C9A227]/70 focus:bg-white/[0.12]";
-  const label = "block text-xs font-medium text-white/70";
+    "w-full rounded-xl border border-white/15 bg-white/[0.08] px-3.5 py-2 text-sm text-white placeholder-white/40 outline-none transition focus:border-[#C9A227]/70 focus:bg-white/[0.12]";
   const err = "mt-1 text-[11px] text-red-300";
 
   return (
-    <form
-      onSubmit={submit}
-      noValidate
-      className="relative flex flex-1 flex-col overflow-y-auto px-5 py-5"
-    >
-      <p className="text-base font-semibold text-white">Welcome to ADZVO</p>
-      <p className="mt-1 text-xs text-white/55">
-        Tell us a little about you and we'll start the chat.
-      </p>
-
-      <div className="mt-4 space-y-3.5">
-        <div>
-          <label htmlFor="adz-chat-name" className={label}>
-            Name <span className="text-[#C9A227]">*</span>
-          </label>
-          <input
-            id="adz-chat-name"
-            type="text"
-            autoComplete="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
-            aria-invalid={!!errors.name}
-            className={`${field} ${errors.name ? "!border-red-400" : ""}`}
-          />
-          {errors.name && <p className={err}>{errors.name}</p>}
-        </div>
-        <div>
-          <label htmlFor="adz-chat-email" className={label}>
-            Email <span className="text-white/35">(optional)</span>
-          </label>
-          <input
-            id="adz-chat-email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            aria-invalid={!!errors.email}
-            className={`${field} ${errors.email ? "!border-red-400" : ""}`}
-          />
-          {errors.email && <p className={err}>{errors.email}</p>}
-        </div>
-        <div>
-          <label htmlFor="adz-chat-phone" className={label}>
-            Phone <span className="text-white/35">(optional)</span>
-          </label>
-          <input
-            id="adz-chat-phone"
-            type="tel"
-            autoComplete="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+91 XXXXX XXXXX"
-            aria-invalid={!!errors.phone}
-            className={`${field} ${errors.phone ? "!border-red-400" : ""}`}
-          />
-          {errors.phone && <p className={err}>{errors.phone}</p>}
-        </div>
+    <form onSubmit={submit} noValidate className="ml-auto flex w-[92%] flex-col gap-2.5 pt-1">
+      <div>
+        <label htmlFor="adz-chat-name" className="sr-only">Name</label>
+        <input id="adz-chat-name" type="text" autoComplete="name" autoFocus value={name}
+          onChange={(e) => setName(e.target.value)} placeholder="Your name *" aria-invalid={!!errors.name}
+          className={`${field} ${errors.name ? "!border-red-400" : ""}`} />
+        {errors.name && <p className={err}>{errors.name}</p>}
       </div>
-
-      <button
-        type="submit"
-        className="mt-5 w-full rounded-full bg-gradient-to-br from-[#E3C255] to-[#B08920] py-2.5 text-sm font-semibold text-[#0A1628] shadow-[0_8px_20px_-8px_rgba(201,162,39,0.7)] transition hover:brightness-110"
-      >
-        Start chat
+      <div>
+        <label htmlFor="adz-chat-phone" className="sr-only">Phone</label>
+        <input id="adz-chat-phone" type="tel" inputMode="tel" autoComplete="tel" value={phone}
+          onChange={(e) => setPhone(e.target.value)} placeholder="Phone, e.g. +91 98765 43210" aria-invalid={!!(errors.phone || errors.either)}
+          className={`${field} ${errors.phone || errors.either ? "!border-red-400" : ""}`} />
+        {errors.phone && <p className={err}>{errors.phone}</p>}
+      </div>
+      <div>
+        <label htmlFor="adz-chat-email" className="sr-only">Email</label>
+        <input id="adz-chat-email" type="email" autoComplete="email" value={email}
+          onChange={(e) => setEmail(e.target.value)} placeholder="Email, e.g. you@company.com" aria-invalid={!!(errors.email || errors.either)}
+          className={`${field} ${errors.email || errors.either ? "!border-red-400" : ""}`} />
+        {errors.email && <p className={err}>{errors.email}</p>}
+      </div>
+      {errors.either && <p className="text-[11px] text-red-300">{errors.either}</p>}
+      <button type="submit"
+        className="w-full rounded-full bg-gradient-to-br from-[#E3C255] to-[#B08920] py-2.5 text-[13px] font-bold text-[#0A1628] transition hover:brightness-110">
+        Send my details
       </button>
       <p className="text-center text-[11px] leading-snug text-white/50">
-        We save this chat so our team can follow up.{" "}
+        Phone or email is enough. We only use these to get back to you.{" "}
         <a href="/privacy-policy" className="underline underline-offset-2 hover:text-white/80">Privacy Policy</a>
       </p>
     </form>
@@ -248,7 +211,7 @@ function PreChatForm({ onSubmit }: { onSubmit: (u: ChatUser) => void }) {
 // ─── Web Chat Panel ──────────────────────────────────────────────────────────
 function WebChatPanel({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate();
-  const [user, setUser] = useState<ChatUser | null>(loadUser);
+  const [user, setUser] = useState<ChatUser>(loadUser);
   const [chat, setChat] = useState<ChatState>(() => {
     try {
       const saved = sessionStorage.getItem(STATE_KEY);
@@ -269,13 +232,14 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
     try { sessionStorage.setItem(STATE_KEY, JSON.stringify(chat)); } catch { /* ignore */ }
   }, [chat]);
 
-  // first open after the details form: greet with the main menu
+  // first open: greet straight away with the main menu (no details asked up front)
   useEffect(() => {
-    if (user && chat.messages.length === 0) {
+    if (chat.messages.length === 0) {
       setChat((c) => ({ ...c, messages: [msg("bot", fill(FLOW_BY_ID["main"]!.text, user, {}))], step: "main", history: [], answers: {} }));
+      logChat({ sessionId: chat.sessionId, event: "chat started", name: "", phone: "", email: "", selection: "Chat opened" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     // Scroll only the message list (never the panel or the page). A new bot answer is
@@ -288,15 +252,8 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
     list.scrollTo({ top, behavior: "smooth" });
   }, [chat.messages, typing]);
 
-  function startChat(u: ChatUser) {
-    try { sessionStorage.setItem(USER_KEY, JSON.stringify(u)); } catch { /* keep in memory only */ }
-    setUser(u);
-    logChat({ sessionId: chat.sessionId, event: "chat started", name: u.name, phone: u.phone, email: u.email, selection: "Details submitted" });
-  }
-
   /** Log one event against the current step (who, what the bot asked, what they chose). */
-  function log(event: ChatEvent["event"], selection: string, action: string, who: ChatUser | null = user, answers: Answers = chat.answers) {
-    if (!who) return;
+  function log(event: ChatEvent["event"], selection: string, action: string, who: ChatUser = user, answers: Answers = chat.answers) {
     const step = FLOW_BY_ID[chat.step];
     logChat({
       sessionId: chat.sessionId, event, name: who.name, phone: who.phone, email: who.email,
@@ -306,10 +263,10 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
   }
 
   /** Show a step: the bot "types" briefly, then posts the step's text. */
-  function showStep(id: string, answers: Answers, history: string[], userLabel?: string, who: ChatUser | null = user) {
+  function showStep(id: string, answers: Answers, history: string[], userLabel?: string, who: ChatUser = user) {
     const step = FLOW_BY_ID[id];
     const u = who;
-    if (!step || !u) return;
+    if (!step) return;
     setChat((c) => ({ ...c, messages: userLabel ? [...c.messages, msg("user", userLabel)] : c.messages, answers, history }));
     setTyping(true);
     window.setTimeout(() => {
@@ -323,17 +280,15 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
   }
 
   function choose(opt: FlowOption) {
-    if (!user || typing) return;
+    if (typing) return;
     const label = fill(opt.label, user, chat.answers);
     const answers = opt.set ? { ...chat.answers, ...opt.set } : chat.answers;
     const did = opt.next ? `→ ${opt.next}` : opt.page ? `opened page ${opt.page}` : opt.href ? `opened ${fill(opt.href, user, answers)}` : opt.action ?? "";
-    if (opt.action !== "callback" || !user.phone) log("selection", label, opt.action === "callback" ? "callback → asked for phone" : did, user, answers);
+    log("selection", label, opt.action === "callback" ? "callback → asked for details" : did, user, answers);
 
     if (opt.action === "callback") {
-      // no number yet? ask for it first, then pass the request on
-      if (!user.phone) return showStep("callback-phone", answers, [...chat.history, chat.step], label);
-      requestCallback({ sessionId: chat.sessionId, name: user.name, phone: user.phone, email: user.email, service: answers.service ?? "General enquiry", stepId: chat.step, botText: fill(FLOW_BY_ID[chat.step]?.text ?? "", user, answers) });
-      return showStep("callback-done", answers, [...chat.history, chat.step], label);
+      // ask for name + phone/email, then pass the request on (see submitContact)
+      return showStep("callback-phone", answers, [...chat.history, chat.step], label);
     }
 
     if (opt.next) return showStep(opt.next, answers, [...chat.history, chat.step], label);
@@ -347,12 +302,14 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
     }
     if (opt.href) {
       const href = fill(opt.href, user, answers);
+      if (href.startsWith("tel:")) gtagEvent("phone_clicked", { location: "chatbot", number: href.slice(4) });
       if (href.startsWith("http")) window.open(href, "_blank", "noopener,noreferrer");
       else window.location.href = href;
       say(label, "Opening that for you now.");
       return;
     }
     if (opt.action === "whatsapp") {
+      gtagEvent("whatsapp_clicked", { location: "chatbot" });
       window.open(`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(leadMessage(user, answers))}`, "_blank", "noopener,noreferrer");
       say(label, "I've opened WhatsApp with your details filled in — just press send and our team will reply.");
       return;
@@ -364,22 +321,15 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
     }
   }
 
-  /** Phone number typed in for a call back. */
-  const [phoneInput, setPhoneInput] = useState("");
-  const [phoneError, setPhoneError] = useState("");
-  function submitPhone(e: React.FormEvent) {
-    e.preventDefault();
-    if (!user) return;
-    const ph = phoneInput.trim();
-    if (!/^[+\d][\d\s()-]{5,}$/.test(ph)) { setPhoneError("Please enter a valid phone number"); return; }
-    setPhoneError("");
-    setPhoneInput("");
-    const updated = { ...user, phone: ph };
-    try { sessionStorage.setItem(USER_KEY, JSON.stringify(updated)); } catch { /* ignore */ }
-    setUser(updated);
-    log("phone entered", ph, "phone saved", updated);
-    requestCallback({ sessionId: chat.sessionId, name: updated.name, phone: ph, email: updated.email, service: chat.answers.service ?? "General enquiry", stepId: chat.step, botText: fill(FLOW_BY_ID[chat.step]?.text ?? "", updated, chat.answers) });
-    showStep("callback-done", chat.answers, [...chat.history, chat.step], ph, updated);
+  /** Name + phone/email submitted for a call back. */
+  function submitContact(u: ChatUser) {
+    try { sessionStorage.setItem(USER_KEY, JSON.stringify(u)); } catch { /* keep in memory only */ }
+    setUser(u);
+    log("phone entered", [u.phone, u.email].filter(Boolean).join(" / "), "contact details saved", u);
+    requestCallback({ sessionId: chat.sessionId, name: u.name, phone: u.phone, email: u.email, service: chat.answers.service ?? "General enquiry", stepId: chat.step, botText: fill(FLOW_BY_ID[chat.step]?.text ?? "", u, chat.answers) });
+    gtagEvent("callback_requested", { service: chat.answers.service ?? "General enquiry" });
+    const shown = [u.name, u.phone, u.email].filter(Boolean).join(" · ");
+    showStep("callback-done", chat.answers, [...chat.history, chat.step], shown, u);
   }
 
   function goBack() {
@@ -448,10 +398,6 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
         </button>
       </div>
 
-      {!user ? (
-        <PreChatForm onSubmit={startChat} />
-      ) : (
-        <>
       {/* Conversation */}
       <div className="relative flex-1 space-y-3 overflow-y-auto px-4 py-4 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.2)_transparent]">
         {chat.messages.map((m) => (
@@ -481,7 +427,7 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
         )}
 
         {/* the current step's choices */}
-        {!typing && user && (
+        {!typing && (
           <div className="flex flex-col items-end gap-2 pt-1" role="group" aria-label="Choose an option">
             {current.options.map((o) => {
               const external = !!(o.page || o.href || (o.action && o.action !== "callback"));
@@ -503,38 +449,13 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
             })}
           </div>
         )}
-        {/* phone box (only on the "what's your number?" step) */}
-        {!typing && user && current.input === "phone" && (
-          <form onSubmit={submitPhone} className="flex flex-col items-end gap-1.5 pt-1" noValidate>
-            <label htmlFor="adz-chat-callback-phone" className="sr-only">Your phone number</label>
-            <div className="flex w-[90%] items-center gap-2">
-              <input
-                id="adz-chat-callback-phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                autoFocus
-                value={phoneInput}
-                onChange={(e) => setPhoneInput(e.target.value)}
-                placeholder="+91 98765 43210"
-                aria-invalid={!!phoneError}
-                className={`min-w-0 flex-1 rounded-full border bg-white/[0.08] px-4 py-2.5 text-sm text-white placeholder-white/40 outline-none transition focus:border-[#C9A227]/70 ${phoneError ? "border-red-400" : "border-white/15"}`}
-              />
-              <button
-                type="submit"
-                className="shrink-0 rounded-full bg-gradient-to-br from-[#E3C255] to-[#B08920] px-4 py-2.5 text-[13px] font-bold text-[#0A1628] transition hover:brightness-110"
-              >
-                Call me
-              </button>
-            </div>
-            {phoneError && <p className="text-xs text-red-300">{phoneError}</p>}
-          </form>
-        )}
+        {/* contact form (only on the call-back details step) */}
+        {!typing && current.input === "contact" && <ContactForm initial={user} onSubmit={submitContact} />}
         <div ref={bottomRef} />
       </div>
 
       {/* Back / main menu */}
-      {user && chat.step !== "main" && (
+      {chat.step !== "main" && (
         <div className="relative flex items-center justify-between gap-2 border-t border-white/10 bg-white/[0.04] px-3 py-2.5">
           <button
             type="button"
@@ -553,8 +474,6 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
             Main menu
           </button>
         </div>
-      )}
-        </>
       )}
 
       {/* Powered-by footer */}
@@ -648,6 +567,7 @@ export function ChatWidgets() {
             aria-label="Chat on WhatsApp"
             whileHover={{ scale: 1.07, y: -2 }}
             whileTap={{ scale: 0.93 }}
+            onClick={() => gtagEvent("whatsapp_clicked", { location: "floating_button" })}
             className="flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg"
             style={{
               background: "linear-gradient(135deg,#25D366,#128C7E)",

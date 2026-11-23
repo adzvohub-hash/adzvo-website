@@ -8,8 +8,8 @@
  *   (`page`), opens an outside link (`href`), or runs an `action`.
  * • `set` remembers what the visitor is enquiring about (service).
  * • action "callback" passes the request to the team (see src/lib/callback.ts).
- *   If the visitor didn't give a phone number at the start, the bot asks for it first.
- * • In text you can use {name}, {phone}, {service}.
+ *   The bot first shows a small form: name (required) plus phone or email (at least one).
+ * • In text you can use {name}, {phone}, {service}, {contactVia}.
  * • "← Back" and "Main menu" are added automatically to every step but "main".
  */
 
@@ -28,7 +28,7 @@ export type FlowStep = {
   id: string;
   text: string;
   options: FlowOption[];
-  input?: "phone";                      // show a phone-number box under the message
+  input?: "contact";                    // show the name / phone / email form under the message
 };
 
 /* ─── Contact details ─────────────────────────────────────────────────────── */
@@ -113,7 +113,7 @@ const serviceSteps: FlowStep[] = SERVICES.flatMap((s) => [
 export const FLOW: FlowStep[] = [
   {
     id: "main",
-    text: "Hi {name}! I'm ADZVO's assistant. What would you like to do?",
+    text: "Hi! I'm ADZVO's assistant. What would you like to do?",
     options: [
       { label: "Explore our services", next: "services" },
       { label: "Request a call back", next: "proj-service" },
@@ -146,21 +146,21 @@ export const FLOW: FlowStep[] = [
   },
   {
     id: "callback-ask",
-    text: "Would you like a call back from our team about {service}?",
+    text: "Would you like our team to get in touch with you about {service}?",
     options: [
-      { label: "Yes, please call me back", action: "callback" },
+      { label: "Yes, please contact me", action: "callback" },
       { label: "No, not right now", next: "callback-no" },
     ],
   },
   {
     id: "callback-phone",
-    text: "Sure! What's the best number for our team to call you on?",
-    input: "phone",
+    text: "Sure! Leave your name and a phone number or email (or both), and our team will get back to you.",
+    input: "contact",
     options: [],
   },
   {
     id: "callback-done",
-    text: "Thank you, {name}! I've let our team know about your enquiry on {service}. Someone will call you back on {phone} shortly.",
+    text: "Thank you, {name}! I've let our team know about your enquiry on {service}. Someone will get back to you on {contactVia} shortly.",
     options: [
       { label: "Explore other services", next: "services" },
       { label: "See our work", next: "work" },
@@ -249,10 +249,17 @@ export const FLOW: FlowStep[] = [
 
 export const FLOW_BY_ID: Record<string, FlowStep> = Object.fromEntries(FLOW.map((s) => [s.id, s]));
 
-/** Fill {name}, {phone}, {service}, … in a piece of text. */
-export function fill(text: string, user: { name: string; phone: string }, a: Answers) {
+/** How the team will reach the visitor: phone, email, or both. */
+function contactVia(user: { phone: string; email?: string }) {
+  if (user.phone && user.email) return `${user.phone} or ${user.email}`;
+  return user.phone || user.email || "the details you gave";
+}
+
+/** Fill {name}, {phone}, {service}, {contactVia}, … in a piece of text. */
+export function fill(text: string, user: { name: string; phone: string; email?: string }, a: Answers) {
   return text
-    .replace(/\{name\}/g, user.name)
+    .replace(/\{name\}/g, user.name || "there")
+    .replace(/\{contactVia\}/g, contactVia(user))
     .replace(/\{phone\}/g, user.phone || "your number")
     .replace(/\{service\}/g, a.service ?? "your enquiry")
     .replace(/\{careersEmail\}/g, CONTACT.careersEmail)
@@ -261,7 +268,7 @@ export function fill(text: string, user: { name: string; phone: string }, a: Ans
 
 /** The message sent by WhatsApp / email: the visitor's details plus any answers. */
 export function leadMessage(user: { name: string; email: string; phone: string }, a: Answers) {
-  const lines = [`Hi ADZVO, I'm ${user.name}.`];
+  const lines = [user.name ? `Hi ADZVO, I'm ${user.name}.` : "Hi ADZVO,"];
   if (a.service) lines.push(`I'm interested in: ${a.service}`);
   if (user.email) lines.push(`Email: ${user.email}`);
   if (user.phone) lines.push(`Phone: ${user.phone}`);

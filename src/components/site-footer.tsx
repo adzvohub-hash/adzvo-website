@@ -4,6 +4,7 @@ import { policyLinks } from "@/components/policy-page";
 import { servicePages } from "@/lib/services";
 import { BrandLogo } from "@/components/brand-logo";
 import { HomeCta } from "@/components/home-cta";
+import { gtagEvent } from "@/routes/__root";
 
 /**
  * Site footer — orange call-to-action strip (HomeCta), link columns, giant ADZVO wordmark.
@@ -90,6 +91,9 @@ export function Footer({ cta = true }: { cta?: boolean } = {}) {
                   <a
                     href={item.href}
                     {...(item.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    onClick={() => {
+                      if (item.href.startsWith("tel:")) gtagEvent("phone_clicked", { location: "footer", number: item.label });
+                    }}
                     className={`ftA-contact ${"main" in item && item.main ? "ftA-contact-main" : ""}`}
                   >
                     <item.icon className="ftA-contact-icon" strokeWidth={2} aria-hidden />

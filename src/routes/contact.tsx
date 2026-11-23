@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Highlight, SectionLabel } from "@/components/brand-logo";
 import { Footer } from "@/components/site-footer";
 import { ArrowRight, Check } from "lucide-react";
+import { gtagEvent } from "./__root";
 
 function useReveal() {
   useEffect(() => {
@@ -65,6 +66,8 @@ function ContactPage() {
     if (ok) {
       form.reset();
       toast.success("Thanks! We'll get back to you within one business day.");
+      // GA4 conversion: contact form submitted
+      gtagEvent("contact_form_submitted", { method: "contact_page" });
     } else {
       toast.error("Sorry, that didn't send. Please check your connection, or email adzvohub@gmail.com.");
     }

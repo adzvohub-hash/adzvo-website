@@ -1,0 +1,615 @@
+
+===== src\index.ts =====
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import type { Bindings } from "./types";
+import auth     from "./routes/auth";
+import home     from "./routes/home";
+import projects from "./routes/projects";
+import insights from "./routes/insights";
+import media    from "./routes/media";
+
+const app = new Hono<{ Bindings: Bindings }>();
+
+// ─── CORS ─────────────────────────────────────────────────────────────────────
+app.use("*", (ctx, next) => {
+  // CORS_ORIGIN can be a comma-separated list e.g. "https://adzvo.com,https://adzvo-website.adzvohub.workers.dev"
+  const allowed = (ctx.env.CORS_ORIGIN ?? "*").split(",").map((s) => s.trim());
+  return cors({
+    origin: (origin) => allowed.includes("*") || allowed.includes(origin) ? origin : allowed[0],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    maxAge: 86400,
+  })(ctx, next);
+});
+
+// ─── Health check ─────────────────────────────────────────────────────────────
+app.get("/api/health", (ctx) => ctx.json({ ok: true, env: ctx.env.ENVIRONMENT }));
+
+// ─── Routes ───────────────────────────────────────────────────────────────────
+app.route("/api/auth",     auth);
+app.route("/api/home",     home);
+app.route("/api/projects", projects);
+app.route("/api/insights", insights);
+app.route("/api/media",    media);
+
+// ─── 404 fallback ─────────────────────────────────────────────────────────────
+app.notFound((ctx) => ctx.json({ error: "Not found" }, 404));
+
+export default app;
+
+
+===== src\types.ts =====
+// Cloudflare Worker bindings
+export type Bindings = {
+  DB: D1Database;
+  MEDIA: R2Bucket;
+  JWT_SECRET: string;
+  ADMIN_USERNAME: string;
+  ADMIN_PASSWORD: string;
+  ENVIRONMENT: string;
+  CORS_ORIGIN: string;
+};
+
+// ─── Domain types (match the frontend's lib/projects.ts, lib/insights.ts) ─────
+
+export type Project = {
+  id: string;
+  title: string;
+  client: string;
+  location: string;
+  service: string;
+  description: string;
+  image_url: string;
+  case_study_url: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Insight = {
+  id: string;
+  tag: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  images: string[];  // assembled from insight_images table
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type InsightRow = Omit<Insight, "images">;
+
+export type ServiceImage = {
+  slug: string;
+  image_url: string;
+};
+
+export type Settings = {
+  hero_video_url: string;
+  metric_projects: number;
+  metric_clients: number;
+  metric_partners: number;
+  metric_categories: number;
+};
+
+
+===== src\middleware\auth.ts =====
+import type { Context, Next } from "hono";
+import type { Bindings } from "../types";
+
+// ─── Minimal JWT helpers (no external deps — Workers crypto is available) ─────
+
+function base64url(data: ArrayBuffer): string {
+  return btoa(String.fromCharCode(...new Uint8Array(data)))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function sign(payload: object, secret: string): Promise<string> {
+  const header = base64url(new TextEncoder().encode(JSON.stringify({ alg: "HS256", typ: "JWT" })));
+  const body   = base64url(new TextEncoder().encode(JSON.stringify(payload)));
+  const key    = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${header}.${body}`));
+  return `${header}.${body}.${base64url(sig)}`;
+}
+
+async function verify(token: string, secret: string): Promise<Record<string, unknown> | null> {
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  const [header, body, sig] = parts;
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" }, false, ["verify"]
+  );
+  const sigBytes = Uint8Array.from(atob(sig.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+  const valid = await crypto.subtle.verify("HMAC", key, sigBytes, new TextEncoder().encode(`${header}.${body}`));
+  if (!valid) return null;
+  try {
+    const payload = JSON.parse(atob(body.replace(/-/g, "+").replace(/_/g, "/"))) as Record<string, unknown>;
+    if (typeof payload.exp === "number" && payload.exp < Date.now() / 1000) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+export async function createToken(username: string, secret: string): Promise<string> {
+  return sign(
+    { sub: username, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 8 }, // 8 h
+    secret
+  );
+}
+
+// ─── Middleware ────────────────────────────────────────────────────────────────
+
+export async function requireAuth(ctx: Context<{ Bindings: Bindings }>, next: Next) {
+  const auth = ctx.req.header("Authorization") ?? "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token) return ctx.json({ error: "Unauthorized" }, 401);
+  const payload = await verify(token, ctx.env.JWT_SECRET);
+  if (!payload) return ctx.json({ error: "Invalid or expired token" }, 401);
+  await next();
+}
+
+
+===== src\routes\auth.ts =====
+import { Hono } from "hono";
+import { createToken } from "../middleware/auth";
+import type { Bindings } from "../types";
+
+const auth = new Hono<{ Bindings: Bindings }>();
+
+// POST /api/auth/login
+// Body: { username: string, password: string }
+// Returns: { token: string }
+auth.post("/login", async (ctx) => {
+  const body = await ctx.req.json<{ username?: string; password?: string }>();
+  const { username = "", password = "" } = body;
+
+  if (
+    username !== ctx.env.ADMIN_USERNAME ||
+    password !== ctx.env.ADMIN_PASSWORD
+  ) {
+    return ctx.json({ error: "Invalid username or password" }, 401);
+  }
+
+  const token = await createToken(username, ctx.env.JWT_SECRET);
+  return ctx.json({ token });
+});
+
+export default auth;
+
+
+===== src\routes\home.ts =====
+import { Hono } from "hono";
+import { requireAuth } from "../middleware/auth";
+import type { Bindings, Settings, ServiceImage } from "../types";
+
+const home = new Hono<{ Bindings: Bindings }>();
+
+// ─── GET /api/home/settings ───────────────────────────────────────────────────
+// Returns hero video URL + 4 impact metrics
+home.get("/settings", async (ctx) => {
+  const rows = await ctx.env.DB
+    .prepare("SELECT key, value FROM settings")
+    .all<{ key: string; value: string }>();
+
+  const map: Record<string, string> = {};
+  for (const row of rows.results) map[row.key] = row.value;
+
+  const settings: Settings = {
+    hero_video_url:    map["hero_video_url"]    ?? "",
+    metric_projects:   Number(map["metric_projects"]   ?? 120),
+    metric_clients:    Number(map["metric_clients"]    ?? 50),
+    metric_partners:   Number(map["metric_partners"]   ?? 36),
+    metric_categories: Number(map["metric_categories"] ?? 8),
+  };
+  return ctx.json(settings);
+});
+
+// ─── PUT /api/home/settings ───────────────────────────────────────────────────
+// Body: Partial<Settings>
+home.put("/settings", requireAuth, async (ctx) => {
+  const body = await ctx.req.json<Partial<Settings>>();
+
+  const updates: { key: string; value: string }[] = [];
+  if (typeof body.hero_video_url    === "string") updates.push({ key: "hero_video_url",    value: body.hero_video_url });
+  if (typeof body.metric_projects   === "number") updates.push({ key: "metric_projects",   value: String(body.metric_projects) });
+  if (typeof body.metric_clients    === "number") updates.push({ key: "metric_clients",    value: String(body.metric_clients) });
+  if (typeof body.metric_partners   === "number") updates.push({ key: "metric_partners",   value: String(body.metric_partners) });
+  if (typeof body.metric_categories === "number") updates.push({ key: "metric_categories", value: String(body.metric_categories) });
+
+  if (updates.length === 0) return ctx.json({ error: "Nothing to update" }, 400);
+
+  const stmts = updates.map(({ key, value }) =>
+    ctx.env.DB.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)").bind(key, value)
+  );
+  await ctx.env.DB.batch(stmts);
+
+  return ctx.json({ ok: true });
+});
+
+// ─── GET /api/home/service-images ────────────────────────────────────────────
+home.get("/service-images", async (ctx) => {
+  const rows = await ctx.env.DB
+    .prepare("SELECT slug, image_url FROM service_images ORDER BY slug")
+    .all<ServiceImage>();
+  return ctx.json(rows.results);
+});
+
+// ─── PUT /api/home/service-images ────────────────────────────────────────────
+// Body: { slug: string, image_url: string }[]
+home.put("/service-images", requireAuth, async (ctx) => {
+  const body = await ctx.req.json<ServiceImage[]>();
+  if (!Array.isArray(body) || body.length === 0) return ctx.json({ error: "Expected an array" }, 400);
+
+  const stmts = body.map(({ slug, image_url }) =>
+    ctx.env.DB
+      .prepare("INSERT OR REPLACE INTO service_images (slug, image_url) VALUES (?, ?)")
+      .bind(slug, image_url)
+  );
+  await ctx.env.DB.batch(stmts);
+
+  return ctx.json({ ok: true });
+});
+
+export default home;
+
+
+===== src\routes\insights.ts =====
+import { Hono } from "hono";
+import { requireAuth } from "../middleware/auth";
+import type { Bindings, Insight, InsightRow } from "../types";
+
+const insights = new Hono<{ Bindings: Bindings }>();
+
+// ─── Helper: attach images to insight rows ────────────────────────────────────
+async function withImages(db: D1Database, rows: InsightRow[]): Promise<Insight[]> {
+  if (rows.length === 0) return [];
+
+  const ids = rows.map((r) => r.id);
+  const placeholders = ids.map(() => "?").join(",");
+  const imgRows = await db
+    .prepare(`SELECT insight_id, image_url FROM insight_images WHERE insight_id IN (${placeholders}) ORDER BY position ASC`)
+    .bind(...ids)
+    .all<{ insight_id: string; image_url: string }>();
+
+  const imageMap = new Map<string, string[]>();
+  for (const img of imgRows.results) {
+    const list = imageMap.get(img.insight_id) ?? [];
+    list.push(img.image_url);
+    imageMap.set(img.insight_id, list);
+  }
+
+  return rows.map((row) => ({ ...row, images: imageMap.get(row.id) ?? [] }));
+}
+
+// ─── GET /api/insights ────────────────────────────────────────────────────────
+insights.get("/", async (ctx) => {
+  const tag = ctx.req.query("tag");
+  const query = tag
+    ? "SELECT * FROM insights WHERE tag = ? ORDER BY sort_order ASC, created_at DESC"
+    : "SELECT * FROM insights ORDER BY sort_order ASC, created_at DESC";
+
+  const rows = tag
+    ? await ctx.env.DB.prepare(query).bind(tag).all<InsightRow>()
+    : await ctx.env.DB.prepare(query).all<InsightRow>();
+
+  return ctx.json(await withImages(ctx.env.DB, rows.results));
+});
+
+// ─── GET /api/insights/:id ────────────────────────────────────────────────────
+insights.get("/:id", async (ctx) => {
+  const row = await ctx.env.DB
+    .prepare("SELECT * FROM insights WHERE id = ?")
+    .bind(ctx.req.param("id"))
+    .first<InsightRow>();
+  if (!row) return ctx.json({ error: "Insight not found" }, 404);
+  const [insight] = await withImages(ctx.env.DB, [row]);
+  return ctx.json(insight);
+});
+
+// ─── POST /api/insights ───────────────────────────────────────────────────────
+insights.post("/", requireAuth, async (ctx) => {
+  const body = await ctx.req.json<Omit<Insight, "created_at" | "updated_at">>();
+  const { id, tag, title, excerpt, body: bodyText, images = [], sort_order = 0 } = body;
+
+  if (!id || !tag || !title || !excerpt || !bodyText) {
+    return ctx.json({ error: "Missing required fields: id, tag, title, excerpt, body" }, 400);
+  }
+
+  await ctx.env.DB
+    .prepare("INSERT INTO insights (id, tag, title, excerpt, body, sort_order) VALUES (?, ?, ?, ?, ?, ?)")
+    .bind(id, tag, title, excerpt, bodyText, sort_order)
+    .run();
+
+  if (images.length > 0) {
+    const imgStmts = images.map((url, i) =>
+      ctx.env.DB
+        .prepare("INSERT INTO insight_images (insight_id, image_url, position) VALUES (?, ?, ?)")
+        .bind(id, url, i)
+    );
+    await ctx.env.DB.batch(imgStmts);
+  }
+
+  const row = await ctx.env.DB.prepare("SELECT * FROM insights WHERE id = ?").bind(id).first<InsightRow>();
+  if (!row) return ctx.json({ error: "Insert failed" }, 500);
+  const [insight] = await withImages(ctx.env.DB, [row]);
+  return ctx.json(insight, 201);
+});
+
+// ─── PUT /api/insights/:id ────────────────────────────────────────────────────
+insights.put("/:id", requireAuth, async (ctx) => {
+  const id = ctx.req.param("id");
+  const body = await ctx.req.json<Partial<Insight>>();
+
+  const existing = await ctx.env.DB
+    .prepare("SELECT id FROM insights WHERE id = ?")
+    .bind(id)
+    .first<{ id: string }>();
+  if (!existing) return ctx.json({ error: "Insight not found" }, 404);
+
+  const { tag, title, excerpt, body: bodyText, images, sort_order } = body;
+
+  await ctx.env.DB
+    .prepare(`
+      UPDATE insights
+      SET tag = COALESCE(?, tag),
+          title = COALESCE(?, title),
+          excerpt = COALESCE(?, excerpt),
+          body = COALESCE(?, body),
+          sort_order = COALESCE(?, sort_order),
+          updated_at = datetime('now')
+      WHERE id = ?
+    `)
+    .bind(tag ?? null, title ?? null, excerpt ?? null, bodyText ?? null, sort_order ?? null, id)
+    .run();
+
+  // Replace images if provided
+  if (Array.isArray(images)) {
+    await ctx.env.DB.prepare("DELETE FROM insight_images WHERE insight_id = ?").bind(id).run();
+    if (images.length > 0) {
+      const imgStmts = images.map((url, i) =>
+        ctx.env.DB
+          .prepare("INSERT INTO insight_images (insight_id, image_url, position) VALUES (?, ?, ?)")
+          .bind(id, url, i)
+      );
+      await ctx.env.DB.batch(imgStmts);
+    }
+  }
+
+  const row = await ctx.env.DB.prepare("SELECT * FROM insights WHERE id = ?").bind(id).first<InsightRow>();
+  if (!row) return ctx.json({ error: "Update failed" }, 500);
+  const [insight] = await withImages(ctx.env.DB, [row]);
+  return ctx.json(insight);
+});
+
+// ─── DELETE /api/insights/:id ─────────────────────────────────────────────────
+insights.delete("/:id", requireAuth, async (ctx) => {
+  const id = ctx.req.param("id");
+  // insight_images deleted by CASCADE
+  const result = await ctx.env.DB
+    .prepare("DELETE FROM insights WHERE id = ?")
+    .bind(id)
+    .run();
+
+  if (result.meta.changes === 0) return ctx.json({ error: "Insight not found" }, 404);
+  return ctx.json({ ok: true });
+});
+
+export default insights;
+
+
+===== src\routes\projects.ts =====
+import { Hono } from "hono";
+import { requireAuth } from "../middleware/auth";
+import type { Bindings, Project } from "../types";
+
+const projects = new Hono<{ Bindings: Bindings }>();
+
+// ─── GET /api/projects ────────────────────────────────────────────────────────
+projects.get("/", async (ctx) => {
+  const service = ctx.req.query("service");
+  const query = service
+    ? "SELECT * FROM projects WHERE service = ? ORDER BY sort_order ASC, created_at DESC"
+    : "SELECT * FROM projects ORDER BY sort_order ASC, created_at DESC";
+
+  const rows = service
+    ? await ctx.env.DB.prepare(query).bind(service).all<Project>()
+    : await ctx.env.DB.prepare(query).all<Project>();
+
+  return ctx.json(rows.results);
+});
+
+// ─── GET /api/projects/:id ────────────────────────────────────────────────────
+projects.get("/:id", async (ctx) => {
+  const row = await ctx.env.DB
+    .prepare("SELECT * FROM projects WHERE id = ?")
+    .bind(ctx.req.param("id"))
+    .first<Project>();
+  if (!row) return ctx.json({ error: "Project not found" }, 404);
+  return ctx.json(row);
+});
+
+// ─── POST /api/projects ───────────────────────────────────────────────────────
+projects.post("/", requireAuth, async (ctx) => {
+  const body = await ctx.req.json<Omit<Project, "created_at" | "updated_at">>();
+
+  const { id, title, client, location, service, description, image_url, case_study_url, sort_order } = body;
+  if (!id || !title || !client || !location || !service || !description) {
+    return ctx.json({ error: "Missing required fields: id, title, client, location, service, description" }, 400);
+  }
+
+  await ctx.env.DB
+    .prepare(`
+      INSERT INTO projects (id, title, client, location, service, description, image_url, case_study_url, sort_order)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+    .bind(id, title, client, location, service, description, image_url ?? "", case_study_url ?? "", sort_order ?? 0)
+    .run();
+
+  const row = await ctx.env.DB.prepare("SELECT * FROM projects WHERE id = ?").bind(id).first<Project>();
+  return ctx.json(row, 201);
+});
+
+// ─── PUT /api/projects/:id ────────────────────────────────────────────────────
+projects.put("/:id", requireAuth, async (ctx) => {
+  const id = ctx.req.param("id");
+  const body = await ctx.req.json<Partial<Project>>();
+
+  const existing = await ctx.env.DB
+    .prepare("SELECT id FROM projects WHERE id = ?")
+    .bind(id)
+    .first<{ id: string }>();
+  if (!existing) return ctx.json({ error: "Project not found" }, 404);
+
+  const { title, client, location, service, description, image_url, case_study_url, sort_order } = body;
+
+  await ctx.env.DB
+    .prepare(`
+      UPDATE projects
+      SET title = COALESCE(?, title),
+          client = COALESCE(?, client),
+          location = COALESCE(?, location),
+          service = COALESCE(?, service),
+          description = COALESCE(?, description),
+          image_url = COALESCE(?, image_url),
+          case_study_url = COALESCE(?, case_study_url),
+          sort_order = COALESCE(?, sort_order),
+          updated_at = datetime('now')
+      WHERE id = ?
+    `)
+    .bind(
+      title ?? null, client ?? null, location ?? null, service ?? null,
+      description ?? null, image_url ?? null, case_study_url ?? null,
+      sort_order ?? null, id
+    )
+    .run();
+
+  const row = await ctx.env.DB.prepare("SELECT * FROM projects WHERE id = ?").bind(id).first<Project>();
+  return ctx.json(row);
+});
+
+// ─── DELETE /api/projects/:id ─────────────────────────────────────────────────
+projects.delete("/:id", requireAuth, async (ctx) => {
+  const id = ctx.req.param("id");
+  const result = await ctx.env.DB
+    .prepare("DELETE FROM projects WHERE id = ?")
+    .bind(id)
+    .run();
+
+  if (result.meta.changes === 0) return ctx.json({ error: "Project not found" }, 404);
+  return ctx.json({ ok: true });
+});
+
+export default projects;
+
+
+===== src\routes\media.ts =====
+import { Hono } from "hono";
+import { requireAuth } from "../middleware/auth";
+import type { Bindings } from "../types";
+
+const media = new Hono<{ Bindings: Bindings }>();
+
+// ─── Allowed MIME types ────────────────────────────────────────────────────────
+const ALLOWED_DOC_TYPES = new Set([
+  "application/pdf",  // .pdf
+]);
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/jpeg",       // .jpg / .jpeg
+  "image/png",        // .png
+  "image/webp",       // .webp
+  "image/avif",       // .avif
+  "image/gif",        // .gif
+  "image/svg+xml",    // .svg
+  "image/tiff",       // .tiff / .tif
+  "image/bmp",        // .bmp
+  "image/heic",       // .heic  (Apple)
+  "image/heif",       // .heif  (Apple)
+  "image/x-icon",     // .ico
+  "image/vnd.microsoft.icon", // .ico (alt MIME)
+]);
+const ALLOWED_VIDEO_TYPES = new Set([
+  "video/mp4",        // .mp4
+  "video/webm",       // .webm
+  "video/ogg",        // .ogv
+  "video/quicktime",  // .mov
+  "video/x-msvideo",  // .avi
+  "video/x-matroska", // .mkv
+  "video/3gpp",       // .3gp
+  "video/x-ms-wmv",   // .wmv
+]);
+const MAX_IMAGE_SIZE = 20 * 1024 * 1024;   // 20 MB
+const MAX_VIDEO_SIZE = 500 * 1024 * 1024;  // 500 MB
+const MAX_DOC_SIZE   = 50 * 1024 * 1024;   // 50 MB
+
+// ─── POST /api/media/upload ───────────────────────────────────────────────────
+// Accepts multipart/form-data with field "file" and optional "folder" (images|videos)
+// Returns: { url: string, key: string }
+media.post("/upload", requireAuth, async (ctx) => {
+  const formData = await ctx.req.formData();
+  const file = formData.get("file");
+  const folder = (formData.get("folder") as string | null) ?? "images";
+
+  if (!(file instanceof File)) return ctx.json({ error: "No file provided" }, 400);
+
+  const isImage = ALLOWED_IMAGE_TYPES.has(file.type);
+  const isVideo = ALLOWED_VIDEO_TYPES.has(file.type);
+  const isDoc   = ALLOWED_DOC_TYPES.has(file.type);
+
+  if (!isImage && !isVideo && !isDoc) {
+    return ctx.json({ error: `Unsupported file type: ${file.type}` }, 415);
+  }
+
+  const maxSize = isVideo ? MAX_VIDEO_SIZE : isDoc ? MAX_DOC_SIZE : MAX_IMAGE_SIZE;
+  if (file.size > maxSize) {
+    return ctx.json({ error: `File exceeds maximum size (${maxSize / 1024 / 1024} MB)` }, 413);
+  }
+
+  // Build a unique key: folder/timestamp-filename
+  const ext       = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+  const safeName  = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 80);
+  const key       = `${folder}/${Date.now()}-${safeName}`;
+
+  await ctx.env.MEDIA.put(key, file.stream(), {
+    httpMetadata: { contentType: file.type },
+  });
+
+  // Public URL — R2 custom domain or the R2.dev dev URL
+  // Set R2_PUBLIC_URL in your Cloudflare env/secret for production
+  const baseUrl   = (ctx.env as unknown as Record<string, string>)["R2_PUBLIC_URL"] ?? "";
+  const url       = baseUrl ? `${baseUrl}/${key}` : `/api/media/${key}`;
+
+  return ctx.json({ url, key });
+});
+
+// ─── GET /api/media/* ─────────────────────────────────────────────────────────
+// Serves a file from R2 (use a public R2 custom domain in production instead)
+media.get("/*", async (ctx) => {
+  const key = ctx.req.param("*");
+  const object = await ctx.env.MEDIA.get(key);
+  if (!object) return ctx.json({ error: "Not found" }, 404);
+
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("Cache-Control", "public, max-age=31536000, immutable");
+
+  return new Response(object.body, { headers });
+});
+
+// ─── DELETE /api/media ────────────────────────────────────────────────────────
+// Body: { key: string }
+media.delete("/", requireAuth, async (ctx) => {
+  const body = await ctx.req.json<{ key?: string }>();
+  if (!body.key) return ctx.json({ error: "key is required" }, 400);
+  await ctx.env.MEDIA.delete(body.key);
+  return ctx.json({ ok: true });
+});
+
+export default media;
+
