@@ -260,6 +260,8 @@ function FlipCard({ icon: Icon, title, text, index }: Capability & { index: numb
   const face = "absolute inset-0 flex flex-col rounded-3xl p-7 [backface-visibility:hidden]";
   return (
     <motion.div variants={flipInVariants} style={{ transformPerspective: 1200 }} className="[perspective:1200px]">
+      {/* Real heading for search engines and screen readers (headings can't sit inside the button). */}
+      <h3 className="sr-only">{title}</h3>
       <button
         type="button"
         aria-pressed={flipped}

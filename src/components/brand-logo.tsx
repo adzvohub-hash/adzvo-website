@@ -10,7 +10,7 @@ export function BrandMark({ className = "size-9" }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" fill="none" aria-hidden className={`shrink-0 ${className}`}>
       <rect width="64" height="64" rx="16" fill="#F5A524" />
-      <path d="M18 46 L32 17 L46 46" stroke="#0B0F1E" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M18 46 L32 17 L46 46" stroke="#0C1020" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="32" cy="43" r="4.8" fill="#FFFFFF" />
     </svg>
   );

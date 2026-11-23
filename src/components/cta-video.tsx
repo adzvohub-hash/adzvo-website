@@ -42,12 +42,12 @@ export function CtaBand({ slug, poster, label, children }: { slug: string; poste
 }
 
 const CTA_BAND_CSS = `
-.cta-band { position: relative; overflow: hidden; background: #0a0e1f; isolation: isolate; }
+.cta-band { position: relative; overflow: hidden; background: #0C1020; isolation: isolate; }
 .cta-band-video { position: absolute; z-index: 0; top: 0; right: 0; height: 100%; width: 100%; object-fit: cover; object-position: center; }
 .cta-band-fade { position: absolute; inset: 0; z-index: 1; pointer-events: none;
   /* mobile: footage behind, darkened enough for the copy */
   background:
-    linear-gradient(180deg, rgba(10,14,31,0.55) 0%, rgba(10,14,31,0.78) 55%, #0a0e1f 100%); }
+    linear-gradient(180deg, rgba(12,16,32,0.55) 0%, rgba(12,16,32,0.78) 55%, #0C1020 100%); }
 .cta-band-inner { position: relative; z-index: 2; display: flex; align-items: center; min-height: 460px; padding-block: 4rem; }
 .cta-band-copy { max-width: 34rem; }
 
@@ -56,8 +56,8 @@ const CTA_BAND_CSS = `
   .cta-band-video { width: 72%; }
   .cta-band-fade {
     background:
-      linear-gradient(90deg, #0a0e1f 0%, #0a0e1f 30%, rgba(10,14,31,0.92) 38%, rgba(10,14,31,0.7) 46%, rgba(10,14,31,0.35) 56%, rgba(10,14,31,0.1) 66%, rgba(10,14,31,0) 74%),
-      linear-gradient(180deg, rgba(10,14,31,0.35) 0%, rgba(10,14,31,0) 18%, rgba(10,14,31,0) 82%, rgba(10,14,31,0.4) 100%);
+      linear-gradient(90deg, #0C1020 0%, #0C1020 30%, rgba(12,16,32,0.92) 38%, rgba(12,16,32,0.7) 46%, rgba(12,16,32,0.35) 56%, rgba(12,16,32,0.1) 66%, rgba(12,16,32,0) 74%),
+      linear-gradient(180deg, rgba(12,16,32,0.35) 0%, rgba(12,16,32,0) 18%, rgba(12,16,32,0) 82%, rgba(12,16,32,0.4) 100%);
   }
   .cta-band-inner { min-height: clamp(420px, 34vw, 560px); padding-block: 4.5rem; }
   .cta-band-copy { max-width: 30rem; }

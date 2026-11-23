@@ -43,9 +43,9 @@ export function HomeCta() {
 }
 
 const HCTA_CSS = `
-.hcta { position: relative; overflow: hidden; isolation: isolate; color: #0a0e1f;
-  background: linear-gradient(100deg, #f5b335 0%, #e5a020 45%, #f08a1c 100%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(10,14,31,.12); }
+.hcta { position: relative; overflow: hidden; isolation: isolate; color: #0C1020;
+  background: linear-gradient(100deg, #F5A524 0%, #F5A524 45%, #F5A524 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(12,16,32,.12); }
 /* slow light sweep across the band */
 .hcta-shine { position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.28) 50%, transparent 65%);
@@ -54,7 +54,7 @@ const HCTA_CSS = `
 /* giant outlined wordmark, like the footer's, sitting low on the right */
 .hcta-word { position: absolute; z-index: -1; right: -.04em; bottom: -.2em; pointer-events: none; user-select: none; white-space: nowrap;
   font-family: 'Space Grotesk', Inter, system-ui, sans-serif; font-weight: 700; letter-spacing: .1em; line-height: 1;
-  font-size: clamp(5rem, 12vw, 10.5rem); color: transparent; -webkit-text-stroke: 1.5px rgba(10,14,31,.16);
+  font-size: clamp(5rem, 12vw, 10.5rem); color: transparent; -webkit-text-stroke: 1.5px rgba(12,16,32,.16);
   background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 80%); -webkit-background-clip: text; background-clip: text; }
 
 .hcta-inner { display: flex; flex-direction: column; gap: 1.25rem; padding-block: 2.25rem 2.5rem; }
@@ -62,9 +62,9 @@ const HCTA_CSS = `
 /* soft fade on the bottom edge so the band melts into the footer */
 .hcta::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22px; z-index: -1; pointer-events: none;
   background: linear-gradient(180deg, rgba(5,7,15,0), rgba(5,7,15,.35)); }
-.hcta-eyebrow { margin: 0; font-size: .7rem; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: rgba(10,14,31,.72); }
+.hcta-eyebrow { margin: 0; font-size: .7rem; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: rgba(12,16,32,.72); }
 .hcta-title { margin: .55rem 0 0; font-family: Inter, system-ui, sans-serif; font-weight: 800; letter-spacing: -.02em; line-height: 1.06;
-  font-size: clamp(1.6rem, 3.4vw, 2.5rem); color: #0a0e1f; }
+  font-size: clamp(1.6rem, 3.4vw, 2.5rem); color: #0C1020; }
 .hcta-title-2 { display: block; color: #fff; text-shadow: 0 2px 18px rgba(150,70,0,.35); }
 .hcta-actions { display: flex; flex-wrap: wrap; gap: .85rem; flex-shrink: 0; }
 .hcta-actions svg { width: 18px; height: 18px; }

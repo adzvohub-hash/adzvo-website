@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PolicyPage, policyHead } from "@/components/policy-page";
+import { PAGE_SEO, seoHead } from "@/lib/seo";
+import { PolicyPage } from "@/components/policy-page";
 
 export const Route = createFileRoute("/privacy-policy")({
-  head: () => policyHead("Privacy Policy", "Read ADZVO’s draft privacy policy covering personal information, privacy choices and enquiries."),
+  head: () => seoHead(PAGE_SEO.privacy, "/privacy-policy"),
   component: PrivacyPolicy,
 });
 

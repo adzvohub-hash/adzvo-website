@@ -25,12 +25,14 @@ const contactItems = [
   { label: "Bangalore, India", href: "https://maps.google.com/?q=Bangalore,+India", icon: MapPin },
 ] as const;
 
-/* Simple stroke icons. Replace href="#" with your profile links. */
+/* Social profiles — the ONE place to change these links.
+   These are the expected handles; they may not exist yet (or may belong to someone else).
+   Update each href once the real ADZVO profile is created. */
 const socials = [
-  { label: "LinkedIn", href: "#", path: <><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7" /></> },
-  { label: "Instagram", href: "#", path: <><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><path d="M17.5 6.5v.01" /></> },
-  { label: "X (Twitter)", href: "#", path: <path d="M4 4l16 16M20 4L4 20" /> },
-  { label: "YouTube", href: "#", path: <><rect x="2.5" y="5" width="19" height="14" rx="4" /><path d="M10 9l5 3-5 3z" /></> },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/adzvo", path: <><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7" /></> },
+  { label: "Instagram", href: "https://www.instagram.com/adzvo", path: <><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><path d="M17.5 6.5v.01" /></> },
+  { label: "X (Twitter)", href: "https://x.com/adzvo", path: <path d="M4 4l16 16M20 4L4 20" /> },
+  { label: "YouTube", href: "https://www.youtube.com/@adzvo", path: <><rect x="2.5" y="5" width="19" height="14" rx="4" /><path d="M10 9l5 3-5 3z" /></> },
 ];
 
 /** cta={false} hides the orange call-to-action strip that sits on top of the footer. */
@@ -52,7 +54,7 @@ export function Footer({ cta = true }: { cta?: boolean } = {}) {
             <p className="ftA-about">A full-service creative digital agency built for Indian brands that want to grow, stand out and make a lasting impact.</p>
             <div className="ftA-socials">
               {socials.map((s) => (
-                <a key={s.label} href={s.href} aria-label={s.label} className="ftA-social">
+                <a key={s.label} href={s.href} aria-label={`ADZVO on ${s.label}`} target="_blank" rel="noopener noreferrer" className="ftA-social">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{s.path}</svg>
                 </a>
               ))}

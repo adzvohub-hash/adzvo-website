@@ -57,31 +57,31 @@ function RobotMascot() {
       <g className="adz-bot-bob">
         {/* antenna */}
         <line x1="32" y1="10" x2="32" y2="17" stroke="#E8EDF5" strokeWidth="2.5" strokeLinecap="round" />
-        <circle className="adz-bot-antenna" cx="32" cy="8" r="3.2" fill="#C9A227" />
+        <circle className="adz-bot-antenna" cx="32" cy="8" r="3.2" fill="#DC8E12" />
         {/* ears */}
-        <rect x="11.5" y="24" width="4.5" height="8" rx="2" fill="#C9A227" />
-        <rect x="48" y="24" width="4.5" height="8" rx="2" fill="#C9A227" />
+        <rect x="11.5" y="24" width="4.5" height="8" rx="2" fill="#DC8E12" />
+        <rect x="48" y="24" width="4.5" height="8" rx="2" fill="#DC8E12" />
         {/* head */}
         <rect x="15" y="16" width="34" height="25" rx="10" fill="#FFFFFF" />
         {/* visor */}
-        <rect x="19.5" y="20.5" width="25" height="16" rx="7" fill="#0A1628" />
+        <rect x="19.5" y="20.5" width="25" height="16" rx="7" fill="#0E1326" />
         {/* eyes */}
         <g className="adz-bot-eyes">
-          <circle cx="27" cy="27" r="2.8" fill="#F5D76E" />
-          <circle cx="37" cy="27" r="2.8" fill="#F5D76E" />
+          <circle cx="27" cy="27" r="2.8" fill="#F5A524" />
+          <circle cx="37" cy="27" r="2.8" fill="#F5A524" />
         </g>
         {/* smile */}
-        <path d="M28.5 31.8 Q32 34.6 35.5 31.8" stroke="#F5D76E" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M28.5 31.8 Q32 34.6 35.5 31.8" stroke="#F5A524" strokeWidth="1.8" strokeLinecap="round" />
         {/* body */}
         <rect x="22" y="43" width="20" height="14" rx="6" fill="#FFFFFF" />
-        <circle cx="32" cy="50" r="2.6" fill="#C9A227" />
+        <circle cx="32" cy="50" r="2.6" fill="#DC8E12" />
         {/* left arm (resting) */}
         <path d="M22 47 L15.5 52.5" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" />
-        <circle cx="14.5" cy="53.5" r="3" fill="#C9A227" />
+        <circle cx="14.5" cy="53.5" r="3" fill="#DC8E12" />
         {/* right arm (waving) */}
         <g className="adz-bot-wave">
           <path d="M42 47 L50 39" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" />
-          <circle cx="51.5" cy="37.5" r="3.4" fill="#C9A227" />
+          <circle cx="51.5" cy="37.5" r="3.4" fill="#DC8E12" />
         </g>
       </g>
     </svg>
@@ -169,7 +169,7 @@ function ContactForm({ initial, onSubmit }: { initial: ChatUser; onSubmit: (u: C
   }
 
   const field =
-    "w-full rounded-xl border border-white/15 bg-white/[0.08] px-3.5 py-2 text-sm text-white placeholder-white/40 outline-none transition focus:border-[#C9A227]/70 focus:bg-white/[0.12]";
+    "w-full rounded-xl border border-white/15 bg-white/[0.08] px-3.5 py-2 text-sm text-white placeholder-white/40 outline-none transition focus:border-[#DC8E12]/70 focus:bg-white/[0.12]";
   const err = "mt-1 text-[11px] text-red-300";
 
   return (
@@ -197,7 +197,7 @@ function ContactForm({ initial, onSubmit }: { initial: ChatUser; onSubmit: (u: C
       </div>
       {errors.either && <p className="text-[11px] text-red-300">{errors.either}</p>}
       <button type="submit"
-        className="w-full rounded-full bg-gradient-to-br from-[#E3C255] to-[#B08920] py-2.5 text-[13px] font-bold text-[#0A1628] transition hover:brightness-110">
+        className="w-full rounded-full bg-gradient-to-br from-[#F5A524] to-[#DC8E12] py-2.5 text-[13px] font-bold text-[#0E1326] transition hover:brightness-110">
         Send my details
       </button>
       <p className="text-center text-[11px] leading-snug text-white/50">
@@ -357,7 +357,7 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
         height: "500px",
         maxHeight: "calc(100vh - 190px)",
         background:
-          "linear-gradient(160deg, rgba(22,48,92,0.62) 0%, rgba(10,22,40,0.72) 55%, rgba(10,22,40,0.8) 100%)",
+          "linear-gradient(160deg, rgba(39,46,72,0.62) 0%, rgba(14,19,38,0.72) 55%, rgba(14,19,38,0.8) 100%)",
         backdropFilter: "blur(22px) saturate(160%)",
         WebkitBackdropFilter: "blur(22px) saturate(160%)",
         boxShadow:
@@ -366,14 +366,14 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
     >
       {/* soft light blooms behind the glass content */}
       <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <span className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[#C9A227]/30 blur-3xl" />
-        <span className="absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-[#3b82f6]/20 blur-3xl" />
+        <span className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[#DC8E12]/30 blur-3xl" />
+        <span className="absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-[#3B4257]/20 blur-3xl" />
       </span>
       {/* Header */}
       <div className="relative flex items-center justify-between border-b border-white/10 bg-white/[0.06] px-4 py-3.5">
         <div className="flex items-center gap-3">
-          <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#E3C255] to-[#B08920] shadow-[0_4px_14px_rgba(201,162,39,0.45)]">
-            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#12233f] bg-emerald-400" />
+          <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#F5A524] to-[#DC8E12] shadow-[0_4px_14px_rgba(220,142,18,0.45)]">
+            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#161D3C] bg-emerald-400" />
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path
                 d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
@@ -405,7 +405,7 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
             <div
               className={`max-w-[85%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                 m.role === "user"
-                  ? "rounded-br-md bg-gradient-to-br from-[#E3C255] to-[#B08920] font-medium text-[#0A1628] shadow-[0_6px_16px_-6px_rgba(201,162,39,0.6)]"
+                  ? "rounded-br-md bg-gradient-to-br from-[#F5A524] to-[#DC8E12] font-medium text-[#0E1326] shadow-[0_6px_16px_-6px_rgba(220,142,18,0.6)]"
                   : "rounded-bl-md border border-white/15 bg-white/[0.09] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
               }`}
               style={{ wordBreak: "break-word" }}
@@ -436,7 +436,7 @@ function WebChatPanel({ onClose }: { onClose: () => void }) {
                   key={o.label}
                   type="button"
                   onClick={() => choose(o)}
-                  className="inline-flex max-w-[90%] items-center gap-1.5 rounded-full border border-[#E3C255]/55 bg-white/[0.06] px-3.5 py-2 text-left text-[13px] font-semibold text-[#F5D76E] transition hover:border-[#E3C255] hover:bg-[#E3C255]/15 focus-visible:outline-2 focus-visible:outline-[#E3C255]"
+                  className="inline-flex max-w-[90%] items-center gap-1.5 rounded-full border border-[#F5A524]/55 bg-white/[0.06] px-3.5 py-2 text-left text-[13px] font-semibold text-[#F5A524] transition hover:border-[#F5A524] hover:bg-[#F5A524]/15 focus-visible:outline-2 focus-visible:outline-[#F5A524]"
                 >
                   {fill(o.label, user, chat.answers)}
                   {external && (
@@ -525,7 +525,7 @@ export function ChatWidgets() {
           {!chatOpen && (
             <span
               aria-hidden
-              className={`pointer-events-none absolute right-[calc(100%+12px)] top-1/2 -translate-y-1/2 whitespace-nowrap rounded-2xl rounded-br-sm bg-white chat-hint-bubble px-3.5 py-2 text-[13px] font-semibold text-[#0A1628] shadow-xl ring-1 ring-black/5 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 ${
+              className={`pointer-events-none absolute right-[calc(100%+12px)] top-1/2 -translate-y-1/2 whitespace-nowrap rounded-2xl rounded-br-sm bg-white chat-hint-bubble px-3.5 py-2 text-[13px] font-semibold text-[#0E1326] shadow-xl ring-1 ring-black/5 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 ${
                 showHint ? "translate-x-0 opacity-100" : "translate-x-2 opacity-0"
               }`}
             >
@@ -535,7 +535,7 @@ export function ChatWidgets() {
           {!chatOpen && (
             <span
               aria-hidden
-              className="adz-bot-ping pointer-events-none absolute inset-0 rounded-full border-2 border-[#C9A227]"
+              className="adz-bot-ping pointer-events-none absolute inset-0 rounded-full border-2 border-[#DC8E12]"
             />
           )}
           <motion.button
@@ -548,9 +548,9 @@ export function ChatWidgets() {
             aria-label={chatOpen ? "Close chat" : "Chat with us"}
             className="relative flex h-16 w-16 items-center justify-center rounded-full text-white"
             style={{
-              background: "linear-gradient(135deg,#16305c,#0A1628)",
-              border: "2px solid #C9A227",
-              boxShadow: "0 10px 25px -5px rgba(201,162,39,0.45)",
+              background: "linear-gradient(135deg,#272E48,#0E1326)",
+              border: "2px solid #DC8E12",
+              boxShadow: "0 10px 25px -5px rgba(220,142,18,0.45)",
             }}
           >
             {chatOpen ? <CloseIcon /> : <RobotMascot />}

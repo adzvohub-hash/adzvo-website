@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PAGE_SEO, seoHead } from "@/lib/seo";
 import { GlassButton } from "@/components/glass-button";
 import { useState, useEffect, type FormEvent } from "react";
 import { Toaster, toast } from "sonner";
@@ -36,15 +37,7 @@ function useReveal() {
 }
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact ADZVO — Start a Project" },
-      { name: "description", content: "Get in touch with ADZVO. Tell us about your brand and goals — we'll come back with a clear plan." },
-      { property: "og:title", content: "Contact ADZVO" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => seoHead(PAGE_SEO.contact, "/contact"),
   component: ContactPage,
 });
 
@@ -86,7 +79,7 @@ function ContactPage() {
             <div className="orb -top-20 -right-20 h-80 w-80 bg-gold/20" />
             <div className="orb -bottom-20 -left-20 h-80 w-80 bg-gold/10 [animation-delay:-5s]" />
             <div className="reveal relative flex h-full w-full flex-col justify-center">
-              <SectionLabel light>Start a Project</SectionLabel>
+              <h1><SectionLabel light>Contact ADZVO in Bangalore</SectionLabel></h1>
               <h2 className="font-display mt-5 text-4xl leading-tight font-extrabold text-primary-foreground sm:text-5xl">
                 Your Next Big Idea <Highlight dark>Starts Here.</Highlight>
               </h2>

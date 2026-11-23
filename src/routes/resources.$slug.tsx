@@ -1,39 +1,50 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GlassButton } from "@/components/glass-button";
-import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Footer as SiteFooter } from "@/components/site-footer";
 import { LOGO_FONT } from "@/components/brand-logo";
-import { postsSeed, fetchInsights, type Post } from "@/lib/insights";
+import { fetchInsights, type Post } from "@/lib/insights";
+import { canonicalUrl } from "@/lib/seo";
+
+/** Articles shorter than this are kept out of Google until they're written in full.
+ *  Thin pages can lower how Google rates the whole site. Once an article in the admin
+ *  reaches this length it becomes indexable automatically — no code change needed. */
+const MIN_INDEXABLE_WORDS = 300;
+const wordCount = (text: string) => text.trim().split(/\s+/).filter(Boolean).length;
 
 export const Route = createFileRoute("/resources/$slug")({
-  head: ({ params }) => {
-    const post = postsSeed.find((p) => p.id === params.slug);
+  // Load the live article (from the API, falling back to the built-in defaults) before the
+  // page renders, so the title, description and robots rule match what's actually published.
+  loader: async ({ params }) => {
+    const all: Post[] = await fetchInsights();
+    return { all, post: all.find((p) => p.id === params.slug) ?? null };
+  },
+  head: ({ loaderData, params }) => {
+    const post = loaderData?.post ?? null;
+    const url = canonicalUrl(`/resources/${params.slug}`);
+    const indexable = !!post && wordCount(post.body) >= MIN_INDEXABLE_WORDS;
     return {
       meta: [
-        { title: post ? `${post.title} — ADZVO Resources` : "Resources — ADZVO" },
+        { title: post ? `${post.title} | ADZVO` : "Article not found | ADZVO" },
         { name: "description", content: post?.excerpt ?? "ADZVO Resources — practical thinking on brands, growth, AI and creative work." },
+        { name: "robots", content: indexable ? "index, follow" : "noindex, follow" },
         { property: "og:title", content: post ? post.title : "ADZVO Resources" },
         { property: "og:description", content: post?.excerpt ?? "" },
         { property: "og:type", content: "article" },
+        { property: "og:site_name", content: "ADZVO" },
         { property: "og:image", content: post?.images[0] ?? "" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:image", content: post?.images[0] ?? "" },
+        { property: "og:url", content: url },
       ],
+      links: [{ rel: "canonical", href: url }],
     };
   },
   component: ResourcePage,
 });
 
 function ResourcePage() {
-  const { slug } = Route.useParams();
-  const [allPosts, setAllPosts] = useState<Post[]>(postsSeed);
-
-  useEffect(() => {
-    void fetchInsights().then(setAllPosts);
-  }, []);
-
-  const post = allPosts.find((p) => p.id === slug);
+  const { post } = Route.useLoaderData() as { all: Post[]; post: Post | null };
 
   if (!post) {
     return (
@@ -88,7 +99,7 @@ function ResourcePage() {
           {post.images.length > 1 && (
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
               {post.images.slice(1).map((src, i) => (
-                <img key={i} src={src} alt="" className="aspect-video w-full rounded-2xl object-cover" />
+                <img key={i} src={src} alt={`${post.title} — image ${i + 1}`} className="aspect-video w-full rounded-2xl object-cover" />
               ))}
             </div>
           )}

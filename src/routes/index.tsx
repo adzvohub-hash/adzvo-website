@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PAGE_SEO, seoHead } from "@/lib/seo";
 import { GlassButton } from "@/components/glass-button";
 import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import { Toaster, toast } from "sonner";
@@ -26,23 +27,7 @@ import { ArrowRight, ArrowUpRight, CheckCircle2, Cpu, Handshake, Lightbulb, Moni
 import { getSettings, getServiceImages } from "@/lib/api";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "ADZVO — Ideas That Inspire. Digital That Delivers." },
-      {
-        name: "description",
-        content:
-          "ADZVO is a full-service creative digital agency in India — branding, social, web, video, SEO and paid media that move the needle.",
-      },
-      { property: "og:title", content: "ADZVO — Creative Digital Agency, India" },
-      {
-        property: "og:description",
-        content: "Brands, campaigns and digital experiences that move people — and move the needle.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => seoHead(PAGE_SEO.home, "/"),
   component: Index,
 });
 
@@ -125,7 +110,7 @@ const SLIDES = [
   {
     img: hero1,
     title: (<>Ideas That <em className="not-italic">Inspire.</em><br />Digital That Delivers.</>),
-    body: "We bring strategy, creativity and technology together to help ambitious brands stand out and move forward.",
+    body: "A Bangalore-based creative and digital agency bringing strategy, creativity and technology together to help ambitious brands across India stand out and grow.",
     cta: "Let's Talk", link: "Explore Our Services", bar: true, tags: [] as string[],
   },
   {
@@ -186,12 +171,16 @@ export function Hero() {
       />
       <div className="homepage-hero-overlay pointer-events-none absolute inset-0" />
 
-      <div className="page-shell relative grid">
+      <div className="page-shell relative flex flex-col items-center">
+        {/* The page's one H1: what ADZVO is and where. The big rotating slogans below are styled text, not headings. */}
+        <h1 className="homepage-hero-copy relative z-10 text-center">
+          <SectionLabel light>Creative Digital Agency in Bangalore</SectionLabel>
+        </h1>
+      <div className="relative grid w-full">
         {SLIDES.map((s, k) => (
           <div key={k} aria-hidden={k !== i}
             className={`homepage-hero-copy col-start-1 row-start-1 mx-auto flex w-full max-w-4xl flex-col items-center text-center transition-all duration-[1200ms] ease-out ${k === i ? "translate-y-0 opacity-100 delay-300" : "pointer-events-none translate-y-6 opacity-0"}`}>
-            <SectionLabel light>Creative Digital Agency</SectionLabel>
-            <h1 className="font-display mt-4 text-[2.4rem] leading-[1.06] min-[400px]:text-5xl sm:leading-[1.04] font-extrabold tracking-normal text-primary-foreground sm:text-6xl lg:text-7xl xl:text-[4.75rem]">{s.title}</h1>
+            <p className="font-display mt-4 text-[2.4rem] leading-[1.06] min-[400px]:text-5xl sm:leading-[1.04] font-extrabold tracking-normal text-primary-foreground sm:text-6xl lg:text-7xl xl:text-[4.75rem]">{s.title}</p>
             {s.bar && <div className="mt-4 h-1 w-24 rounded-full bg-gold" />}
             <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-primary-foreground/90 sm:text-lg">{s.body}</p>
             {s.tags.length > 0 && (
@@ -210,6 +199,7 @@ export function Hero() {
             </div>
           </div>
         ))}
+      </div>
       </div>
 
       <div className="absolute bottom-[4.5rem] left-1/2 -translate-x-1/2">
@@ -299,7 +289,7 @@ function Services() {
     <section id="services" className="svc-sec relative overflow-hidden py-20 sm:py-24">
       <div aria-hidden className="svc-sec-glow" />
       <div className="page-shell relative">
-          <div className="reveal mx-auto flex flex-col items-center text-center">
+          <div className="svc-sec-head reveal mx-auto flex flex-col items-center text-center">
             <SectionLabel light>What We Do</SectionLabel>
             <h2 className="font-display mt-6 text-3xl leading-tight font-extrabold text-primary-foreground sm:text-4xl lg:text-5xl lg:whitespace-nowrap">
               Full-Spectrum <Highlight dark>Digital Services</Highlight>
@@ -344,16 +334,16 @@ function Services() {
                 <div
                   className="invisible absolute inset-0 opacity-0 transition-all duration-500 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
                   style={{
-                    background: "linear-gradient(180deg, rgba(10,14,31,0.42) 0%, rgba(10,14,31,0.58) 55%, rgba(10,14,31,0.72) 100%)",
+                    background: "linear-gradient(180deg, rgba(12,16,32,0.42) 0%, rgba(12,16,32,0.58) 55%, rgba(12,16,32,0.72) 100%)",
                     backdropFilter: "blur(14px) saturate(150%)",
                     WebkitBackdropFilter: "blur(14px) saturate(150%)",
                   }}
                 >
                  <div className="flex h-full flex-col items-start justify-center p-6 text-primary-foreground" style={{ textShadow: "0 1px 10px rgba(0,0,0,0.35)" }}>
-                  <span className="mb-3 grid shrink-0 place-items-center rounded-xl bg-gold text-navy" style={{ width: 40, height: 40, boxShadow: "0 6px 16px -6px rgba(229,160,32,0.8)" }}>
+                  <span className="mb-3 grid shrink-0 place-items-center rounded-xl bg-gold text-navy" style={{ width: 40, height: 40, boxShadow: "0 6px 16px -6px rgba(245,165,36,0.8)" }}>
                     <Icon className="h-5 w-5" strokeWidth={2} />
                   </span>
-                  <h3 className="font-display text-sm font-bold uppercase tracking-widest text-primary-foreground">{t}</h3>
+                  <p aria-hidden className="font-display text-sm font-bold uppercase tracking-widest text-primary-foreground">{t}</p>
                   <p className="mt-2 text-sm leading-relaxed text-primary-foreground/85">{desc}</p>
                   <ul className="mt-3 space-y-1.5">
                     {bullets.map((b) => (

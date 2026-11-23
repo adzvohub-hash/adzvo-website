@@ -122,7 +122,7 @@ const contentLocalizationCapabilities: Capability[] = [
 ];
 
 const strategyAnalyticsCapabilities: Capability[] = [
-  { icon: Target, title: "Digital & Marketing Strategy", text: "Brand-led copy for websites, campaigns, products, and communication." },
+  { icon: Target, title: "Digital & Marketing Strategy", text: "Clear plans that connect your goals, audiences, channels and budget into one practical roadmap." },
   { icon: BarChart3, title: "GA4", text: "Measurement frameworks that reveal how users discover, explore, and convert." },
   { icon: Tags, title: "Tag Manager", text: "Structured tracking implementation for cleaner, more reliable marketing data." },
   { icon: LayoutDashboard, title: "Dashboards", text: "Clear visual views of the metrics and trends that matter most." },

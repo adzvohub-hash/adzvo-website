@@ -88,6 +88,10 @@ export function CapabilityShowcase({ capabilities }: { capabilities: Capability[
             const selected = index === active;
             return (
               <li key={title} className="relative border-b border-navy/10 last:border-b-0">
+                {/* Every service keeps a heading and its description in the page, so search engines see all six,
+                    not only the one that happens to be open. Visible layout is unchanged. */}
+                <h3 className="sr-only">{title}</h3>
+                {!selected && <p className="sr-only">{text}</p>}
                 <button
                   type="button"
                   aria-expanded={selected}

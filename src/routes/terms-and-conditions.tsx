@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PolicyPage, policyHead } from "@/components/policy-page";
+import { PAGE_SEO, seoHead } from "@/lib/seo";
+import { PolicyPage } from "@/components/policy-page";
 
 export const Route = createFileRoute("/terms-and-conditions")({
-  head: () => policyHead("Terms & Conditions", "Read ADZVO’s draft website terms covering website use, intellectual property and service agreements."),
+  head: () => seoHead(PAGE_SEO.terms, "/terms-and-conditions"),
   component: TermsAndConditions,
 });
 

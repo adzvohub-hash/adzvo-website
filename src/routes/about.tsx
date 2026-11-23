@@ -16,6 +16,7 @@
  * all of its text if WebGL or the package is unavailable).
  */
 
+import { PAGE_SEO, seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GlassButton } from "@/components/glass-button";
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
@@ -28,16 +29,7 @@ import { Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";
 
 /* ─── Route ──────────────────────────────────────────────────────────── */
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About ADZVO — Integrated Advertising & Digital Agency" },
-      { name: "description", content: "ADZVO brings creativity, technology and strategy together to help businesses build stronger brands and meaningful digital experiences." },
-      { property: "og:title", content: "About ADZVO" },
-      { property: "og:description", content: "An advertising and digital agency built around an integrated way of working." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => seoHead(PAGE_SEO.about, "/about"),
   component: AboutPage,
 });
 
@@ -205,7 +197,7 @@ function AboutPage() {
               </div>
               <div className="mt-3 grid grid-cols-5 gap-1.5">
                 {CHAPTERS.map((c, i) => (
-                  <div key={c.step} className={`h-1 rounded-full transition-colors duration-500 ${i <= active ? "bg-[#e5a020]" : "bg-[#0a0e1f]/10"}`} />
+                  <div key={c.step} className={`h-1 rounded-full transition-colors duration-500 ${i <= active ? "bg-[#F5A524]" : "bg-[#0C1020]/10"}`} />
                 ))}
               </div>
             </div>
@@ -273,7 +265,7 @@ function AboutPage() {
               <div className="mt-4 space-y-3">
                 {LENSES.map((l, i) => (
                   <div key={l.title} data-reveal className={`${REVEAL} lg-glass flex gap-4 rounded-2xl p-4`}>
-                    <span className="text-base font-bold text-[#e5a020]" style={LOGO_FONT}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className="text-base font-bold text-[#F5A524]" style={LOGO_FONT}>{String(i + 1).padStart(2, "0")}</span>
                     <div>
                       <p className="font-display text-lg font-bold">{l.title}</p>
                       <p className="mt-0.5 text-base leading-relaxed text-navy/65">{l.text}</p>
@@ -319,7 +311,7 @@ function AboutPage() {
               <ol className="space-y-5">
                 {APPROACH.map((a) => (
                   <li key={a.title} data-reveal className={`${REVEAL} flex gap-4`}>
-                    <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-[#0a0e1f] text-[#e5a020]">
+                    <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-[#0C1020] text-[#F5A524]">
                       <Check className="size-4" strokeWidth={3} />
                     </span>
                     <div>
@@ -363,7 +355,7 @@ function AboutPage() {
 
       {/* thin overall progress line along the top of the viewport */}
       <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[3px]">
-        <div ref={progressRef} className="h-full origin-left bg-[#e5a020]" style={{ transform: "scaleX(0)" }} />
+        <div ref={progressRef} className="h-full origin-left bg-[#F5A524]" style={{ transform: "scaleX(0)" }} />
       </div>
 
       <style>{`@keyframes stageCaption { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }`}</style>
@@ -449,7 +441,7 @@ function PillarCard({ icon: Icon, label, text }: (typeof PILLARS)[number]) {
   return (
     <article data-reveal className={`${REVEAL} lg-glass rounded-2xl p-5`}>
       <div className="flex items-center gap-3">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#e5a020] text-navy">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F5A524] text-navy">
           <Icon className="size-5" strokeWidth={2.4} />
         </span>
         <h3 className="font-display text-xl font-bold">{label}</h3>
@@ -462,7 +454,7 @@ function PillarCard({ icon: Icon, label, text }: (typeof PILLARS)[number]) {
 function ChapterTag({ label }: { n?: number; label: string }) {
   return (
     <div data-reveal className={`${REVEAL} chapter-tag flex items-center gap-3`}>
-      <span className="h-px w-8 bg-[#e5a020]/70" />
+      <span className="h-px w-8 bg-[#F5A524]/70" />
       <span className="text-xs font-bold uppercase tracking-[0.2em] text-navy/55" style={LOGO_FONT}>{label}</span>
     </div>
   );

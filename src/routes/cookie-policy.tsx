@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PolicyPage, policyHead } from "@/components/policy-page";
+import { PAGE_SEO, seoHead } from "@/lib/seo";
+import { PolicyPage } from "@/components/policy-page";
 
 export const Route = createFileRoute("/cookie-policy")({
-  head: () => policyHead("Cookie Policy", "Read ADZVO’s draft cookie policy and learn about cookies, similar technologies and browser choices."),
+  head: () => seoHead(PAGE_SEO.cookies, "/cookie-policy"),
   component: CookiePolicy,
 });
 

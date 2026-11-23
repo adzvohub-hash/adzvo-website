@@ -3,6 +3,7 @@ import { GlassButton } from "@/components/glass-button";
 import {
   Outlet,
   Link,
+  HeadContent,
   createRootRouteWithContext,
   useRouter,
   useRouterState,
@@ -100,6 +101,13 @@ function RootComponent() {
       state.location.pathname.startsWith("/adzvoadmin/"),
   });
 
+  // index.html carries a default title/description for crawlers that don't run JavaScript.
+  // Once the app is running, <HeadContent /> writes each page's own — so remove the defaults
+  // to avoid every page having two descriptions.
+  useEffect(() => {
+    document.querySelectorAll("[data-static-seo]").forEach((el) => el.remove());
+  }, []);
+
   // ── SPA page-view tracking ──────────────────────────────────────────────
   // TanStack Router navigation isn't a real page load, so GA4's tag won't
   // fire automatically. Subscribe to the router and fire page_view manually
@@ -123,6 +131,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Writes each route's head() — title, description, social tags, robots — into the page. */}
+      <HeadContent />
       {!isAdmin && <SiteNav />}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />

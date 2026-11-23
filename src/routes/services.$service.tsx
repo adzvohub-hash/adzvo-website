@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { SERVICE_SEO, seoHead } from "@/lib/seo";
 import { GlassButton } from "@/components/glass-button";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,23 +23,8 @@ export const Route = createFileRoute("/services/$service")({
     return service;
   },
   head: ({ loaderData }) => {
-    const title = loaderData ? `${loaderData.title} — ADZVO` : "Service unavailable — ADZVO";
-    const description = loaderData?.slug === "marketing-growth"
-      ? "Explore ADZVO Marketing & Growth: social media marketing, SEO and YouTube SEO, email and lifecycle marketing, Google and Meta ads, lead generation and conversion optimization."
-      : loaderData?.slug === "animation-content"
-      ? "Explore Animation & Content at ADZVO: expressive motion design, 3D artwork and visual storytelling."
-      : loaderData?.slug === "film-video-photography"
-        ? "Explore ADZVO and LCA Film Studio: ad films, corporate films, commercials, podcasts, photography and end-to-end production."
-        : loaderData?.slug === "content-localization"
-          ? "Explore ADZVO content and localization: copywriting, blogs, e-books, storybooks, translation, subtitles and multilingual content."
-          : loaderData?.slug === "strategy-analytics"
-            ? "Explore ADZVO strategy and analytics: digital and marketing strategy, GA4, Tag Manager, dashboards, reporting and content strategy."
-            : loaderData ? `Explore ${loaderData.title} at ADZVO. Full service details are coming soon.` : "This ADZVO service page is unavailable.";
-    return { meta: [
-      { title }, { name: "description", content: description },
-      { property: "og:title", content: title }, { property: "og:description", content: description },
-      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
-    ] };
+    const seo = loaderData ? SERVICE_SEO[loaderData.slug] : undefined;
+    return seoHead(seo ?? { title: "Service not found | ADZVO", description: "This ADZVO service page is unavailable." }, `/services/${loaderData?.slug ?? ""}`);
   },
   component: ServicePage,
 });

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { PAGE_SEO, seoHead } from "@/lib/seo";
 import { GlassButton } from "@/components/glass-button";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
@@ -8,16 +9,10 @@ import hero from "@/assets/insights-hero.jpg";
 import { postsSeed, fetchInsights, type Post } from "@/lib/insights";
 
 export const Route = createFileRoute("/resources")({
-  head: () => ({
-    meta: [
-      { title: "Resources — ADZVO" },
-      { name: "description", content: "Practical thinking on brands, growth, AI, film and the ideas shaping modern creative work." },
-      { property: "og:title", content: "ADZVO Resources" },
-      { property: "og:description", content: "Practical thinking on brands, growth, AI, film and the ideas shaping modern creative work." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  // This route is also the parent of every article (/resources/<slug>). Only set the Resources
+  // page's own tags when it's the page being shown, so articles get exactly one canonical.
+  head: ({ matches, match }) =>
+    matches[matches.length - 1]?.routeId === match.routeId ? seoHead(PAGE_SEO.resources, "/resources") : {},
   component: ResourcesRoot,
 });
 
@@ -35,7 +30,7 @@ function PostCard({ post }: { post: Post }) {
     <article className="flex flex-col">
       <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-navy shadow-[0_14px_36px_-22px] shadow-navy/40">
         {post.images.map((src, k) => (
-          <img key={k} src={src} alt="" loading="lazy" className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${k === i ? "opacity-100" : "opacity-0"}`} />
+          <img key={k} src={src} alt={k === 0 ? post.title : ""} loading="lazy" className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${k === i ? "opacity-100" : "opacity-0"}`} />
         ))}
         <span className="absolute right-3 top-3 rounded-md bg-navy/70 px-2 py-1 text-xs font-bold tracking-wider text-primary-foreground backdrop-blur" style={LOGO_FONT}>{i + 1} / {n}</span>
         <button aria-label="Previous image" onClick={() => setI((i - 1 + n) % n)} className="absolute left-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-primary-foreground/30 bg-navy/60 text-primary-foreground backdrop-blur hover:bg-navy"><ArrowLeft className="h-4 w-4" /></button>

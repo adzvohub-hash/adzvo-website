@@ -6,8 +6,8 @@ import frost from "@/assets/animation-frosted.jpg";
 
 const palette = [
   { name: "Gold", hex: "#F5A524" },
-  { name: "Navy", hex: "#0B0F1E" },
-  { name: "Slate", hex: "#3B4257" },
+  { name: "Navy", hex: "#0C1020" },
+  { name: "Slate", hex: "#373E54" },
   { name: "Off-white", hex: "#F7F8FC" },
 ];
 import { BrandMark, Highlight, LOGO_FONT, SectionLabel } from "@/components/brand-logo";

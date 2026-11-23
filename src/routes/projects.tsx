@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PAGE_SEO, seoHead } from "@/lib/seo";
 import { GlassButton } from "@/components/glass-button";
 import { useEffect, useMemo, useState } from "react";
 import { FileText, MapPin } from "lucide-react";
@@ -12,16 +13,7 @@ import { servicePages } from "@/lib/services";
 import { projectLocations, projectsSeed, fetchProjects, type Project } from "@/lib/projects";
 
 export const Route = createFileRoute("/projects")({
-  head: () => ({
-    meta: [
-      { title: "Projects — ADZVO Portfolio" },
-      { name: "description", content: "Explore ADZVO projects across India and global markets, filterable by service and location." },
-      { property: "og:title", content: "Projects — ADZVO Portfolio" },
-      { property: "og:description", content: "Explore ADZVO projects across India and global markets, filterable by service and location." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => seoHead(PAGE_SEO.projects, "/projects"),
   component: ProjectsPage,
 });
 
@@ -74,7 +66,7 @@ function ProjectsPage() {
               const s = serviceOf(p.service);
               return (
                 <article key={p.id} className="group flex flex-col overflow-hidden rounded-3xl border border-navy/10 bg-card shadow-[0_14px_36px_-22px] shadow-navy/30 transition duration-300 hover:-translate-y-1.5 hover:border-gold">
-                  <img src={p.image_url || s.image} alt="" className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                  <img src={p.image_url || s.image} alt={`${p.title} — ${s.title} project for ${p.client}, ${p.location}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
                   <div className="flex flex-1 flex-col p-5">
                     <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-navy/70" style={LOGO_FONT}><span className="size-1.5 shrink-0 rounded-full bg-gold" />{s.title}</p>
                     <h2 className="mt-3 font-display text-lg font-bold leading-snug text-navy">{p.title}</h2>
