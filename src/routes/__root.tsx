@@ -38,6 +38,9 @@ import { reportError } from "../lib/error-reporting";
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      {/* React moves these into <head>: a tab title, and "noindex" so Google never lists a missing page. */}
+      <title>Page not found | ADZVO</title>
+      <meta name="robots" content="noindex, follow" />
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
