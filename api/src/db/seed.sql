@@ -58,15 +58,15 @@ INSERT OR IGNORE INTO insights (id, tag, title, excerpt, body, sort_order) VALUE
 
 -- ─── Insight images ────────────────────────────────────────────────────────────
 INSERT OR IGNORE INTO insight_images (insight_id, image_url, position) VALUES
-  ('ai-saves-time',         'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-6.jpg', 0),
-  ('ai-saves-time',         'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-7.jpg', 1),
-  ('brand-scales',          'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-3.jpg', 0),
-  ('brand-scales',          'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-4.jpg', 1),
-  ('brand-film',            'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-3.jpg', 0),
-  ('brand-film',            'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-5.jpg', 1),
-  ('perf-marketing-2026',   'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-5.jpg', 0),
-  ('perf-marketing-2026',   'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-8.jpg', 1),
-  ('transcreation',         'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-7.jpg', 0),
-  ('transcreation',         'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-2.jpg', 1),
-  ('dashboard-leadership',  'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-8.jpg', 0),
-  ('dashboard-leadership',  'https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev/images/svc-1.jpg', 1);
+  ('ai-saves-time',         'https://media.adzvo.com/images/svc-6.jpg', 0),
+  ('ai-saves-time',         'https://media.adzvo.com/images/svc-7.jpg', 1),
+  ('brand-scales',          'https://media.adzvo.com/images/svc-3.jpg', 0),
+  ('brand-scales',          'https://media.adzvo.com/images/svc-4.jpg', 1),
+  ('brand-film',            'https://media.adzvo.com/images/svc-3.jpg', 0),
+  ('brand-film',            'https://media.adzvo.com/images/svc-5.jpg', 1),
+  ('perf-marketing-2026',   'https://media.adzvo.com/images/svc-5.jpg', 0),
+  ('perf-marketing-2026',   'https://media.adzvo.com/images/svc-8.jpg', 1),
+  ('transcreation',         'https://media.adzvo.com/images/svc-7.jpg', 0),
+  ('transcreation',         'https://media.adzvo.com/images/svc-2.jpg', 1),
+  ('dashboard-leadership',  'https://media.adzvo.com/images/svc-8.jpg', 0),
+  ('dashboard-leadership',  'https://media.adzvo.com/images/svc-1.jpg', 1);

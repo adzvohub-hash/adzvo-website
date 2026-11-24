@@ -27,10 +27,11 @@ CORS_ORIGIN = "https://adzvo.com,https://www.adzvo.com,https://adzvo-website.adz
 #R2_PUBLIC_URL = "https://pub-d599108787ca4f3283af2c206c0a1244.r2.dev"
 R2_PUBLIC_URL = "https://media.adzvo.com"
 
-# Dev overrides
+# Dev overrides (only used with `wrangler dev --env dev`)
 [env.dev.vars]
 ENVIRONMENT = "development"
 CORS_ORIGIN = "http://localhost:5173"
-ADMIN_USERNAME = "adzvoadmin"
-ADMIN_PASSWORD = "adzvoadmin"
-JWT_SECRET = "local-dev-secret-not-for-production"
+# Credentials are NOT stored in this file (it is committed to git).
+#   Local testing: copy api/.dev.vars.example to api/.dev.vars and fill in values
+#                  (.dev.vars is git-ignored; wrangler dev reads it automatically).
+#   Production:    npx wrangler@4 secret put ADMIN_USERNAME / ADMIN_PASSWORD / JWT_SECRET

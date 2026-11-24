@@ -21,6 +21,41 @@
     <!-- Default title/description for crawlers that don't run JavaScript. Removed on load; each page then sets its own (see src/routes/__root.tsx). -->
     <meta name="description" data-static-seo content="ADZVO is a full-service creative digital agency in India — branding, social, web, video, SEO and paid media that move the needle." />
     <title data-static-seo>ADZVO — Ideas That Inspire. Digital That Delivers.</title>
+    <!-- Structured data: tells Google who ADZVO is (name, site, logo, phone). Not removed on load, so every page carries it.
+         TODO when the company is registered: add "address" (PostalAddress). TODO when social profiles exist: add "sameAs": [urls]. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://adzvo.com/#organization",
+          "name": "ADZVO",
+          "url": "https://adzvo.com/",
+          "logo": "https://adzvo.com/favicon.svg",
+          "description": "ADZVO is a Bangalore creative and digital agency for branding, websites, digital marketing, video and AI, helping brands across India grow.",
+          "areaServed": ["India", "GCC"],
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+91-70123-76221",
+              "contactType": "customer service",
+              "areaServed": "IN",
+              "availableLanguage": ["English"]
+            }
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://adzvo.com/#website",
+          "url": "https://adzvo.com/",
+          "name": "ADZVO",
+          "publisher": { "@id": "https://adzvo.com/#organization" },
+          "inLanguage": "en"
+        }
+      ]
+    }
+    </script>
     <!-- Google tag (GA4) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T4NCYNBCT6"></script>
     <script>
