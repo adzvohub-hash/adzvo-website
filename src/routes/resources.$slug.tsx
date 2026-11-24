@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Footer as SiteFooter } from "@/components/site-footer";
 import { LOGO_FONT } from "@/components/brand-logo";
 import { fetchInsights, type Post } from "@/lib/insights";
-import { canonicalUrl } from "@/lib/seo";
+import { canonicalUrl, shareImageMeta } from "@/lib/seo";
 
 /** Articles shorter than this are kept out of Google until they're written in full.
  *  Thin pages can lower how Google rates the whole site. Once an article in the admin
@@ -32,9 +32,8 @@ export const Route = createFileRoute("/resources/$slug")({
         { property: "og:description", content: post?.excerpt ?? "" },
         { property: "og:type", content: "article" },
         { property: "og:site_name", content: "ADZVO" },
-        { property: "og:image", content: post?.images[0] ?? "" },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:image", content: post?.images[0] ?? "" },
+        ...shareImageMeta(post?.images[0] || undefined),
         { property: "og:url", content: url },
       ],
       links: [{ rel: "canonical", href: url }],

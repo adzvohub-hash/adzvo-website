@@ -90,6 +90,29 @@ export const SITE_URL = "https://adzvo.com";
 /** The one official address of a page — used for the canonical tag and og:url.
  *  Ad clicks add ?gclid=… and other tracking to URLs; the canonical tells Google
  *  all of those are this same page. */
+/** Default picture for link previews (WhatsApp, LinkedIn, Facebook, X). 1200×630, in /public. */
+export const SHARE_IMAGE = {
+  url: `${SITE_URL}/og-image.png`,
+  width: "1200",
+  height: "630",
+  alt: "ADZVO — Ideas That Inspire. Digital That Delivers.",
+};
+
+/** The share-image tags. Pass a page's own picture to override the default. */
+export const shareImageMeta = (image?: string) =>
+  image
+    ? [
+        { property: "og:image", content: image },
+        { name: "twitter:image", content: image },
+      ]
+    : [
+        { property: "og:image", content: SHARE_IMAGE.url },
+        { property: "og:image:width", content: SHARE_IMAGE.width },
+        { property: "og:image:height", content: SHARE_IMAGE.height },
+        { property: "og:image:alt", content: SHARE_IMAGE.alt },
+        { name: "twitter:image", content: SHARE_IMAGE.url },
+      ];
+
 export const canonicalUrl = (path: string) => SITE_URL + (path === "/" ? "/" : path.replace(/\/+$/, ""));
 
 /** Builds a route's head(): title, description, canonical link and matching social-share tags. */
@@ -105,6 +128,7 @@ export function seoHead({ title, description }: PageSeo, path: string, type: "we
       { property: "og:url", content: url },
       { property: "og:site_name", content: "ADZVO" },
       { name: "twitter:card", content: "summary_large_image" },
+      ...shareImageMeta(),
     ],
     links: [{ rel: "canonical", href: url }],
   };
