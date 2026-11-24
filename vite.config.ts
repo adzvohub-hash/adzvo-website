@@ -9,6 +9,8 @@ export default defineConfig({
     TanStackRouterVite({
       routesDirectory: './src/routes',
       generatedRouteTree: './src/routeTree.gen.ts',
+      // Each page's code downloads only when that page is visited (smaller first load, admin never sent to visitors).
+      autoCodeSplitting: true,
     }),
     react(),
     tailwindcss(),
