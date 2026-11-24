@@ -9,6 +9,7 @@ import { CapabilityShowcase } from "@/components/capability-showcase";
 import { CapabilityBento, CapabilityFlip, CapabilityPanels, CapabilityStack, CapabilityTilt } from "@/components/capability-layouts";
 import { Button } from "@/components/ui/button";
 import { servicePages } from "@/lib/services";
+import { ServiceDetails } from "@/components/service-details";
 import animationCta from "@/assets/animation-play.jpg";
 import digitalCta from "@/assets/svc-1.jpg";
 import brandingCta from "@/assets/svc-3.jpg";
@@ -219,6 +220,8 @@ export function ServiceContentBody({ slug }: { slug: string }) {
         </div>}
       </div>
     </section>
+
+    <ServiceDetails slug={slug} />
 
     <CtaBand slug={slug} poster={body.ctaImage} label={body.ctaAlt}>
           <SectionLabel light>Start a Project</SectionLabel>

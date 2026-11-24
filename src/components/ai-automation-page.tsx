@@ -6,6 +6,7 @@ import { servicePages } from "@/lib/services";
 import { Highlight, SectionLabel } from "@/components/brand-logo";
 import { AiAutomationHero } from "@/components/ai-automation-hero";
 import { GlowGrid } from "@/components/capability-layouts";
+import { ServiceDetails } from "@/components/service-details";
 import consulting from "@/assets/ai-consulting.jpg";
 import content from "@/assets/ai-content.jpg";
 import workflows from "@/assets/ai-workflows.jpg";
@@ -36,6 +37,8 @@ export function AiAutomationPage() {
         </div>
       </div>
     </section>
+
+    <ServiceDetails slug="ai-automation" />
 
     <CtaBand slug="ai-automation" poster={cta} label="Glowing AI network animation">
           <SectionLabel light>Start a Project</SectionLabel>
