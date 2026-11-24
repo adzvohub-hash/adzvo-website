@@ -92,7 +92,7 @@ export const SITE_URL = "https://adzvo.com";
  *  all of those are this same page. */
 /** Default picture for link previews (WhatsApp, LinkedIn, Facebook, X). 1200×630, in /public. */
 export const SHARE_IMAGE = {
-  url: `${SITE_URL}/og-image.png`,
+  url: `${SITE_URL}/og-image.jpg`,
   width: "1200",
   height: "630",
   alt: "ADZVO — Ideas That Inspire. Digital That Delivers.",
