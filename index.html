@@ -81,7 +81,17 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-T4NCYNBCT6', { send_page_view: false });
+      // ADZVO team devices are labelled "internal" so GA4's Internal Traffic filter leaves them out.
+      // Mark a browser once with adzvo.com/?internal=1 (opening /adzvoadmin marks it too); undo with ?internal=0.
+      var gaCfg = { send_page_view: false };
+      try {
+        var q = new URLSearchParams(location.search), mark = q.get('internal');
+        if (mark === '1' || location.pathname.indexOf('/adzvoadmin') === 0) localStorage.setItem('adzvoInternal', '1');
+        if (mark === '0') localStorage.removeItem('adzvoInternal');
+        if (mark !== null) { q.delete('internal'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); }
+        if (localStorage.getItem('adzvoInternal') === '1') gaCfg.traffic_type = 'internal';
+      } catch (e) {}
+      gtag('config', 'G-T4NCYNBCT6', gaCfg);
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
