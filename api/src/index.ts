@@ -21,6 +21,16 @@ app.use("*", (ctx, next) => {
   })(ctx, next);
 });
 
+// ─── Search engines ───────────────────────────────────────────────────────────
+// Crawlers must still be ALLOWED here: Google loads this API while rendering adzvo.com's
+// pages (projects, articles, images), and a "Disallow" would make those pages look empty.
+// Instead, every API reply is marked "noindex" so raw API data never appears in search.
+app.use("*", async (ctx, next) => {
+  await next();
+  ctx.res.headers.set("X-Robots-Tag", "noindex");
+});
+app.get("/robots.txt", (ctx) => ctx.text("User-agent: *\nAllow: /\n"));
+
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get("/api/health", (ctx) => ctx.json({ ok: true, env: ctx.env.ENVIRONMENT }));
 
