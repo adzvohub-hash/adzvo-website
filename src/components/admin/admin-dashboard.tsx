@@ -106,6 +106,17 @@ function LoginView({ onLogin }: { onLogin: () => void }) {
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
+/** Readable, unique web address from an article title: "Why SEO Matters!" → "why-seo-matters" (then "-2", "-3" if taken). */
+function articleSlug(title: string, taken: string[]): string {
+  let base = title.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    .replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  if (base.length > 70) base = base.slice(0, 70).replace(/-[^-]*$/, "");
+  if (!base) return "";
+  let slug = base;
+  for (let n = 2; taken.includes(slug); n++) slug = `${base}-${n}`;
+  return slug;
+}
+
 export function AdminDashboard() {
   const [signedIn,     setSignedIn]     = useState(() => Boolean(getToken()));
   const [tab,          setTab]          = useState<Tab>("Home");
@@ -206,6 +217,9 @@ export function AdminDashboard() {
 
   // ─── Insight save ──────────────────────────────────────────────────────────
   async function handleSaveInsight(draft: Omit<Insight, "created_at" | "updated_at">) {
+    // A new article's web address is made from its title (adzvo.com/resources/why-seo-matters),
+    // not a random code. Existing articles keep the address they already have.
+    if (insightIsNew) draft = { ...draft, id: articleSlug(draft.title, insights.map((i) => i.id)) || draft.id };
     const saved = await saveInsight(draft, insightIsNew);
     setInsights(upsertItem(insights, saved));
     setInsightEdit(null);

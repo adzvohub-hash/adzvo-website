@@ -12,6 +12,16 @@ import { canonicalUrl, shareImageMeta } from "@/lib/seo";
  *  reaches this length it becomes indexable automatically — no code change needed. */
 const MIN_INDEXABLE_WORDS = 300;
 
+/** The database stores UTC times like "2026-11-26 07:40:12"; this turns one into a real date (or null). */
+function parseDbDate(v?: string): Date | null {
+  if (!v) return null;
+  const d = new Date(v.includes("T") ? v : v.replace(" ", "T") + "Z");
+  return isNaN(d.getTime()) ? null : d;
+}
+/** "26 November 2026", in India time. */
+const formatPostDate = (d: Date) =>
+  d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+
 /**
  * Turns the plain text typed in the admin into paragraphs and subheadings:
  * • every line (or blank-line-separated block) becomes its own paragraph;
@@ -54,6 +64,8 @@ export const Route = createFileRoute("/resources/$slug")({
         { property: "og:title", content: post ? post.title : "ADZVO Resources" },
         { property: "og:description", content: post?.excerpt ?? "" },
         { property: "og:type", content: "article" },
+        ...(parseDbDate(post?.created_at) ? [{ property: "article:published_time", content: parseDbDate(post?.created_at)!.toISOString() }] : []),
+        ...(parseDbDate(post?.updated_at) ? [{ property: "article:modified_time", content: parseDbDate(post?.updated_at)!.toISOString() }] : []),
         { property: "og:site_name", content: "ADZVO" },
         { name: "twitter:card", content: "summary_large_image" },
         ...shareImageMeta(post?.images[0] || undefined),
@@ -110,8 +122,25 @@ function ResourcePage() {
     );
   }
 
+  const published = parseDbDate(post.created_at);
+  const modified = parseDbDate(post.updated_at);
+  // Tells Google this is an article by ADZVO and when it was published (can show the date in results).
+  const articleData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    ...(post.images[0] ? { image: post.images.filter(Boolean) } : {}),
+    ...(published ? { datePublished: published.toISOString() } : {}),
+    ...(modified ? { dateModified: modified.toISOString() } : {}),
+    author: { "@type": "Organization", name: "ADZVO", url: "https://adzvo.com/" },
+    publisher: { "@id": "https://adzvo.com/#organization" },
+    mainEntityOfPage: canonicalUrl(`/resources/${post.id}`),
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleData).replace(/</g, "\\u003c") }} />
       <main className="bg-off pb-24">
         {/* Hero image */}
         <div className="relative isolate h-[50vh] min-h-[320px] overflow-hidden bg-navy">
@@ -135,6 +164,11 @@ function ResourcePage() {
               <h1 className="mt-3 font-display text-3xl font-extrabold leading-tight text-white sm:text-5xl">
                 {post.title}
               </h1>
+              {published && (
+                <p className="mt-3 text-sm font-medium text-white/80">
+                  Posted on <time dateTime={published.toISOString()}>{formatPostDate(published)}</time>
+                </p>
+              )}
             </div>
           </div>
         </div>

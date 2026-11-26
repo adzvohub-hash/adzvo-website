@@ -35,10 +35,15 @@ const PAGES = {
 };
 
 const attr = (s = "") => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const toIso = (v) => {
+  if (!v) return undefined;
+  const d = new Date(String(v).includes("T") ? v : String(v).replace(" ", "T") + "Z");
+  return isNaN(d.getTime()) ? undefined : d.toISOString();
+};
 const words = (t = "") => t.trim().split(/\s+/).filter(Boolean).length;
 const meta = (key, name, content) => `    <meta ${key}="${name}" content="${attr(content)}" data-static-seo />`;
 
-function headTags({ path, title, description, type = "website", image, robots }) {
+function headTags({ path, title, description, type = "website", image, robots, published }) {
   const url = canonicalUrl(path);
   const img = image
     ? [meta("property", "og:image", image), meta("name", "twitter:image", image)]
@@ -55,6 +60,7 @@ function headTags({ path, title, description, type = "website", image, robots })
     ...(robots ? [meta("name", "robots", robots)] : []),
     `    <link rel="canonical" href="${attr(url)}" data-static-seo />`,
     meta("property", "og:type", type),
+    ...(published ? [meta("property", "article:published_time", published)] : []),
     meta("property", "og:site_name", "ADZVO"),
     meta("property", "og:url", url),
     meta("property", "og:title", title),
@@ -111,6 +117,7 @@ try {
       type: "article",
       image,
       robots: words(a.body) >= MIN_INDEXABLE_WORDS ? "index, follow" : "noindex, follow",
+      published: toIso(a.created_at),
     }));
     articles++;
   }
