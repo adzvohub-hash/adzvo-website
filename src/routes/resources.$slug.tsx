@@ -10,6 +10,28 @@ import { canonicalUrl, shareImageMeta } from "@/lib/seo";
  *  Thin pages can lower how Google rates the whole site. Once an article in the admin
  *  reaches this length it becomes indexable automatically — no code change needed. */
 const MIN_INDEXABLE_WORDS = 300;
+
+/**
+ * Turns the plain text typed in the admin into paragraphs and subheadings:
+ * • every line (or blank-line-separated block) becomes its own paragraph;
+ * • a short line with no full stop at the end — or a line starting with "## " — becomes a subheading.
+ */
+function ArticleBody({ body }: { body: string }) {
+  const lines = body.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const isHeading = (l: string) =>
+    l.startsWith("## ") || (l.length <= 80 && l.split(/\s+/).length <= 12 && !/[.!?:;,"”)]$/.test(l));
+  return (
+    <div className="mt-8 space-y-5 text-base leading-[1.85] text-foreground">
+      {lines.map((l, i) =>
+        isHeading(l) ? (
+          <h2 key={i} className="!mt-10 font-display text-2xl font-bold leading-snug text-foreground">{l.replace(/^##\s+/, "")}</h2>
+        ) : (
+          <p key={i}>{l}</p>
+        ),
+      )}
+    </div>
+  );
+}
 const wordCount = (text: string) => text.trim().split(/\s+/).filter(Boolean).length;
 
 export const Route = createFileRoute("/resources/$slug")({
@@ -92,7 +114,7 @@ function ResourcePage() {
         <article className="page-shell mt-12 max-w-3xl">
           <p className="text-lg leading-relaxed text-muted-foreground">{post.excerpt}</p>
           <div className="mt-8 h-px bg-border" />
-          <p className="mt-8 text-base leading-[1.85] text-foreground">{post.body}</p>
+          <ArticleBody body={post.body} />
 
           {/* Image gallery if more than one image */}
           {post.images.length > 1 && (
