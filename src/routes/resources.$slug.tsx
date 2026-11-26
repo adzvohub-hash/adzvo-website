@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { GlassButton } from "@/components/glass-button";
 import { ArrowLeft } from "lucide-react";
 import { Footer as SiteFooter } from "@/components/site-footer";
@@ -64,6 +65,34 @@ export const Route = createFileRoute("/resources/$slug")({
   component: ResourcePage,
 });
 
+/**
+ * Article hero: every image the article has, cross-fading slowly one into the next
+ * (each shows for 7 s, the fade takes 3 s). One image = a still picture; none = plain navy.
+ * Visitors who ask their device for reduced motion see the first image only.
+ */
+function HeroSlideshow({ images, title }: { images: string[]; title: string }) {
+  const list = images.filter(Boolean);
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (list.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = setInterval(() => setI((v) => (v + 1) % list.length), 7000);
+    return () => clearInterval(t);
+  }, [list.length]);
+  return (
+    <>
+      {list.map((src, k) => (
+        <img
+          key={src + k}
+          src={src}
+          alt={k === 0 ? title : ""}
+          loading={k === 0 ? "eager" : "lazy"}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[3000ms] ease-in-out ${k === i ? "opacity-70" : "opacity-0"}`}
+        />
+      ))}
+    </>
+  );
+}
+
 function ResourcePage() {
   const { post } = Route.useLoaderData() as { all: Post[]; post: Post | null };
 
@@ -86,7 +115,7 @@ function ResourcePage() {
       <main className="bg-off pb-24">
         {/* Hero image */}
         <div className="relative isolate h-[50vh] min-h-[320px] overflow-hidden bg-navy">
-          <img src={post.images[0]} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70" />
+          <HeroSlideshow images={post.images} title={post.title} />
           <div className="absolute inset-0 bg-gradient-to-b from-navy/60 via-navy/30 to-navy/80" />
           {/* Back link */}
           <div className="absolute left-0 top-0 p-6 md:p-10">
@@ -116,14 +145,6 @@ function ResourcePage() {
           <div className="mt-8 h-px bg-border" />
           <ArticleBody body={post.body} />
 
-          {/* Image gallery if more than one image */}
-          {post.images.length > 1 && (
-            <div className="mt-10 grid gap-4 sm:grid-cols-2">
-              {post.images.slice(1).map((src, i) => (
-                <img key={i} src={src} alt={`${post.title} — image ${i + 1}`} className="aspect-video w-full rounded-2xl object-cover" />
-              ))}
-            </div>
-          )}
 
           <div className="mt-14">
             <GlassButton as={Link} to="/resources" variant="secondary">
